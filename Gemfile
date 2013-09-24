@@ -15,6 +15,8 @@ group :test do
   gem 'database_cleaner', '1.1.1', require: false
   gem 'factory_girl_rails', '4.2.1'
   gem 'shoulda-context', '1.1.5'
+  gem 'simplecov', '0.7.1'
+  gem 'simplecov-rcov'
 end
 
 group :assets do

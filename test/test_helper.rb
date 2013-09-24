@@ -1,8 +1,14 @@
 ENV["RAILS_ENV"] = "test"
+
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
-
 require 'database_cleaner'
+
+require 'simplecov'
+require 'simplecov-rcov'
+
+SimpleCov.start 'rails'
+SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 
 DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean
