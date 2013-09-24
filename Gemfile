@@ -2,7 +2,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.14'
 
-gem 'mongoid', '3.1.4'
+gem 'mongoid', '3.0.23'
+gem 'plek', '1.4.0'
 
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
