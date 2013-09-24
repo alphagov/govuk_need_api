@@ -28,3 +28,4 @@ end
 gem 'jquery-rails'
 
 gem 'unicorn'
+gem 'exception_notification', '2.6.1'
