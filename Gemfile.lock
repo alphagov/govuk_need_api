@@ -102,6 +102,7 @@ GEM
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
     origin (1.1.0)
+    plek (1.4.0)
     polyglot (0.3.3)
     rack (1.4.5)
     rack-accept (0.4.5)
@@ -178,6 +179,7 @@ DEPENDENCIES
   gds-sso (= 3.1.0)
   jquery-rails
   mongoid (= 3.0.23)
+  plek (= 1.4.0)
   rails (= 3.2.14)
   sass-rails (~> 3.2.3)
   shoulda-context (= 1.1.5)
