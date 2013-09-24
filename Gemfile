@@ -4,6 +4,12 @@ gem 'rails', '3.2.14'
 
 gem 'mongoid', '3.1.4'
 
+if ENV['SSO_DEV']
+  gem 'gds-sso', path: '../gds-sso'
+else
+  gem 'gds-sso', '3.1.0'
+end
+
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'
