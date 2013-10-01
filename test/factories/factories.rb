@@ -3,4 +3,9 @@ FactoryGirl.define do
     sequence(:name) { |n| "Winston #{n}"}
     permissions { ["signin"] }
   end
+
+  factory :organisation do
+    name "Ministry of Plenty"
+    slug "ministry-of-plenty"
+  end
 end
