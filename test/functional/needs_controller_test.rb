@@ -17,7 +17,7 @@ class NeedsControllerTest < ActionController::TestCase
       end
 
       should "persist the need" do
-        post :create, need: @need
+        post :create, @need
 
         need = Need.first
 
@@ -28,7 +28,7 @@ class NeedsControllerTest < ActionController::TestCase
       end
 
       should "return a created status" do
-        post :create, need: @need
+        post :create, @need
 
         assert_response :created
 
@@ -37,7 +37,7 @@ class NeedsControllerTest < ActionController::TestCase
       end
 
       should "return details about the new need" do
-        post :create, need: @need
+        post :create, @need
 
         need = Need.first
         body = JSON.parse(response.body)
@@ -59,13 +59,13 @@ class NeedsControllerTest < ActionController::TestCase
       end
 
       should "return a 422 status code" do
-        post :create, need: @need
+        post :create, @need
 
         assert_equal 422, response.status
       end
 
       should "return model errors in the json response" do
-        post :create, need: @need
+        post :create, @need
 
         body = JSON.parse(response.body)
         assert_equal "invalid_attributes", body["_response_info"]["status"]
