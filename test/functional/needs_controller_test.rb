@@ -7,6 +7,27 @@ class NeedsControllerTest < ActionController::TestCase
   end
 
   context "POST create" do
+    context "given a need with all fields filled" do
+      should "should persist the need" do
+        @need = {
+          role: "user",
+          goal: "find my local council",
+          benefit: "contact them about a local enquiry",
+          organisations: ["cabinet-office","department-for-transport","department-for-war"],
+          justifications: ["legislation","other"],
+          impact: "Noticed by an expert audience",
+          met_when: ["criteria #1","criteria #2"]
+        }
+
+        post :create, @need
+        need = Need.first
+
+        @need.each do |k,v|
+          assert_equal v, need.send(k)
+        end
+      end
+    end
+
     context "given a valid need" do
       setup do
         @need = {
