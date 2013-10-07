@@ -9,4 +9,10 @@ FactoryGirl.define do
     slug "ministry-of-plenty"
     _id { slug }
   end
+
+  factory :need do
+    role "user"
+    goal "pay my council tax"
+    benefit "I don't receive a fine"
+  end
 end
