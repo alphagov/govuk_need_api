@@ -7,5 +7,6 @@ FactoryGirl.define do
   factory :organisation do
     name "Ministry of Plenty"
     slug "ministry-of-plenty"
+    _id { slug }
   end
 end
