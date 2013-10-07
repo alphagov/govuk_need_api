@@ -2,11 +2,13 @@ require_relative '../test_helper'
 
 class NeedTest < ActiveSupport::TestCase
 
+  setup do
+    FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+    FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+  end
+
   context "creating a need" do
     setup do
-      FactoryGirl.create(:organisation, slug: "cabinet-office")
-      FactoryGirl.create(:organisation, slug: "ministry-of-justice")
-
       @atts = {
         role: "user",
         goal: "pay my car tax",
@@ -62,6 +64,24 @@ class NeedTest < ActiveSupport::TestCase
 
       need = Need.new(@atts.merge(:organisation_ids => []))
       assert need.valid?
+    end
+  end
+
+  context "an existing need" do
+    should "return organisations" do
+      need = FactoryGirl.create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
+
+      assert_equal 2, need.organisations.count
+      assert_equal ["Cabinet Office", "Ministry of Justice"], need.organisations.map(&:name)
+      assert_equal ["cabinet-office", "ministry-of-justice"], need.organisations.map(&:id)
+    end
+
+    should "return no organisations when no ids are present" do
+      need = FactoryGirl.create(:need, :organisation_ids => nil)
+
+      assert_equal 0, need.organisations.count
+      assert_equal [], need.organisations.map(&:name)
+      assert_equal [], need.organisations.map(&:id)
     end
   end
 

@@ -4,7 +4,7 @@ class Need
   field :role, type: String
   field :goal, type: String
   field :benefit, type: String
-  field :organisation_ids, type: Array
+  field :organisation_ids, type: Array, default: []
   field :justifications, type: Array
   field :impact, type: String
   field :met_when, type: Array
@@ -14,6 +14,8 @@ class Need
   validates :benefit, presence: true
 
   validate :organisation_ids_must_exist
+
+  has_and_belongs_to_many :organisations
 
   private
   def organisation_ids_must_exist
