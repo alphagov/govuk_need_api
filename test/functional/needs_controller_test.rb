@@ -4,6 +4,9 @@ class NeedsControllerTest < ActionController::TestCase
 
   setup do
     login_as_stub_user
+
+    FactoryGirl.create(:organisation, slug: "cabinet-office")
+    FactoryGirl.create(:organisation, slug: "department-for-transport")
   end
 
   context "POST create" do
@@ -13,7 +16,7 @@ class NeedsControllerTest < ActionController::TestCase
           role: "user",
           goal: "find my local council",
           benefit: "contact them about a local enquiry",
-          organisations: ["cabinet-office","department-for-transport","department-for-war"],
+          organisations: ["cabinet-office","department-for-transport"],
           justifications: ["legislation","other"],
           impact: "Noticed by an expert audience",
           met_when: ["criteria #1","criteria #2"]
@@ -21,6 +24,8 @@ class NeedsControllerTest < ActionController::TestCase
 
         post :create, @need
         need = Need.first
+
+        assert need.present?
 
         @need.each do |k,v|
           assert_equal v, need.send(k)
