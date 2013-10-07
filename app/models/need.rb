@@ -4,7 +4,7 @@ class Need
   field :role, type: String
   field :goal, type: String
   field :benefit, type: String
-  field :organisations, type: Array
+  field :organisation_ids, type: Array
   field :justifications, type: Array
   field :impact, type: String
   field :met_when, type: Array
@@ -13,14 +13,14 @@ class Need
   validates :goal, presence: true
   validates :benefit, presence: true
 
-  validate :organisations_must_exist
+  validate :organisation_ids_must_exist
 
   private
-  def organisations_must_exist
-    organisation_ids = (organisations || []).uniq
+  def organisation_ids_must_exist
+    org_ids = (organisation_ids || []).uniq
 
-    if Organisation.where(:id.in => organisation_ids).count < organisation_ids.size
-      errors.add(:organisations, "must exist")
+    if Organisation.where(:id.in => org_ids).count < org_ids.size
+      errors.add(:organisation_ids, "must exist")
     end
   end
 end

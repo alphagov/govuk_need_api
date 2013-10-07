@@ -16,7 +16,7 @@ class NeedsControllerTest < ActionController::TestCase
           role: "user",
           goal: "find my local council",
           benefit: "contact them about a local enquiry",
-          organisations: ["cabinet-office","department-for-transport"],
+          organisation_ids: ["cabinet-office","department-for-transport"],
           justifications: ["legislation","other"],
           impact: "Noticed by an expert audience",
           met_when: ["criteria #1","criteria #2"]
