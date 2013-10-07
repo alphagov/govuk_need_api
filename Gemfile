@@ -13,7 +13,6 @@ else
 end
 
 group :test do
-  gem 'capybara', '2.1.0'
   gem 'database_cleaner', '1.1.1', require: false
   gem 'factory_girl_rails', '4.2.1'
   gem 'mocha', '0.13.3', require: false
