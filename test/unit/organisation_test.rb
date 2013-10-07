@@ -20,6 +20,7 @@ class OrganisationTest < ActiveSupport::TestCase
 
       assert_equal "Ministry of Magic", organisation.name
       assert_equal "ministry-of-magic", organisation.slug
+      assert_equal "ministry-of-magic", organisation._id
     end
 
     should "not be valid without a name" do
