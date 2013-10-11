@@ -1,11 +1,13 @@
 require_relative 'test_helper'
-require 'capybara/rails'
 
 class ActionDispatch::IntegrationTest
-  include Capybara::DSL
+  include Rack::Test::Methods
 
   def login_as(user)
     GDS::SSO.test_user = user
-    Capybara.current_session.driver.browser.clear_cookies
+  end
+
+  def post_json(url, body, headers = {})
+    post url, body, { "CONTENT_TYPE" => "application/json" }.merge(headers)
   end
 end
