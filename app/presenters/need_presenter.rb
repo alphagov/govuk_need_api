@@ -8,7 +8,12 @@ class NeedPresenter
     {
       _response_info: {
         status: options[:status] || "ok"
-      },
+      }
+    }.merge(present)
+  end
+
+  def present(options = {})
+    {
       id: @view_context.need_url(@need.id),
       role: @need.role,
       goal: @need.goal,
