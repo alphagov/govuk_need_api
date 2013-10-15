@@ -12,7 +12,7 @@ class NeedPresenter
     }.merge(present)
   end
 
-  def present(options = {})
+  def present
     {
       id: @view_context.need_url(@need.id),
       role: @need.role,
