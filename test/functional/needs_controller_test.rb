@@ -34,6 +34,12 @@ class NeedsControllerTest < ActionController::TestCase
       assert_equal @needs.first.goal, body["results"][0]["goal"]
       assert_equal @needs.first.benefit, body["results"][0]["benefit"]
     end
+
+    should "set cache-control headers to zero" do
+      get :index
+
+      assert_equal "max-age=0, public", response.headers["Cache-Control"]
+    end
   end
 
   context "POST create" do
