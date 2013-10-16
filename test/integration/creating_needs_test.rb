@@ -20,7 +20,14 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "met_when" => [
         "The user sees the minimum wage",
         "The user sees information about the age groups"
-      ]
+      ],
+      "contacts" => 1000,
+      "site_views" => 10000,
+      "need_views" => 1000,
+      "searched_for" => 2000,
+      "currently_online" => false,
+      "other_evidence" => "Other evidence",
+      "legislation" => ["link#1","link#2"]
     }.to_json
 
     post_json '/needs', request_body
@@ -42,6 +49,14 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "department-for-work-and-pensions", body["organisations"][0]["id"]
     assert_equal "HM Treasury", body["organisations"][1]["name"]
     assert_equal "hm-treasury", body["organisations"][1]["id"]
+
+    assert_equal 1000, body["contacts"]
+    assert_equal 10000, body["site_views"]
+    assert_equal 1000, body["need_views"]
+    assert_equal 2000, body["searched_for"]
+    assert_equal false, body["currently_online"]
+    assert_equal "Other evidence", body["other_evidence"]
+    assert_equal ["link#1", "link#2"], body["legislation"]
   end
 
   should "return errors given invalid attributes" do

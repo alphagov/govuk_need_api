@@ -19,7 +19,14 @@ class NeedsControllerTest < ActionController::TestCase
           organisation_ids: ["cabinet-office","department-for-transport"],
           justifications: ["legislation","other"],
           impact: "Noticed by an expert audience",
-          met_when: ["criteria #1","criteria #2"]
+          met_when: ["criteria #1","criteria #2"],
+          contacts: 1000,
+          site_views: 10000,
+          need_views: 1000,
+          searched_for: 2000,
+          currently_online: false,
+          other_evidence: "Other evidence",
+          legislation: ["link#1","link#2"]
         }
 
         post :create, @need

@@ -17,7 +17,14 @@ class NeedPresenter
       organisations: organisations,
       justifications: @need.justifications,
       impact: @need.impact,
-      met_when: @need.met_when
+      met_when: @need.met_when,
+      contacts: @need.contacts,
+      site_views: @need.site_views,
+      need_views: @need.need_views,
+      searched_for: @need.searched_for,
+      currently_online: @need.currently_online,
+      other_evidence: @need.other_evidence,
+      legislation: @need.legislation
     }
   end
 
