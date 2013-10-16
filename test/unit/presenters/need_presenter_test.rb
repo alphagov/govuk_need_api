@@ -20,7 +20,14 @@ class NeedPresenterTest < ActiveSupport::TestCase
       ],
       justifications: [ "legislation", "other" ],
       impact: "Noticed by an expert audience",
-      met_when: [ "the user sees the current vat rate" ]
+      met_when: [ "the user sees the current vat rate" ],
+      monthly_user_contacts: 1000,
+      monthly_site_views: 10000,
+      monthly_need_views: 1000,
+      monthly_searches: 2000,
+      currently_met: false,
+      other_evidence: "Other evidence",
+      legislation: ["link#1","link#2"]
     )
     @view_context = MockViewContext.new
     @presenter = NeedPresenter.new(@need, @view_context)
@@ -45,6 +52,14 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal ["legislation", "other"], response[:justifications]
     assert_equal "Noticed by an expert audience", response[:impact]
     assert_equal ["the user sees the current vat rate"], response[:met_when]
+
+    assert_equal 1000, response[:monthly_user_contacts]
+    assert_equal 10000, response[:monthly_site_views]
+    assert_equal 1000, response[:monthly_need_views]
+    assert_equal 2000, response[:monthly_searches]
+    assert_equal false, response[:currently_met]
+    assert_equal "Other evidence", response[:other_evidence]
+    assert_equal ["link#1","link#2"], response[:legislation]
   end
 
   should "return a custom status" do
