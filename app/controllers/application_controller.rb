@@ -13,4 +13,10 @@ class ApplicationController < ActionController::Base
            status: code
   end
 
+  def set_expiry(duration)
+    unless Rails.env.development?
+      expires_in duration, :public => true
+    end
+  end
+
 end
