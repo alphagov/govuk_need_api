@@ -21,7 +21,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
         "The user sees the minimum wage",
         "The user sees information about the age groups"
       ],
-      "contacts" => 1000,
+      "monthly_user_contacts" => 1000,
       "site_views" => 10000,
       "need_views" => 1000,
       "searched_for" => 2000,
@@ -50,7 +50,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "HM Treasury", body["organisations"][1]["name"]
     assert_equal "hm-treasury", body["organisations"][1]["id"]
 
-    assert_equal 1000, body["contacts"]
+    assert_equal 1000, body["monthly_user_contacts"]
     assert_equal 10000, body["site_views"]
     assert_equal 1000, body["need_views"]
     assert_equal 2000, body["searched_for"]

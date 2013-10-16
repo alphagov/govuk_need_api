@@ -20,7 +20,7 @@ class NeedsControllerTest < ActionController::TestCase
           justifications: ["legislation","other"],
           impact: "Noticed by an expert audience",
           met_when: ["criteria #1","criteria #2"],
-          contacts: 1000,
+          monthly_user_contacts: 1000,
           site_views: 10000,
           need_views: 1000,
           searched_for: 2000,

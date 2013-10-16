@@ -18,7 +18,7 @@ class NeedPresenter
       justifications: @need.justifications,
       impact: @need.impact,
       met_when: @need.met_when,
-      contacts: @need.contacts,
+      monthly_user_contacts: @need.monthly_user_contacts,
       site_views: @need.site_views,
       need_views: @need.need_views,
       searched_for: @need.searched_for,
