@@ -1,4 +1,11 @@
 class NeedsController < ApplicationController
+  def index
+    @needs = Need.all
+
+    set_expiry 0
+    render json: NeedResultSetPresenter.new(@needs, view_context).as_json
+  end
+
   def create
     @need = Need.new(filtered_params)
 

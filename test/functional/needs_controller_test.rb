@@ -9,6 +9,39 @@ class NeedsControllerTest < ActionController::TestCase
     FactoryGirl.create(:organisation, slug: "department-for-transport")
   end
 
+  context "GET index" do
+    setup do
+      @needs = FactoryGirl.create_list(:need, 5)
+    end
+
+    should "return a success status" do
+      get :index
+
+      assert_response :success
+
+      body = JSON.parse(response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+    end
+
+    should "return a response containing needs" do
+      get :index
+
+      body = JSON.parse(response.body)
+
+      assert_equal 5, body["results"].size
+      assert_equal "http://test.host/needs/#{@needs.first.id}", body["results"][0]["id"]
+      assert_equal @needs.first.role, body["results"][0]["role"]
+      assert_equal @needs.first.goal, body["results"][0]["goal"]
+      assert_equal @needs.first.benefit, body["results"][0]["benefit"]
+    end
+
+    should "set cache-control headers to zero" do
+      get :index
+
+      assert_equal "max-age=0, public", response.headers["Cache-Control"]
+    end
+  end
+
   context "POST create" do
     context "given a need with all fields filled" do
       should "should persist the need" do
