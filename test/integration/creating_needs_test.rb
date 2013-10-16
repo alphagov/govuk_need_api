@@ -22,10 +22,10 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
         "The user sees information about the age groups"
       ],
       "monthly_user_contacts" => 1000,
-      "site_views" => 10000,
-      "need_views" => 1000,
-      "searched_for" => 2000,
-      "currently_online" => false,
+      "monthly_site_views" => 10000,
+      "monthly_need_views" => 1000,
+      "monthly_searches" => 2000,
+      "currently_met" => false,
       "other_evidence" => "Other evidence",
       "legislation" => ["link#1","link#2"]
     }.to_json
@@ -51,10 +51,10 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "hm-treasury", body["organisations"][1]["id"]
 
     assert_equal 1000, body["monthly_user_contacts"]
-    assert_equal 10000, body["site_views"]
-    assert_equal 1000, body["need_views"]
-    assert_equal 2000, body["searched_for"]
-    assert_equal false, body["currently_online"]
+    assert_equal 10000, body["monthly_site_views"]
+    assert_equal 1000, body["monthly_need_views"]
+    assert_equal 2000, body["monthly_searches"]
+    assert_equal false, body["currently_met"]
     assert_equal "Other evidence", body["other_evidence"]
     assert_equal ["link#1", "link#2"], body["legislation"]
   end

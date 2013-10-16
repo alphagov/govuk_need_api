@@ -19,10 +19,10 @@ class NeedPresenter
       impact: @need.impact,
       met_when: @need.met_when,
       monthly_user_contacts: @need.monthly_user_contacts,
-      site_views: @need.site_views,
-      need_views: @need.need_views,
-      searched_for: @need.searched_for,
-      currently_online: @need.currently_online,
+      monthly_site_views: @need.monthly_site_views,
+      monthly_need_views: @need.monthly_need_views,
+      monthly_searches: @need.monthly_searches,
+      currently_met: @need.currently_met,
       other_evidence: @need.other_evidence,
       legislation: @need.legislation
     }

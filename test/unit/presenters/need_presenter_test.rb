@@ -22,10 +22,10 @@ class NeedPresenterTest < ActiveSupport::TestCase
       impact: "Noticed by an expert audience",
       met_when: [ "the user sees the current vat rate" ],
       monthly_user_contacts: 1000,
-      site_views: 10000,
-      need_views: 1000,
-      searched_for: 2000,
-      currently_online: false,
+      monthly_site_views: 10000,
+      monthly_need_views: 1000,
+      monthly_searches: 2000,
+      currently_met: false,
       other_evidence: "Other evidence",
       legislation: ["link#1","link#2"]
     )
@@ -54,10 +54,10 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal ["the user sees the current vat rate"], response[:met_when]
 
     assert_equal 1000, response[:monthly_user_contacts]
-    assert_equal 10000, response[:site_views]
-    assert_equal 1000, response[:need_views]
-    assert_equal 2000, response[:searched_for]
-    assert_equal false, response[:currently_online]
+    assert_equal 10000, response[:monthly_site_views]
+    assert_equal 1000, response[:monthly_need_views]
+    assert_equal 2000, response[:monthly_searches]
+    assert_equal false, response[:currently_met]
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal ["link#1","link#2"], response[:legislation]
   end

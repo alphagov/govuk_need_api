@@ -21,10 +21,10 @@ class NeedsControllerTest < ActionController::TestCase
           impact: "Noticed by an expert audience",
           met_when: ["criteria #1","criteria #2"],
           monthly_user_contacts: 1000,
-          site_views: 10000,
-          need_views: 1000,
-          searched_for: 2000,
-          currently_online: false,
+          monthly_site_views: 10000,
+          monthly_need_views: 1000,
+          monthly_searches: 2000,
+          currently_met: false,
           other_evidence: "Other evidence",
           legislation: ["link#1","link#2"]
         }

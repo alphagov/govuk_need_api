@@ -18,10 +18,10 @@ class NeedTest < ActiveSupport::TestCase
         impact: "Noticed by an expert audience",
         met_when: ["criteria #1", "criteria #2"],
         monthly_user_contacts: 1000,
-        site_views: 10000,
-        need_views: 1000,
-        searched_for: 2000,
-        currently_online: false,
+        monthly_site_views: 10000,
+        monthly_need_views: 1000,
+        monthly_searches: 2000,
+        currently_met: false,
         other_evidence: "Other evidence",
         legislation: ["link#1","link#2"]
       }
@@ -43,10 +43,10 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "Noticed by an expert audience", need.impact
       assert_equal ["criteria #1", "criteria #2"], need.met_when
       assert_equal 1000, need.monthly_user_contacts
-      assert_equal 10000, need.site_views
-      assert_equal 1000, need.need_views
-      assert_equal 2000, need.searched_for
-      assert_equal false, need.currently_online
+      assert_equal 10000, need.monthly_site_views
+      assert_equal 1000, need.monthly_need_views
+      assert_equal 2000, need.monthly_searches
+      assert_equal false, need.currently_met
       assert_equal "Other evidence", need.other_evidence
       assert_equal ["link#1","link#2"], need.legislation
     end
@@ -80,24 +80,24 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "be invalid if monthly site views is not a positive integer" do
-      need = Need.new(@atts.merge(:site_views => -10))
+      need = Need.new(@atts.merge(:monthly_site_views => -10))
 
       refute need.valid?
-      assert need.errors.has_key?(:site_views)
+      assert need.errors.has_key?(:monthly_site_views)
     end
 
     should "be invalid if monthly need views is not a positive integer" do
-      need = Need.new(@atts.merge(:need_views => -10))
+      need = Need.new(@atts.merge(:monthly_need_views => -10))
 
       refute need.valid?
-      assert need.errors.has_key?(:need_views)
+      assert need.errors.has_key?(:monthly_need_views)
     end
 
     should "be invalid if monthly searches for this need is not a positive integer" do
-      need = Need.new(@atts.merge(:searched_for => -10))
+      need = Need.new(@atts.merge(:monthly_searches => -10))
 
       refute need.valid?
-      assert need.errors.has_key?(:searched_for)
+      assert need.errors.has_key?(:monthly_searches)
     end
 
     should "be valid with no organisations" do
