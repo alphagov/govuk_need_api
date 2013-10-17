@@ -27,7 +27,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       monthly_searches: 2000,
       currently_met: false,
       other_evidence: "Other evidence",
-      legislation: ["link#1","link#2"]
+      legislation: "link#1\nlink#2"
     )
     @view_context = MockViewContext.new
     @presenter = NeedPresenter.new(@need, @view_context)
@@ -59,7 +59,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal 2000, response[:monthly_searches]
     assert_equal false, response[:currently_met]
     assert_equal "Other evidence", response[:other_evidence]
-    assert_equal ["link#1","link#2"], response[:legislation]
+    assert_equal "link#1\nlink#2", response[:legislation]
   end
 
   should "return a custom status" do

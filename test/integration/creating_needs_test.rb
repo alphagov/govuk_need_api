@@ -27,7 +27,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "monthly_searches" => 2000,
       "currently_met" => false,
       "other_evidence" => "Other evidence",
-      "legislation" => ["link#1","link#2"]
+      "legislation" => "link#1\nlink#2"
     }.to_json
 
     post_json '/needs', request_body
@@ -56,7 +56,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal 2000, body["monthly_searches"]
     assert_equal false, body["currently_met"]
     assert_equal "Other evidence", body["other_evidence"]
-    assert_equal ["link#1", "link#2"], body["legislation"]
+    assert_equal "link#1\nlink#2", body["legislation"]
   end
 
   should "return errors given invalid attributes" do

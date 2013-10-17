@@ -23,7 +23,7 @@ class NeedTest < ActiveSupport::TestCase
         monthly_searches: 2000,
         currently_met: false,
         other_evidence: "Other evidence",
-        legislation: ["link#1","link#2"]
+        legislation: "link#1\nlink#2"
       }
     end
 
@@ -48,7 +48,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal 2000, need.monthly_searches
       assert_equal false, need.currently_met
       assert_equal "Other evidence", need.other_evidence
-      assert_equal ["link#1","link#2"], need.legislation
+      assert_equal "link#1\nlink#2", need.legislation
     end
 
     should "be invalid without a goal" do
