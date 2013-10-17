@@ -14,7 +14,7 @@ class Need
   field :monthly_searches, type: Integer
   field :currently_met, type: Boolean
   field :other_evidence, type: String
-  field :legislation, type: Array
+  field :legislation, type: String
 
   validates :role, presence: true
   validates :goal, presence: true
