@@ -51,6 +51,22 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "link#1\nlink#2", need.legislation
     end
 
+    should "assign an incremented identifier to a new need" do
+      need_one = Need.create!(@atts)
+      need_two = Need.create!(@atts)
+
+      assert_equal 1, need_one.id
+      assert_equal 2, need_two.id
+
+      need_three = Need.new(@atts)
+      need_three.id = 5
+      need_three.save!
+      need_four = Need.create!(@atts)
+
+      assert_equal 5, need_three.id
+      assert_equal 6, need_four.id
+    end
+
     should "be invalid without a goal" do
       need = Need.new(@atts.merge(:goal => ""))
 

@@ -1,6 +1,8 @@
 class Need
   include Mongoid::Document
 
+  field :_id, type: Integer
+
   field :role, type: String
   field :goal, type: String
   field :benefit, type: String
@@ -26,9 +28,15 @@ class Need
 
   validate :organisation_ids_must_exist
 
+  before_create :assign_new_id
   has_and_belongs_to_many :organisations
 
   private
+  def assign_new_id
+    last_assigned = Need.order_by([:_id, :desc]).first
+    self.id ||= last_assigned.present? ? last_assigned.id + 1 : 1
+  end
+
   def organisation_ids_must_exist
     org_ids = (organisation_ids || []).uniq
 
