@@ -59,7 +59,7 @@ class NeedsControllerTest < ActionController::TestCase
           monthly_searches: 2000,
           currently_met: false,
           other_evidence: "Other evidence",
-          legislation: ["link#1","link#2"]
+          legislation: "link#1\nlink#2"
         }
 
         post :create, @need
