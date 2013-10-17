@@ -1,6 +1,8 @@
 class Need
   include Mongoid::Document
 
+  INITIAL_NEED_ID = 100001
+
   field :_id, type: Integer
 
   field :role, type: String
@@ -34,7 +36,7 @@ class Need
   private
   def assign_new_id
     last_assigned = Need.order_by([:_id, :desc]).first
-    self.id ||= last_assigned.present? ? last_assigned.id + 1 : 1
+    self.id ||= (last_assigned.present? && last_assigned.id >= INITIAL_NEED_ID) ? last_assigned.id + 1 : INITIAL_NEED_ID
   end
 
   def organisation_ids_must_exist

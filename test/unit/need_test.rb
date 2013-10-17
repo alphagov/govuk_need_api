@@ -51,20 +51,20 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "link#1\nlink#2", need.legislation
     end
 
-    should "assign an incremented identifier to a new need" do
+    should "assign an incremented identifier to a new need, starting at 100001" do
       need_one = Need.create!(@atts)
       need_two = Need.create!(@atts)
 
-      assert_equal 1, need_one.id
-      assert_equal 2, need_two.id
+      assert_equal 100001, need_one.id
+      assert_equal 100002, need_two.id
 
       need_three = Need.new(@atts)
-      need_three.id = 5
+      need_three.id = 100005
       need_three.save!
       need_four = Need.create!(@atts)
 
-      assert_equal 5, need_three.id
-      assert_equal 6, need_four.id
+      assert_equal 100005, need_three.id
+      assert_equal 100006, need_four.id
     end
 
     should "be invalid without a goal" do
