@@ -37,7 +37,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     response = @presenter.as_json
 
     assert_equal "ok", response[:_response_info][:status]
-    assert_equal "http://need-api.test.gov.uk/needs/1", response[:id]
+    assert_equal 1, response[:id]
 
     assert_equal "business owner", response[:role]
     assert_equal "find out the VAT rate", response[:goal]

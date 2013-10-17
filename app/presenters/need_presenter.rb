@@ -14,7 +14,7 @@ class NeedPresenter
 
   def present
     {
-      id: @view_context.need_url(@need.id),
+      id: @need.id,
       role: @need.role,
       goal: @need.goal,
       benefit: @need.benefit,

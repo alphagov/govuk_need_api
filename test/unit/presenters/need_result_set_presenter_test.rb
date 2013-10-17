@@ -41,7 +41,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
     assert_equal "ok", response[:_response_info][:status]
     assert_equal 2, response[:results].size
 
-    assert_equal ["http://need-api.test.gov.uk/needs/1", "http://need-api.test.gov.uk/needs/2"], response[:results].map {|i| i[:id] }
+    assert_equal [1, 2], response[:results].map {|i| i[:id] }
     assert_equal ["business owner", "car owner"], response[:results].map {|i| i[:role] }
     assert_equal ["find out the VAT rate", "renew my car tax"], response[:results].map {|i| i[:goal] }
     assert_equal ["I can charge my customers the correct amount", "I can drive my car for another year"], response[:results].map {|i| i[:benefit] }
