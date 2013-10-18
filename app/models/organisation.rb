@@ -8,4 +8,6 @@ class Organisation
 
   validates :name, :slug, presence: true
   validates :slug, uniqueness: { case_sensitive: false }
+
+  scope :in_name_order, order_by(:name => :asc)
 end
