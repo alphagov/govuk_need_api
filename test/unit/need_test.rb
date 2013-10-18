@@ -55,16 +55,37 @@ class NeedTest < ActiveSupport::TestCase
       need_one = Need.create!(@atts)
       need_two = Need.create!(@atts)
 
-      assert_equal 100001, need_one.id
-      assert_equal 100002, need_two.id
+      assert_equal 100001, need_one.need_id
+      assert_equal 100002, need_two.need_id
 
       need_three = Need.new(@atts)
-      need_three.id = 100005
+      need_three.need_id = 100005
       need_three.save!
       need_four = Need.create!(@atts)
 
-      assert_equal 100005, need_three.id
-      assert_equal 100006, need_four.id
+      assert_equal 100005, need_three.need_id
+      assert_equal 100006, need_four.need_id
+    end
+
+    should "not permit two needs to have the same id" do
+      need_one = Need.new(@atts.merge(role: "Need one"))
+      need_two = Need.new(@atts.merge(role: "Need two"))
+
+      need_one.need_id = 123456
+      need_two.need_id = 123456
+
+      assert need_one.save
+      assert_raise Mongo::OperationFailure do
+        need_two.save
+      end
+
+      assert need_one.persisted?
+      refute need_two.persisted?
+
+      need_one.reload
+
+      assert_equal 123456, need_one.need_id
+      assert_equal "123456", need_one.id
     end
 
     should "be invalid without a goal" do

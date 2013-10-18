@@ -34,6 +34,9 @@ GEM
       mail (> 2.2.5)
       mime-types
       xml-simple
+    bson (1.9.2)
+    bson_ext (1.9.2)
+      bson (~> 1.9.2)
     builder (3.0.4)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -78,12 +81,12 @@ GEM
     mime-types (1.25)
     mocha (0.13.3)
       metaclass (~> 0.0.1)
-    mongoid (3.0.23)
+    mongo (1.9.2)
+      bson (~> 1.9.2)
+    mongoid (2.8.1)
       activemodel (~> 3.1)
-      moped (~> 1.2)
-      origin (~> 1.0)
+      mongo (~> 1.9)
       tzinfo (~> 0.3.22)
-    moped (1.5.1)
     multi_json (1.8.0)
     multipart-post (1.2.0)
     oauth2 (0.8.1)
@@ -100,7 +103,6 @@ GEM
     omniauth-oauth2 (1.1.1)
       oauth2 (~> 0.8.0)
       omniauth (~> 1.0)
-    origin (1.1.0)
     plek (1.4.0)
     polyglot (0.3.3)
     rack (1.4.5)
@@ -170,6 +172,7 @@ PLATFORMS
 
 DEPENDENCIES
   aws-ses
+  bson_ext (= 1.9.2)
   coffee-rails (~> 3.2.1)
   database_cleaner (= 1.1.1)
   exception_notification (= 2.6.1)
@@ -177,7 +180,7 @@ DEPENDENCIES
   gds-sso (= 3.1.0)
   jquery-rails
   mocha (= 0.13.3)
-  mongoid (= 3.0.23)
+  mongoid (= 2.8.1)
   plek (= 1.4.0)
   rails (= 3.2.14)
   sass-rails (~> 3.2.3)

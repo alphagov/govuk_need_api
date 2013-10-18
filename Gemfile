@@ -2,7 +2,9 @@ source 'https://rubygems.org'
 
 gem 'rails', '3.2.14'
 
-gem 'mongoid', '3.0.23'
+gem 'mongoid', '2.8.1'
+gem 'bson_ext', '1.9.2'
+
 gem 'plek', '1.4.0'
 gem 'aws-ses', :require => 'aws/ses'
 

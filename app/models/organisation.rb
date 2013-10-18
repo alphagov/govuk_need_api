@@ -3,7 +3,8 @@ class Organisation
 
   field :name, type: String
   field :slug, type: String
-  field :_id,  type: String, default: ->{ slug }
+
+  key :slug
 
   validates :name, :slug, presence: true
   validates :slug, uniqueness: { case_sensitive: false }
