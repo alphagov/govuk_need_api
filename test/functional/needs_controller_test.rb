@@ -29,7 +29,7 @@ class NeedsControllerTest < ActionController::TestCase
       body = JSON.parse(response.body)
 
       assert_equal 5, body["results"].size
-      assert_equal "http://test.host/needs/#{@needs.first.id}", body["results"][0]["id"]
+      assert_equal @needs.first.id, body["results"][0]["id"]
       assert_equal @needs.first.role, body["results"][0]["role"]
       assert_equal @needs.first.goal, body["results"][0]["goal"]
       assert_equal @needs.first.benefit, body["results"][0]["benefit"]
@@ -108,7 +108,7 @@ class NeedsControllerTest < ActionController::TestCase
         need = Need.first
         body = JSON.parse(response.body)
 
-        assert_equal "http://test.host/needs/#{need.id}", body["id"]
+        assert_equal need.id, body["id"]
         assert_equal "user", body["role"]
         assert_equal "find my local council", body["goal"]
         assert_equal "contact them about a local enquiry", body["benefit"]
