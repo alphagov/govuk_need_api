@@ -1,6 +1,7 @@
 class NeedsController < ApplicationController
   def index
-    @needs = if org = params["organisation_id"]
+    org = params["organisation_id"]
+    @needs = if org.present?
                Need.where(:organisation_ids => org)
              else
                Need.all

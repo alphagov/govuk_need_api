@@ -55,5 +55,23 @@ class RetrievingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal ["renew my car tax", "search for jobs"], body["results"].map{|n| n["goal"] }
       assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map{|n| n["benefit"] }
     end
+
+    should "return all needs if no organisation is given" do
+      get "/needs?organisation_id="
+      body = JSON.parse(last_response.body)
+
+      assert_equal 200, last_response.status
+      assert_equal "ok", body["_response_info"]["status"]
+      assert_equal 3, body["results"].size
+    end
+
+    should "return no needs if the organisation has no needs" do
+      get "/needs?organisation_id=department-of-justice"
+      body = JSON.parse(last_response.body)
+
+      assert_equal 200, last_response.status
+      assert_equal "ok", body["_response_info"]["status"]
+      assert_equal 0, body["results"].size
+    end
   end
 end
