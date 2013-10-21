@@ -1,11 +1,11 @@
 class NeedsController < ApplicationController
   def index
     query = filtered_params
-    @needs = if query.empty?
-               Need.all
-             else
-               orgs = *query["organisation_id"]
+    orgs = *query["organisation_id"]
+    @needs = unless orgs.empty?
                Need.where(:organisation_ids.all => orgs)
+             else
+               Need.all
              end
 
     set_expiry 0
