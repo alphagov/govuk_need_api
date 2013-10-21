@@ -31,7 +31,7 @@ class Need
 
   validate :organisation_ids_must_exist
 
-  before_create :assign_new_id
+  before_validation :assign_new_id, on: :create
   has_and_belongs_to_many :organisations
 
   private
