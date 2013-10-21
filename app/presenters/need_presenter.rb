@@ -1,7 +1,6 @@
 class NeedPresenter
-  def initialize(need, view_context)
+  def initialize(need)
     @need = need
-    @view_context = view_context
   end
 
   def as_json(options = {})
@@ -14,7 +13,7 @@ class NeedPresenter
 
   def present
     {
-      id: @view_context.need_url(@need.id),
+      id: @need.need_id,
       role: @need.role,
       goal: @need.goal,
       benefit: @need.benefit,

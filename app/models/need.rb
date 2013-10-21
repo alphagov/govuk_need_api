@@ -1,6 +1,9 @@
 class Need
   include Mongoid::Document
 
+  INITIAL_NEED_ID = 100001
+
+  field :need_id, type: Integer
   field :role, type: String
   field :goal, type: String
   field :benefit, type: String
@@ -16,6 +19,8 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
 
+  key :need_id
+
   validates :role, presence: true
   validates :goal, presence: true
   validates :benefit, presence: true
@@ -26,13 +31,18 @@ class Need
 
   validate :organisation_ids_must_exist
 
+  before_validation :assign_new_id, on: :create
   has_and_belongs_to_many :organisations
 
   private
+  def assign_new_id
+    last_assigned = Need.order_by([:need_id, :desc]).first
+    self.need_id ||= (last_assigned.present? && last_assigned.need_id >= INITIAL_NEED_ID) ? last_assigned.need_id + 1 : INITIAL_NEED_ID
+  end
+
   def organisation_ids_must_exist
     org_ids = (organisation_ids || []).uniq
-
-    if Organisation.where(:id.in => org_ids).count < org_ids.size
+    if Organisation.any_in(_id: org_ids).count < org_ids.size
       errors.add(:organisation_ids, "must exist")
     end
   end
