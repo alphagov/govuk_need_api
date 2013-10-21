@@ -1,9 +1,7 @@
 class NeedsController < ApplicationController
   def index
-    query = filtered_params
-    orgs = *query["organisation_id"]
-    @needs = unless orgs.empty?
-               Need.where(:organisation_ids.all => orgs)
+    @needs = if org = params["organisation_id"]
+               Need.where(:organisation_ids => org)
              else
                Need.all
              end
