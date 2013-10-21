@@ -5,7 +5,8 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
   setup do
     @needs = [
       OpenStruct.new(
-        id: 1,
+        id: "blah-bson-id-one",
+        need_id: 1,
         role: "business owner",
         goal: "find out the VAT rate",
         benefit: "I can charge my customers the correct amount",
@@ -15,7 +16,8 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         ]
       ),
       OpenStruct.new(
-        id: 2,
+        id: "blah-bson-id-two",
+        need_id: 2,
         role: "car owner",
         goal: "renew my car tax",
         benefit: "I can drive my car for another year",

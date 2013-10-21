@@ -13,7 +13,7 @@ class NeedPresenter
 
   def present
     {
-      id: @need.id,
+      id: @need.need_id,
       role: @need.role,
       goal: @need.goal,
       benefit: @need.benefit,
