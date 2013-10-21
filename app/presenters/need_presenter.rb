@@ -1,7 +1,6 @@
 class NeedPresenter
-  def initialize(need, view_context)
+  def initialize(need)
     @need = need
-    @view_context = view_context
   end
 
   def as_json(options = {})

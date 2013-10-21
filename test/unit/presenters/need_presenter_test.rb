@@ -2,12 +2,6 @@ require_relative '../../test_helper'
 
 class NeedPresenterTest < ActiveSupport::TestCase
 
-  class MockViewContext
-    def need_url(need_id)
-      "http://need-api.test.gov.uk/needs/#{need_id}"
-    end
-  end
-
   setup do
     @need = OpenStruct.new(
       id: 1,
@@ -29,8 +23,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       other_evidence: "Other evidence",
       legislation: "link#1\nlink#2"
     )
-    @view_context = MockViewContext.new
-    @presenter = NeedPresenter.new(@need, @view_context)
+    @presenter = NeedPresenter.new(@need)
   end
 
   should "return an need as json" do
