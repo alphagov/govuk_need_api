@@ -19,6 +19,7 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
 
+  # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
   key :need_id
 
   validates :role, presence: true
