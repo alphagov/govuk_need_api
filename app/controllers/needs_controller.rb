@@ -11,6 +11,14 @@ class NeedsController < ApplicationController
     render json: NeedResultSetPresenter.new(@needs).as_json
   end
 
+  def show
+    need = Need.find(params["id"])
+    render json: NeedPresenter.new(need).as_json(status: :ok),
+           status: :ok
+  rescue Mongoid::Errors::DocumentNotFound
+    error 404, message: :not_found, error: "No need exists with this ID"
+  end
+
   def create
     @need = Need.new(filtered_params)
 
