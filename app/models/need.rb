@@ -33,7 +33,20 @@ class Need
   validate :organisation_ids_must_exist
 
   before_validation :assign_new_id, on: :create
+  after_update :record_update_revision
+  after_create :record_create_revision
+
   has_and_belongs_to_many :organisations
+  has_many :revisions, class_name: "NeedRevision"
+
+  def save_as(user)
+    action = new_record? ? "create" : "update"
+
+    if saved = save_without_callbacks
+      record_revision(action, user)
+    end
+    saved
+  end
 
   private
   def assign_new_id
@@ -46,5 +59,37 @@ class Need
     if Organisation.any_in(_id: org_ids).count < org_ids.size
       errors.add(:organisation_ids, "must exist")
     end
+  end
+
+  def record_create_revision
+    record_revision "create"
+  end
+
+  def record_update_revision
+    record_revision "update"
+  end
+
+  def record_revision(action, user = nil)
+    revisions.create(
+      action_type: action,
+      snapshot: attributes,
+      author: user
+    )
+  end
+
+  # It is necessary to save without callbacks here so that we can create a
+  # revision with extra attributes (eg user info) using the save_as method
+  # without duplicate revisions being created.
+  #
+  def save_without_callbacks
+    Need.skip_callback(:create, :after, :record_create_revision)
+    Need.skip_callback(:update, :after, :record_update_revision)
+
+    save_status = save
+
+    Need.set_callback(:create, :after, :record_create_revision)
+    Need.set_callback(:update, :after, :record_update_revision)
+
+    save_status
   end
 end
