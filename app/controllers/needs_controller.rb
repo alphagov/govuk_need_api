@@ -14,7 +14,7 @@ class NeedsController < ApplicationController
   def create
     @need = Need.new(filtered_params)
 
-    if @need.save
+    if @need.save_as(params[:author])
       render json: NeedPresenter.new(@need).as_json(status: :created),
              status: :created
     else
@@ -29,6 +29,6 @@ class NeedsController < ApplicationController
   private
 
   def filtered_params
-    params.except(:action, :controller)
+    params.except(:action, :controller, :author)
   end
 end

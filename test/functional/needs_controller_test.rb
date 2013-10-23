@@ -82,36 +82,50 @@ class NeedsControllerTest < ActionController::TestCase
         }
       end
 
-      should "persist the need" do
-        post :create, @need
+      context "given author details" do
+        setup do
+          @need_with_author = @need.merge(author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          })
+        end
 
-        need = Need.first
+        should "persist the need and create a revision given author information" do
+          post :create, @need_with_author
 
-        assert_equal 1, Need.count
-        assert_equal "user", need.role
-        assert_equal "find my local council", need.goal
-        assert_equal "contact them about a local enquiry", need.benefit
-      end
+          need = Need.first
 
-      should "return a created status" do
-        post :create, @need
+          assert_equal 1, Need.count
+          assert_equal "user", need.role
+          assert_equal "find my local council", need.goal
+          assert_equal "contact them about a local enquiry", need.benefit
 
-        assert_response :created
+          assert_equal 1, need.revisions.count
+          assert_equal "create", need.revisions.first.action_type
+          assert_equal "Winston Smith-Churchill", need.revisions.first.author["name"]
+          assert_equal "winston@alphagov.co.uk", need.revisions.first.author["email"]
+        end
 
-        body = JSON.parse(response.body)
-        assert_equal "created", body["_response_info"]["status"]
-      end
+        should "return a created status" do
+          post :create, @need_with_author
 
-      should "return details about the new need" do
-        post :create, @need
+          assert_response :created
 
-        need = Need.first
-        body = JSON.parse(response.body)
+          body = JSON.parse(response.body)
+          assert_equal "created", body["_response_info"]["status"]
+        end
 
-        assert_equal need.need_id, body["id"]
-        assert_equal "user", body["role"]
-        assert_equal "find my local council", body["goal"]
-        assert_equal "contact them about a local enquiry", body["benefit"]
+        should "return details about the new need" do
+          post :create, @need_with_author
+
+          need = Need.first
+          body = JSON.parse(response.body)
+
+          assert_equal need.need_id, body["id"]
+          assert_equal "user", body["role"]
+          assert_equal "find my local council", body["goal"]
+          assert_equal "contact them about a local enquiry", body["benefit"]
+        end
       end
     end
 
