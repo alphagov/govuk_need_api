@@ -15,6 +15,6 @@ class NeedRevision
 
   private
   def filter_snapshot_data
-    snapshot.stringify_keys!.except!("_id", "need_id")
+    self.snapshot = snapshot.stringify_keys.except("_id", "need_id")
   end
 end
