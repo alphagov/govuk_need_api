@@ -22,6 +22,10 @@ class NeedsController < ApplicationController
     end
   end
 
+  def destroy
+    error 405, message: :method_not_allowed, errors: "Needs cannot be deleted"
+  end
+
   private
 
   def filtered_params
