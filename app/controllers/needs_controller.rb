@@ -20,6 +20,18 @@ class NeedsController < ApplicationController
   end
 
   def create
+    # Explicitly deny need IDs in create requests
+    # This is a controller-level concern, rather than a model-level one, as we
+    # may want to be able to specify need IDs when, for example, importing old
+    # needs.
+    if filtered_params["need_id"]
+      error(
+        422,
+        message: :invalid_attributes,
+        errors: ["New needs can't specify need IDs"]
+      )
+      return
+    end
     @need = Need.new(filtered_params)
 
     unless author_params.any?
