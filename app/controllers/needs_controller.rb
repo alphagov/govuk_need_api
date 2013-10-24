@@ -14,7 +14,12 @@ class NeedsController < ApplicationController
   def create
     @need = Need.new(filtered_params)
 
-    if @need.save_as(params[:author])
+    unless author_params.any?
+      error 422, message: :author_not_provided, errors: ["Author details must be provided"]
+      return
+    end
+
+    if @need.save_as(author_params)
       render json: NeedPresenter.new(@need).as_json(status: :created),
              status: :created
     else
@@ -30,5 +35,10 @@ class NeedsController < ApplicationController
 
   def filtered_params
     params.except(:action, :controller, :author)
+  end
+
+  def author_params
+    author = params[:author] || { }
+    author.slice(:name, :email, :uid)
   end
 end

@@ -43,8 +43,8 @@ class NeedsControllerTest < ActionController::TestCase
   end
 
   context "POST create" do
-    context "given a need with all fields filled" do
-      should "should persist the need" do
+    context "given a valid need" do
+      setup do
         @need = {
           role: "user",
           goal: "find my local council",
@@ -59,26 +59,7 @@ class NeedsControllerTest < ActionController::TestCase
           monthly_searches: 2000,
           currently_met: false,
           other_evidence: "Other evidence",
-          legislation: "link#1\nlink#2"
-        }
-
-        post :create, @need
-        need = Need.first
-
-        assert need.present?
-
-        @need.each do |k,v|
-          assert_equal v, need.send(k)
-        end
-      end
-    end
-
-    context "given a valid need" do
-      setup do
-        @need = {
-          role: "user",
-          goal: "find my local council",
-          benefit: "contact them about a local enquiry"
+          legislation: "Sale of Pugs Act 2004"
         }
       end
 
@@ -99,6 +80,17 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "user", need.role
           assert_equal "find my local council", need.goal
           assert_equal "contact them about a local enquiry", need.benefit
+          assert_equal ["cabinet-office", "department-for-transport"], need.organisation_ids
+          assert_equal ["legislation", "other"], need.justifications
+          assert_equal "Noticed by an expert audience", need.impact
+          assert_equal ["criteria #1", "criteria #2"], need.met_when
+          assert_equal 1000, need.monthly_user_contacts
+          assert_equal 10000, need.monthly_site_views
+          assert_equal 1000, need.monthly_need_views
+          assert_equal 2000, need.monthly_searches
+          assert_equal false, need.currently_met
+          assert_equal "Other evidence", need.other_evidence
+          assert_equal "Sale of Pugs Act 2004", need.legislation
 
           assert_equal 1, need.revisions.count
           assert_equal "create", need.revisions.first.action_type
@@ -127,6 +119,48 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "contact them about a local enquiry", body["benefit"]
         end
       end
+
+
+      context "when no author details are provided" do
+        should "return a 422 status code" do
+          post :create, @need
+
+          assert_equal 422, response.status
+        end
+
+        should "return an error in the json response" do
+          post :create, @need
+
+          body = JSON.parse(response.body)
+          assert_equal "author_not_provided", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal "Author details must be provided", body["errors"].first
+        end
+
+        should "not create the need" do
+          post :create, @need
+
+          assert_equal 0, Need.count
+        end
+      end
+
+      should "only pass through selected fields for an author" do
+        Need.any_instance.expects(:save_as).with(
+          "name" => "name",
+          "email" => "email",
+          "uid" => "uid"
+        ).returns(true)
+
+        post :create, @need.merge(author: {
+          name: "name",
+          foo: "foo",
+          uid: "uid",
+          email: "email",
+          bar: "bar"
+        })
+
+        assert_equal 201, response.status
+      end
     end
 
     context "given invalid attributes" do
@@ -138,19 +172,45 @@ class NeedsControllerTest < ActionController::TestCase
         }
       end
 
-      should "return a 422 status code" do
-        post :create, @need
+      context "given author details" do
+        setup do
+          @need_with_author = @need.merge(author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          })
+        end
 
-        assert_equal 422, response.status
+        should "return a 422 status code" do
+          post :create, @need_with_author
+
+          assert_equal 422, response.status
+        end
+
+        should "return model errors in the json response" do
+          post :create, @need_with_author
+
+          body = JSON.parse(response.body)
+          assert_equal "invalid_attributes", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal "Goal can't be blank", body["errors"].first
+        end
       end
 
-      should "return model errors in the json response" do
-        post :create, @need
+      context "without author details" do
+        should "return a 422 status code" do
+          post :create, @need
 
-        body = JSON.parse(response.body)
-        assert_equal "invalid_attributes", body["_response_info"]["status"]
-        assert_equal 1, body["errors"].length
-        assert_equal "Goal can't be blank", body["errors"].first
+          assert_equal 422, response.status
+        end
+
+        should "return an error in the json response" do
+          post :create, @need
+
+          body = JSON.parse(response.body)
+          assert_equal "author_not_provided", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal "Author details must be provided", body["errors"].first
+        end
       end
     end
   end
