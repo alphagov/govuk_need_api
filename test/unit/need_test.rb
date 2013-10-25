@@ -153,6 +153,14 @@ class NeedTest < ActiveSupport::TestCase
       need = Need.new(@atts.merge(:organisation_ids => []))
       assert need.valid?
     end
+
+    should "not assign a need ID until creation" do
+      need = Need.new(@atts.merge(:organisation_ids => []))
+      assert need.valid?
+      assert_nil need.need_id
+      need.save!
+      refute_nil need.need_id
+    end
   end
 
   context "an existing need" do
