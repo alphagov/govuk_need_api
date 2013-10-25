@@ -19,6 +19,18 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
 
+  after_update :record_update_revision
+  after_create :record_create_revision
+
+  # This callback needs to be assigned before the `key` class method below, as
+  # otherwise Mongoid will generate a new document's key before it assigns a
+  # new need ID. Normally, ActiveModel would ensure `before_x` callbacks were
+  # invoked before `around_x` callbacks, but apparently not in this case.
+  #
+  # See: <http://edgeguides.rubyonrails.org/active_record_callbacks.html>
+  #      <http://two.mongoid.org/docs/callbacks.html>
+  before_save :assign_new_id, on: :create
+
   # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
   key :need_id
 
@@ -31,10 +43,6 @@ class Need
   validates_numericality_of :monthly_searches, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
 
   validate :organisation_ids_must_exist
-
-  before_validation :assign_new_id, on: :create
-  after_update :record_update_revision
-  after_create :record_create_revision
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"

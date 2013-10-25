@@ -95,6 +95,14 @@ class NeedTest < ActiveSupport::TestCase
         assert_equal 100001, need_one.need_id
         assert_equal "100001", need_one.id
       end
+
+      should "not assign a need ID until creation" do
+        need = Need.new(@atts.merge(:organisation_ids => []))
+        assert need.valid?
+        assert_nil need.need_id
+        need.save!
+        refute_nil need.need_id
+      end
     end
 
     should "be invalid without a goal" do
