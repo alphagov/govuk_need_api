@@ -51,6 +51,27 @@ class NeedsController < ApplicationController
     error 405, message: :method_not_allowed, errors: "Needs cannot be deleted"
   end
 
+  def update
+    @need = Need.find(params["id"])
+
+    # Fail explicitly on need ID change
+    # `attr_protected`, by default, will silently fail to update the field
+    if params["need_id"] && params["need_id"].to_i != @need.need_id
+      error 422, message: :invalid_attributes, errors: ["Need IDs cannot change"]
+      return
+    end
+
+    @need.assign_attributes(filtered_params)
+    if @need.valid?
+      @need.save!
+      render nothing: true, status: 204
+    else
+      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+    end
+  rescue Mongoid::Errors::DocumentNotFound
+    error 404, message: :not_found, error: "No need exists with this ID"
+  end
+
   private
 
   def filtered_params
