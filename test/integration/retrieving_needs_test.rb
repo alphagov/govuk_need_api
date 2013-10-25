@@ -31,15 +31,20 @@ class RetrievingNeedsTest < ActionDispatch::IntegrationTest
       body = JSON.parse(last_response.body)
       assert_equal "ok", body["_response_info"]["status"]
 
-      assert_equal 3, body["results"].size
+      # quick fix to sort results by the Need ID
+      # remove once we have explicit sorting on needs
+      #
+      results = body["results"].sort_by{|r| r["id"] }
 
-      assert_equal ["car owner", "student", "jobseeker"], body["results"].map{|n| n["role"] }
-      assert_equal ["renew my car tax", "apply for student finance", "search for jobs"], body["results"].map{|n| n["goal"] }
-      assert_equal ["I can drive my car for another year", "I can get the money I need to go to university", "I can get into work"], body["results"].map{|n| n["benefit"] }
-      assert_equal [1, 1, 2], body["results"].map{|n| n["organisations"].size }
+      assert_equal 3, results.size
 
-      assert_equal "hm-treasury", body["results"][0]["organisations"][0]["id"]
-      assert_equal "HM Treasury", body["results"][0]["organisations"][0]["name"]
+      assert_equal ["car owner", "student", "jobseeker"], results.map{|n| n["role"] }
+      assert_equal ["renew my car tax", "apply for student finance", "search for jobs"], results.map{|n| n["goal"] }
+      assert_equal ["I can drive my car for another year", "I can get the money I need to go to university", "I can get into work"], results.map{|n| n["benefit"] }
+      assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }
+
+      assert_equal "hm-treasury", results[0]["organisations"][0]["id"]
+      assert_equal "HM Treasury", results[0]["organisations"][0]["name"]
     end
   end
 
