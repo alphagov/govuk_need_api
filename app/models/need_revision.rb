@@ -7,6 +7,7 @@ class NeedRevision
   field :author, type: Hash
 
   belongs_to :need
+  index [[ :need_id, Mongo::ASCENDING ], [ :created_at, Mongo::DESCENDING ]]
 
   validates :action_type, inclusion: { in: ["create", "update"] }
   validates :snapshot, presence: true
