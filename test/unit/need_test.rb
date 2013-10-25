@@ -95,6 +95,14 @@ class NeedTest < ActiveSupport::TestCase
         assert_equal 100001, need_one.need_id
         assert_equal "100001", need_one.id
       end
+
+      should "not assign a need ID until creation" do
+        need = Need.new(@atts.merge(:organisation_ids => []))
+        assert need.valid?
+        assert_nil need.need_id
+        need.save!
+        refute_nil need.need_id
+      end
     end
 
     should "be invalid without a goal" do
@@ -154,12 +162,42 @@ class NeedTest < ActiveSupport::TestCase
       assert need.valid?
     end
 
-    should "not assign a need ID until creation" do
-      need = Need.new(@atts.merge(:organisation_ids => []))
-      assert need.valid?
-      assert_nil need.need_id
-      need.save!
-      refute_nil need.need_id
+    context "creating revisions" do
+      should "create an initial revision when given valid attributes" do
+        need = Need.new(@atts.merge(goal: "get a premises licence"))
+        need.save
+        need.reload
+
+        assert_equal 1, need.revisions.count
+
+        revision = need.revisions.first
+        assert_equal "create", revision.action_type
+        assert_equal "get a premises licence", revision.snapshot["goal"]
+        assert_nil revision.author
+      end
+
+      should "store user information in the revision if provided" do
+        need = Need.new(@atts.merge(goal: "get a premises licence"))
+        need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
+        need.reload
+
+        assert_equal 1, need.revisions.count
+
+        revision = need.revisions.first
+        assert_equal "create", revision.action_type
+        assert_equal "get a premises licence", revision.snapshot["goal"]
+        assert_equal "Winston Smith-Churchill", revision.author["name"]
+        assert_equal "winston@alphagov.co.uk", revision.author["email"]
+      end
+
+      should "not create a revision if not saved" do
+        need = Need.new(@atts.merge(role: ""))
+
+        refute need.save
+        refute need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
+
+        assert_equal 0, need.revisions.count
+      end
     end
   end
 
@@ -178,6 +216,64 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal 0, need.organisations.count
       assert_equal [], need.organisations.map(&:name)
       assert_equal [], need.organisations.map(&:id)
+    end
+  end
+
+  context "updating a need" do
+    setup do
+      @need = FactoryGirl.create(:need, goal: "pay my car tax") # creates an initial revision
+    end
+
+    should "persist the changes" do
+      @need.goal = "find travel advice for Turks and Caicos Islands"
+      assert @need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
+
+      @need.reload
+
+      assert_equal "find travel advice for Turks and Caicos Islands", @need.goal
+    end
+
+    should "create a new revision of the need" do
+      @need.goal = "find travel advice for Germany"
+      @need.save
+
+      @need.reload
+
+      assert_equal "find travel advice for Germany", @need.goal
+      assert_equal 2, @need.revisions.count
+
+      revision = @need.revisions.last
+      assert_equal "update", revision.action_type
+      assert_equal "find travel advice for Germany", revision.snapshot["goal"]
+      assert_nil revision.author
+    end
+
+    should "save user information in the revision if provided" do
+      @need.goal = "find travel advice for Portugal"
+      @need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
+
+      @need.reload
+
+      assert_equal "find travel advice for Portugal", @need.goal
+      assert_equal 2, @need.revisions.count
+
+      revision = @need.revisions.last
+      assert_equal "update", revision.action_type
+      assert_equal "find travel advice for Portugal", revision.snapshot["goal"]
+      assert_equal "Winston Smith-Churchill", revision.author["name"]
+      assert_equal "winston@alphagov.co.uk", revision.author["email"]
+    end
+
+    should "not create a new revision if not saved" do
+      @need.role = ""
+
+      refute @need.save
+      refute @need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
+
+      @need.reload
+
+      assert_equal "pay my car tax", @need.goal
+      assert_equal 1, @need.revisions.count
     end
   end
 

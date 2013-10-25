@@ -27,7 +27,11 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "monthly_searches" => 2000,
       "currently_met" => false,
       "other_evidence" => "Other evidence",
-      "legislation" => "link#1\nlink#2"
+      "legislation" => "link#1\nlink#2",
+      "author" => {
+        "name" => "Winston Smith-Churchill",
+        "email" => "winston@alphagov.co.uk"
+      }
     }.to_json
 
     post_json '/needs', request_body
@@ -63,7 +67,11 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     request_body = {
       "role" => "user",
       "goal" => "find out the minimum wage",
-      "benefit" => ""
+      "benefit" => "",
+      "author" => {
+        "name" => "Winston Smith-Churchill",
+        "email" => "winston@alphagov.co.uk"
+      }
     }.to_json
 
     post_json '/needs', request_body
@@ -74,6 +82,23 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
 
     assert_equal 1, body["errors"].size
     assert_equal "Benefit can't be blank", body["errors"].first
+  end
+
+  should "return errors given no author details" do
+    request_body = {
+      "role" => "user",
+      "goal" => "find out the minimum wage",
+      "benefit" => "",
+      "author" => nil
+    }.to_json
+
+    post_json '/needs', request_body
+    assert_equal 422, last_response.status
+
+    body = JSON.parse(last_response.body)
+    assert_equal "author_not_provided", body["_response_info"]["status"]
+
+    assert_equal "Author details must be provided", body["errors"].first
   end
 
 end
