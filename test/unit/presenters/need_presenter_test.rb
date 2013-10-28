@@ -2,6 +2,14 @@ require_relative '../../test_helper'
 
 class NeedPresenterTest < ActiveSupport::TestCase
 
+  def stub_presenter(presenter, attributes, presenter_output)
+    presenter_stub = stub(:present => presenter_output)
+
+    presenter.constantize.expects(:new)
+                            .with(has_entries(attributes))
+                            .returns(presenter_stub)
+  end
+
   setup do
     @need = OpenStruct.new(
       id: "blah-bson-id",
@@ -25,6 +33,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       legislation: "link#1\nlink#2"
     )
     @presenter = NeedPresenter.new(@need)
+    stub_presenter("OrganisationPresenter", @need.organisations.first, "presented organisation")
   end
 
   should "return an need as json" do
@@ -39,9 +48,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal ["ministry-of-testing"], response[:organisation_ids]
 
-    assert_equal 1, response[:organisations].size
-    assert_equal "Ministry of Testing", response[:organisations][0][:name]
-    assert_equal "ministry-of-testing", response[:organisations][0][:id]
+    assert_equal [ "presented organisation" ], response[:organisations]
 
     assert_equal ["legislation", "other"], response[:justifications]
     assert_equal "Noticed by an expert audience", response[:impact]
