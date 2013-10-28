@@ -1,6 +1,6 @@
 require 'delegate'
 
-class SnapshotRevisionDecorator < SimpleDelegator
+class RevisionDecorator < SimpleDelegator
 
   # This method returns the changes between the decorated revision and a given
   # previous revision as a hash of arrays. Each array contains the previous value,
@@ -13,16 +13,17 @@ class SnapshotRevisionDecorator < SimpleDelegator
   #   }
   #
   def changes_with(previous_revision)
-    snapshots = [ previous_revision.snapshot, revision.snapshot ]
+    previous_snapshot = previous_revision.present? ? previous_revision.snapshot : { }
+    snapshots = [ previous_snapshot, revision.snapshot ]
 
-    changed_keys(previous_revision).inject({}) { |changes, key|
+    changed_keys(previous_snapshot).inject({}) { |changes, key|
       changes.merge(key => snapshots.map {|snapshot| snapshot[key] })
     }
   end
 
-  def changed_keys(previous_revision)
-    (revision.snapshot.keys | previous_revision.snapshot.keys).reject { |key|
-      revision.snapshot[key] == previous_revision.snapshot[key]
+  def changed_keys(previous_snapshot)
+    (revision.snapshot.keys | previous_snapshot.keys).reject { |key|
+      revision.snapshot[key] == previous_snapshot[key]
     }
   end
 

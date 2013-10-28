@@ -1,6 +1,6 @@
 require_relative '../../test_helper'
 
-class SnapshotRevisionDecoratorTest < ActiveSupport::TestCase
+class RevisionDecoratorTest < ActiveSupport::TestCase
 
   setup do
     @revision = OpenStruct.new(
@@ -14,7 +14,7 @@ class SnapshotRevisionDecoratorTest < ActiveSupport::TestCase
       },
       created_at: Time.parse("2013-10-01 10:00:00")
     )
-    @decorator = SnapshotRevisionDecorator.new(@revision)
+    @decorator = RevisionDecorator.new(@revision)
   end
 
   should "delegate methods to the provided revision" do
@@ -69,6 +69,17 @@ class SnapshotRevisionDecoratorTest < ActiveSupport::TestCase
         justification: [[ "Only government does this" ], nil ]
       }
       changes = @decorator.changes_with previous_revision
+
+      assert_equal expected_changes, changes
+    end
+
+    should "return all fields when previous edition is nil" do
+      expected_changes = {
+        role: [nil, "car owner"],
+        goal: [nil, "pay my car tax"],
+        benefit: [nil, "I can drive my car"]
+      }
+      changes = @decorator.changes_with nil
 
       assert_equal expected_changes, changes
     end
