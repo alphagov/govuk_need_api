@@ -101,4 +101,17 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "Author details must be provided", body["errors"].first
   end
 
+  should "refuse to create needs with an assigned ID" do
+    request_body = {
+      "role" => "user",
+      "goal" => "find out the minimum wage",
+      "benefit" => "I can work out if I am being paid the correct amount",
+      "need_id" => 972
+    }.to_json
+
+    post_json '/needs', request_body
+    assert_equal 422, last_response.status
+    body = JSON.parse(last_response.body)
+    assert_equal ["New needs can't specify need IDs"], body["errors"]
+  end
 end

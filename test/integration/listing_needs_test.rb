@@ -1,6 +1,6 @@
 require_relative '../integration_test_helper'
 
-class RetrievingNeedsTest < ActionDispatch::IntegrationTest
+class ListingNeedsTest < ActionDispatch::IntegrationTest
 
   setup do
     login_as_stub_user

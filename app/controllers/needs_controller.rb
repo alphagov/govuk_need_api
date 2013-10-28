@@ -11,7 +11,27 @@ class NeedsController < ApplicationController
     render json: NeedResultSetPresenter.new(@needs).as_json
   end
 
+  def show
+    need = Need.find(params["id"])
+    render json: NeedPresenter.new(need).as_json(status: :ok),
+           status: :ok
+  rescue Mongoid::Errors::DocumentNotFound
+    error 404, message: :not_found, error: "No need exists with this ID"
+  end
+
   def create
+    # Explicitly deny need IDs in create requests
+    # This is a controller-level concern, rather than a model-level one, as we
+    # may want to be able to specify need IDs when, for example, importing old
+    # needs.
+    if filtered_params["need_id"]
+      error(
+        422,
+        message: :invalid_attributes,
+        errors: ["New needs can't specify need IDs"]
+      )
+      return
+    end
     @need = Need.new(filtered_params)
 
     unless author_params.any?
@@ -29,6 +49,27 @@ class NeedsController < ApplicationController
 
   def destroy
     error 405, message: :method_not_allowed, errors: "Needs cannot be deleted"
+  end
+
+  def update
+    @need = Need.find(params["id"])
+
+    # Fail explicitly on need ID change
+    # `attr_protected`, by default, will silently fail to update the field
+    if params["need_id"] && params["need_id"].to_i != @need.need_id
+      error 422, message: :invalid_attributes, errors: ["Need IDs cannot change"]
+      return
+    end
+
+    @need.assign_attributes(filtered_params)
+    if @need.valid?
+      @need.save!
+      render nothing: true, status: 204
+    else
+      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+    end
+  rescue Mongoid::Errors::DocumentNotFound
+    error 404, message: :not_found, error: "No need exists with this ID"
   end
 
   private
