@@ -15,7 +15,7 @@ class NeedResultSetPresenter
   private
   def results
     @needs.map {|need|
-      NeedPresenter.new(need).present
+      BasicNeedPresenter.new(need).present
     }
   end
 end
