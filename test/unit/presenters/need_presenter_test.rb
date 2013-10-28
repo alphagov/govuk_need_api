@@ -5,8 +5,11 @@ class NeedPresenterTest < ActiveSupport::TestCase
   def stub_presenter(presenter, attributes, presenter_output)
     presenter_stub = stub(:present => presenter_output)
 
+    attributes = [attributes] unless attributes.is_a?(Array)
+    matchers = attributes.map {|a| has_entries(a) }
+
     presenter.constantize.expects(:new)
-                            .with(has_entries(attributes))
+                            .with(*matchers)
                             .returns(presenter_stub)
   end
 
@@ -30,9 +33,29 @@ class NeedPresenterTest < ActiveSupport::TestCase
       monthly_searches: 2000,
       currently_met: false,
       other_evidence: "Other evidence",
-      legislation: "link#1\nlink#2"
+      legislation: "link#1\nlink#2",
+      revisions_with_changes: [
+        [
+          OpenStruct.new(
+            author: "Winston Smith-Churchill",
+            snapshot: {
+              role: "small business owner"
+            },
+            action_type: "update"
+          ),
+          OpenStruct.new(
+            author: "Winston Smith-Churchill",
+            snapshot: {
+              role: "small business owner"
+            },
+            action_type: "update"
+          )
+        ]
+      ]
     )
     @presenter = NeedPresenter.new(@need)
+
+    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes.first, "presented revision")
     stub_presenter("OrganisationPresenter", @need.organisations.first, "presented organisation")
   end
 
@@ -61,6 +84,8 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal false, response[:currently_met]
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal "link#1\nlink#2", response[:legislation]
+
+    assert_equal [ "presented revision" ], response[:revisions]
   end
 
   should "return a custom status" do

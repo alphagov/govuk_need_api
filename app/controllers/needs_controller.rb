@@ -13,7 +13,8 @@ class NeedsController < ApplicationController
 
   def show
     need = Need.find(params["id"])
-    render json: NeedPresenter.new(need).as_json(status: :ok),
+    decorated_need = NeedDecorator.new(need)
+    render json: NeedPresenter.new(decorated_need).as_json(status: :ok),
            status: :ok
   rescue Mongoid::Errors::DocumentNotFound
     error 404, message: :not_found, error: "No need exists with this ID"
@@ -40,7 +41,8 @@ class NeedsController < ApplicationController
     end
 
     if @need.save_as(author_params)
-      render json: NeedPresenter.new(@need).as_json(status: :created),
+      decorated_need = NeedDecorator.new(@need)
+      render json: NeedPresenter.new(decorated_need).as_json(status: :created),
              status: :created
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
