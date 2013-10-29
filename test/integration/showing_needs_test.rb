@@ -17,7 +17,28 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
                                         organisation_ids: ["department-for-work-and-pensions"],
                                         need_id: 100001)
       @need.revisions.first.destroy # delete the automatically-created first revision
+    end
 
+    should "return details about the need" do
+      get "/needs/100001"
+      assert_equal 200, last_response.status
+
+      body = JSON.parse(last_response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+
+      assert_equal 100001, body["id"]
+
+      assert_equal "parent", body["role"]
+      assert_equal "find out school holiday dates for my local school", body["goal"]
+      assert_equal "I can plan around the school holidays", body["benefit"]
+
+      assert_equal ["department-for-work-and-pensions"], body["organisation_ids"]
+      assert_equal 1, body["organisations"].size
+      assert_equal "department-for-work-and-pensions", body["organisations"].first["id"]
+      assert_equal "Department for Work and Pensions", body["organisations"].first["name"]
+    end
+
+    should "include the need revisions" do
       @need.revisions.create!(
         author: { name: "John Hammond" },
         action_type: "update",
@@ -41,28 +62,7 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
         },
         created_at: Date.parse("2013-04-01")
       )
-    end
 
-    should "return details about the need" do
-      get "/needs/100001"
-      assert_equal 200, last_response.status
-
-      body = JSON.parse(last_response.body)
-      assert_equal "ok", body["_response_info"]["status"]
-
-      assert_equal 100001, body["id"]
-
-      assert_equal "parent", body["role"]
-      assert_equal "find out school holiday dates for my local school", body["goal"]
-      assert_equal "I can plan around the school holidays", body["benefit"]
-
-      assert_equal ["department-for-work-and-pensions"], body["organisation_ids"]
-      assert_equal 1, body["organisations"].size
-      assert_equal "department-for-work-and-pensions", body["organisations"].first["id"]
-      assert_equal "Department for Work and Pensions", body["organisations"].first["name"]
-    end
-
-    should "return revisions of the need" do
       get "/needs/100001"
       body = JSON.parse(last_response.body)
 
@@ -93,6 +93,19 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal "Jack Torrance", create_revision["author"]["name"]
       assert_equal expected_changes, create_revision["changes"]
       assert_equal "2013-04-01T00:00:00+00:00", create_revision["created_at"]
+    end
+
+    should "return the five most recent revisions for the need" do
+      5.times do |i|
+        FactoryGirl.create(:need_revision, :need => @need, author: { name: "Author #{i}" }, created_at: Date.parse("2013-04-01"))
+      end
+      FactoryGirl.create(:need_revision, :need => @need, author: { name: "Old Author" }, created_at: Date.parse("2013-04-01"))
+
+      get "/needs/100001"
+      body = JSON.parse(last_response.body)
+
+      assert_equal 5, body["revisions"].size
+      assert_equal [ "2013-04-01T00:00:00+00:00" ], body["revisions"].map {|r| r['created_at'] }.uniq
     end
 
     should "return a not found response" do

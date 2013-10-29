@@ -22,7 +22,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       benefit: "I can charge my customers the correct amount",
       organisation_ids: [ "ministry-of-testing" ],
       organisations: [
-        OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
+        { id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing" }
       ],
       justifications: [ "legislation", "other" ],
       impact: "Noticed by an expert audience",
@@ -35,28 +35,23 @@ class NeedPresenterTest < ActiveSupport::TestCase
       other_evidence: "Other evidence",
       legislation: "link#1\nlink#2",
       revisions_with_changes: [
-        [
-          OpenStruct.new(
-            author: "Winston Smith-Churchill",
-            snapshot: {
-              role: "small business owner"
-            },
-            action_type: "update"
-          ),
-          OpenStruct.new(
-            author: "Winston Smith-Churchill",
-            snapshot: {
-              role: "small business owner"
-            },
-            action_type: "update"
-          )
-        ]
+        [{ author: "Author 1" }, { author: "Author 0" }],
+        [{ author: "Author 2" }, { author: "Author 1" }],
+        [{ author: "Author 3" }, { author: "Author 2" }],
+        [{ author: "Author 4" }, { author: "Author 3" }],
+        [{ author: "Author 5" }, { author: "Author 4" }],
+        [{ author: "Author 6" }, { author: "Author 5" }],
       ]
     )
     @presenter = NeedPresenter.new(@need)
 
-    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes.first, "presented revision")
     stub_presenter("OrganisationPresenter", @need.organisations.first, "presented organisation")
+
+    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[0], "Revision 1")
+    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[1], "Revision 2")
+    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[2], "Revision 3")
+    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[3], "Revision 4")
+    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[4], "Revision 5")
   end
 
   should "return an need as json" do
@@ -85,7 +80,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal "link#1\nlink#2", response[:legislation]
 
-    assert_equal [ "presented revision" ], response[:revisions]
+    assert_equal [ "Revision 1", "Revision 2", "Revision 3", "Revision 4", "Revision 5" ], response[:revisions]
   end
 
   should "return a custom status" do
@@ -93,6 +88,4 @@ class NeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal "created", response[:_response_info][:status]
   end
-
-
 end
