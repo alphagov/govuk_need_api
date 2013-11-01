@@ -41,8 +41,8 @@ class NeedPresenter
   end
 
   def revisions
-    @need.revisions_with_changes.take(5).map {|(revision,previous)|
-      NeedRevisionPresenter.new(revision, previous).present
+    @need.changesets.take(5).map { |changeset|
+      ChangesetPresenter.new(changeset).present
     }
   end
 end

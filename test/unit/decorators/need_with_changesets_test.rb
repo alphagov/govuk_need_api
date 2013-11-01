@@ -1,6 +1,6 @@
 require_relative '../../test_helper'
 
-class NeedDecoratorTest < ActiveSupport::TestCase
+class NeedWithChangesetsTest < ActiveSupport::TestCase
 
   setup do
     @need = FactoryGirl.create(:need)
@@ -15,29 +15,27 @@ class NeedDecoratorTest < ActiveSupport::TestCase
       FactoryGirl.create(:need_revision, need: @need, author: { name: "George" }, created_at: 4.hours.ago, action_type: "create")
     ]
 
-    @decorator = NeedDecorator.new(@need)
+    @decorator = NeedWithChangesets.new(@need)
   end
 
-  should "return revisions in pairs" do
-    revision_pairs = @decorator.revisions_with_changes
+  should "return a list of changesets" do
+    changesets = @decorator.changesets
 
-    expected = [
+    assert changesets.all? { |c| c.respond_to? :changes }
+  end
+
+  should "pair revisions correctly" do
+    expected_authors = [
       [ "John", "Paul" ],
       [ "Paul", "Ringo" ],
       [ "Ringo", "George" ],
       [ "George", nil ]
     ]
-
-    pairs = revision_pairs.map {|pair| pair.map {|revision| revision.author[:name] if revision.present? }}
-    assert_equal expected, pairs
+    assert_equal expected_authors, @decorator.changesets.map { |changeset|
+      [
+        changeset.author[:name],
+        (changeset.previous.author[:name] if changeset.previous)
+      ]
+    }
   end
-
-  should "return the current revision as an instance of RevisionDecorator" do
-    revision_pairs = @decorator.revisions_with_changes
-
-    revision_pairs.each do |(revision,previous)|
-      assert revision.is_a?(RevisionDecorator)
-    end
-  end
-
 end
