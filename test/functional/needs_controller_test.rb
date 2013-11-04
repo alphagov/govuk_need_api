@@ -27,6 +27,7 @@ class NeedsControllerTest < ActionController::TestCase
       get :index
 
       body = JSON.parse(response.body)
+      body["results"].sort_by! {|r| r["id"] }
 
       assert_equal 5, body["results"].size
       assert_equal @needs.first.need_id, body["results"][0]["id"]
