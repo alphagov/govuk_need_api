@@ -13,7 +13,7 @@ class NeedsController < ApplicationController
 
   def show
     need = Need.find(params["id"])
-    decorated_need = NeedDecorator.new(need)
+    decorated_need = NeedWithChangesets.new(need)
     render json: NeedPresenter.new(decorated_need).as_json(status: :ok),
            status: :ok
   rescue Mongoid::Errors::DocumentNotFound
@@ -41,7 +41,7 @@ class NeedsController < ApplicationController
     end
 
     if @need.save_as(author_params)
-      decorated_need = NeedDecorator.new(@need)
+      decorated_need = NeedWithChangesets.new(@need)
       render json: NeedPresenter.new(decorated_need).as_json(status: :created),
              status: :created
     else

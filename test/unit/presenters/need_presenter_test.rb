@@ -34,24 +34,25 @@ class NeedPresenterTest < ActiveSupport::TestCase
       currently_met: false,
       other_evidence: "Other evidence",
       legislation: "link#1\nlink#2",
-      revisions_with_changes: [
-        [{ author: "Author 1" }, { author: "Author 0" }],
-        [{ author: "Author 2" }, { author: "Author 1" }],
-        [{ author: "Author 3" }, { author: "Author 2" }],
-        [{ author: "Author 4" }, { author: "Author 3" }],
-        [{ author: "Author 5" }, { author: "Author 4" }],
-        [{ author: "Author 6" }, { author: "Author 5" }],
+      changesets: [
+        { author: "Author 1" },
+        { author: "Author 2" },
+        { author: "Author 3" },
+        { author: "Author 4" },
+        { author: "Author 5" },
+        { author: "Author 6" },
       ]
     )
     @presenter = NeedPresenter.new(@need)
 
     stub_presenter("OrganisationPresenter", @need.organisations.first, "presented organisation")
 
-    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[0], "Revision 1")
-    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[1], "Revision 2")
-    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[2], "Revision 3")
-    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[3], "Revision 4")
-    stub_presenter("NeedRevisionPresenter", @need.revisions_with_changes[4], "Revision 5")
+    # Stub out the individual changeset presenter instances
+    stub_presenter("ChangesetPresenter", @need.changesets[0], "Changeset 1")
+    stub_presenter("ChangesetPresenter", @need.changesets[1], "Changeset 2")
+    stub_presenter("ChangesetPresenter", @need.changesets[2], "Changeset 3")
+    stub_presenter("ChangesetPresenter", @need.changesets[3], "Changeset 4")
+    stub_presenter("ChangesetPresenter", @need.changesets[4], "Changeset 5")
   end
 
   should "return an need as json" do
@@ -80,7 +81,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal "link#1\nlink#2", response[:legislation]
 
-    assert_equal [ "Revision 1", "Revision 2", "Revision 3", "Revision 4", "Revision 5" ], response[:revisions]
+    assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
   end
 
   should "return a custom status" do

@@ -1,15 +1,9 @@
 require_relative '../../test_helper'
 
-class NeedRevisionPresenterTest < ActiveSupport::TestCase
-
-  class MockRevision < OpenStruct
-    def changes_with(previous)
-      { role: [ "user", "home owner" ] }
-    end
-  end
+class ChangesetPresenterTest < ActiveSupport::TestCase
 
   setup do
-    @revision = MockRevision.new(
+    current = OpenStruct.new(
       action_type: "update",
       snapshot: {
         role: "home owner"
@@ -21,15 +15,15 @@ class NeedRevisionPresenterTest < ActiveSupport::TestCase
       },
       created_at: Time.parse("2013-01-01")
     )
-    @previous_revision = MockRevision.new(
-      snapshot: {
-        role: "user"
-      }
+
+    @changeset = OpenStruct.new(
+      current: current,
+      changes: { role: [ "user", "home owner" ] }
     )
   end
 
   should "return the basic attributes" do
-    response = NeedRevisionPresenter.new(@revision, @previous_revision).present
+    response = ChangesetPresenter.new(@changeset).present
 
     assert_equal "update", response[:action_type]
 
