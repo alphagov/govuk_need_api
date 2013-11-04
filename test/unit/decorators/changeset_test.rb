@@ -18,8 +18,8 @@ class ChangesetTest < ActiveSupport::TestCase
 
   should "delegate methods to the provided revision" do
     change = Changeset.new(@revision, nil)
-    assert_equal "Winston Smith-Churchill", change.author[:name]
-    assert_equal Time.parse("2013-10-01 10:00:00"), change.created_at
+    assert_equal "Winston Smith-Churchill", change.current.author[:name]
+    assert_equal Time.parse("2013-10-01 10:00:00"), change.current.created_at
   end
 
   context "calculating the changes with a previous revision" do

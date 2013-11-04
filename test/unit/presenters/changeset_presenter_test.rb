@@ -3,7 +3,7 @@ require_relative '../../test_helper'
 class ChangesetPresenterTest < ActiveSupport::TestCase
 
   setup do
-    @changeset = OpenStruct.new(
+    current = OpenStruct.new(
       action_type: "update",
       snapshot: {
         role: "home owner"
@@ -13,7 +13,11 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
         email: "winston@alphagov.co.uk",
         uid: "w1n5t0n"
       },
-      created_at: Time.parse("2013-01-01"),
+      created_at: Time.parse("2013-01-01")
+    )
+
+    @changeset = OpenStruct.new(
+      current: current,
       changes: { role: [ "user", "home owner" ] }
     )
   end

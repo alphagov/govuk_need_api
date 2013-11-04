@@ -33,7 +33,7 @@ class NeedWithChangesetsTest < ActiveSupport::TestCase
     ]
     assert_equal expected_authors, @decorator.changesets.map { |changeset|
       [
-        changeset.author[:name],
+        changeset.current.author[:name],
         (changeset.previous.author[:name] if changeset.previous)
       ]
     }

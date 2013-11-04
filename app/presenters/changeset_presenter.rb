@@ -5,10 +5,10 @@ class ChangesetPresenter
 
   def present
     {
-      action_type: @changeset.action_type,
-      author: @changeset.author,
+      action_type: @changeset.current.action_type,
+      author: @changeset.current.author,
       changes: @changeset.changes,
-      created_at: @changeset.created_at
+      created_at: @changeset.current.created_at
     }
   end
 end
