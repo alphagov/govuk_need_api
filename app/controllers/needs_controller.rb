@@ -5,7 +5,7 @@ class NeedsController < ApplicationController
                Need.where(:organisation_ids => org)
              else
                Need.all
-             end
+             end.sort
 
     set_expiry 0
     render json: NeedResultSetPresenter.new(@needs).as_json
