@@ -28,4 +28,13 @@ FactoryGirl.define do
     other_evidence "This is important"
     legislation "Council Tax Act 1994"
   end
+
+  factory :need_revision do
+    need
+    action_type "update"
+    snapshot { need.attributes }
+    author({
+      name: "Winston Smith-Churchill"
+    })
+  end
 end

@@ -2,6 +2,17 @@ require_relative '../../test_helper'
 
 class NeedPresenterTest < ActiveSupport::TestCase
 
+  def stub_presenter(presenter, attributes, presenter_output)
+    presenter_stub = stub(:present => presenter_output)
+
+    attributes = [attributes] unless attributes.is_a?(Array)
+    matchers = attributes.map {|a| has_entries(a) }
+
+    presenter.constantize.expects(:new)
+                            .with(*matchers)
+                            .returns(presenter_stub)
+  end
+
   setup do
     @need = OpenStruct.new(
       id: "blah-bson-id",
@@ -11,7 +22,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       benefit: "I can charge my customers the correct amount",
       organisation_ids: [ "ministry-of-testing" ],
       organisations: [
-        OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
+        { id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing" }
       ],
       justifications: [ "legislation", "other" ],
       impact: "Noticed by an expert audience",
@@ -22,9 +33,26 @@ class NeedPresenterTest < ActiveSupport::TestCase
       monthly_searches: 2000,
       currently_met: false,
       other_evidence: "Other evidence",
-      legislation: "link#1\nlink#2"
+      legislation: "link#1\nlink#2",
+      changesets: [
+        { author: "Author 1" },
+        { author: "Author 2" },
+        { author: "Author 3" },
+        { author: "Author 4" },
+        { author: "Author 5" },
+        { author: "Author 6" },
+      ]
     )
     @presenter = NeedPresenter.new(@need)
+
+    stub_presenter("OrganisationPresenter", @need.organisations.first, "presented organisation")
+
+    # Stub out the individual changeset presenter instances
+    stub_presenter("ChangesetPresenter", @need.changesets[0], "Changeset 1")
+    stub_presenter("ChangesetPresenter", @need.changesets[1], "Changeset 2")
+    stub_presenter("ChangesetPresenter", @need.changesets[2], "Changeset 3")
+    stub_presenter("ChangesetPresenter", @need.changesets[3], "Changeset 4")
+    stub_presenter("ChangesetPresenter", @need.changesets[4], "Changeset 5")
   end
 
   should "return an need as json" do
@@ -39,9 +67,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal ["ministry-of-testing"], response[:organisation_ids]
 
-    assert_equal 1, response[:organisations].size
-    assert_equal "Ministry of Testing", response[:organisations][0][:name]
-    assert_equal "ministry-of-testing", response[:organisations][0][:id]
+    assert_equal [ "presented organisation" ], response[:organisations]
 
     assert_equal ["legislation", "other"], response[:justifications]
     assert_equal "Noticed by an expert audience", response[:impact]
@@ -54,6 +80,8 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal false, response[:currently_met]
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal "link#1\nlink#2", response[:legislation]
+
+    assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
   end
 
   should "return a custom status" do
@@ -61,6 +89,4 @@ class NeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal "created", response[:_response_info][:status]
   end
-
-
 end

@@ -222,6 +222,10 @@ class NeedTest < ActiveSupport::TestCase
   context "updating a need" do
     setup do
       @need = FactoryGirl.create(:need, goal: "pay my car tax") # creates an initial revision
+
+      # set the timestamp to be explicitly different so that the return order can be
+      # assured for the subsequent tests
+      @need.revisions.first.update_attribute(:created_at, Date.parse("2001-01-01"))
     end
 
     should "persist the changes" do
@@ -242,7 +246,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "find travel advice for Germany", @need.goal
       assert_equal 2, @need.revisions.count
 
-      revision = @need.revisions.last
+      revision = @need.revisions.first
       assert_equal "update", revision.action_type
       assert_equal "find travel advice for Germany", revision.snapshot["goal"]
       assert_nil revision.author
@@ -257,7 +261,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "find travel advice for Portugal", @need.goal
       assert_equal 2, @need.revisions.count
 
-      revision = @need.revisions.last
+      revision = @need.revisions.first
       assert_equal "update", revision.action_type
       assert_equal "find travel advice for Portugal", revision.snapshot["goal"]
       assert_equal "Winston Smith-Churchill", revision.author["name"]

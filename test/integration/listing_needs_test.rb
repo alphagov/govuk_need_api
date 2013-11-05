@@ -38,10 +38,10 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
       assert_equal 3, results.size
 
-      assert_equal ["car owner", "student", "jobseeker"], results.map{|n| n["role"] }
-      assert_equal ["renew my car tax", "apply for student finance", "search for jobs"], results.map{|n| n["goal"] }
-      assert_equal ["I can drive my car for another year", "I can get the money I need to go to university", "I can get into work"], results.map{|n| n["benefit"] }
-      assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }
+      assert_equal ["car owner", "jobseeker", "student"], results.map{|n| n["role"] }.sort
+      assert_equal ["apply for student finance", "renew my car tax", "search for jobs"], results.map{|n| n["goal"] }.sort
+      assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map{|n| n["benefit"] }.sort
+      assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }.sort
 
       assert_equal "hm-treasury", results[0]["organisations"][0]["id"]
       assert_equal "HM Treasury", results[0]["organisations"][0]["name"]
@@ -56,9 +56,9 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal 200, last_response.status
       assert_equal "ok", body["_response_info"]["status"]
       assert_equal 2, body["results"].size
-      assert_equal ["car owner", "jobseeker"], body["results"].map{|n| n["role"] }
-      assert_equal ["renew my car tax", "search for jobs"], body["results"].map{|n| n["goal"] }
-      assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map{|n| n["benefit"] }
+      assert_equal ["car owner", "jobseeker"], body["results"].map{|n| n["role"] }.sort
+      assert_equal ["renew my car tax", "search for jobs"], body["results"].map{|n| n["goal"] }.sort
+      assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map{|n| n["benefit"] }.sort
     end
 
     should "return all needs if no organisation is given" do

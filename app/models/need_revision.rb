@@ -6,6 +6,8 @@ class NeedRevision
   field :snapshot, type: Hash
   field :author, type: Hash
 
+  default_scope order_by([:created_at, :desc])
+
   belongs_to :need
   index [[ :need_id, Mongo::ASCENDING ], [ :created_at, Mongo::DESCENDING ]]
 

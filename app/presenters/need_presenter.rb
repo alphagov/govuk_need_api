@@ -28,7 +28,8 @@ class NeedPresenter
       monthly_searches: @need.monthly_searches,
       currently_met: @need.currently_met,
       other_evidence: @need.other_evidence,
-      legislation: @need.legislation
+      legislation: @need.legislation,
+      revisions: revisions
     }
   end
 
@@ -36,6 +37,12 @@ class NeedPresenter
   def organisations
     @need.organisations.map {|o|
       OrganisationPresenter.new(o).present
+    }
+  end
+
+  def revisions
+    @need.changesets.take(5).map { |changeset|
+      ChangesetPresenter.new(changeset).present
     }
   end
 end
