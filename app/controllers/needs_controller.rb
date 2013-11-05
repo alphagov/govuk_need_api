@@ -63,9 +63,13 @@ class NeedsController < ApplicationController
       return
     end
 
+    unless author_params.any?
+      error 422, message: :author_not_provided, errors: ["Author details must be provided"]
+      return
+    end
+
     @need.assign_attributes(filtered_params)
-    if @need.valid?
-      @need.save!
+    if @need.valid? and @need.save_as(author_params)
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
