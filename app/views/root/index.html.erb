@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+  <title>GOV.UK Need API</title>
+
+  <style type="text/css">
+    body {
+      background: #f3f3f3;
+      font-family: Avenir, Helvetica, Arial, sans-serif;
+      font-size: 100%;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    main {
+      width: 780px;
+      margin: 0 auto;
+    }
+
+    code {
+      background: #fff;
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 15px ;
+      border-bottom: 2px solid #fff;
+      font-family: Menlo, fixed-width;
+    }
+
+    dl dt {
+      font-weight: bold;
+    }
+    dl dd {
+      padding: 2px 0 20px;
+    }
+    dl dt code {
+      font-weight: normal;
+      margin-bottom: 2px;
+    }
+
+    ul {
+      padding-left: 0;
+    }
+    li {
+      list-style: none;
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <h1>GOV.UK Need API</h1>
+
+    <p>The Need API stores and provides details about user needs which may or may not be met by GOV.UK.</p>
+
+    <h2>API Information</h2>
+
+    <dl>
+      <dt>Formats</dt>
+      <dd>JSON</dd>
+      <dt>Data access</dt>
+      <dd>Read and write</dd>
+      <dt>Authentication</dt>
+      <dd>Required for all requests.</dd>
+    </dl>
+
+    <h2>Endpoints</h2>
+
+    <dl>
+      <dt><code>GET /needs</code></dt>
+      <dd>Basic information about all user needs in the API. Can be filtered by an <code>organisation_id</code> value.</dd>
+
+      <dt><code>POST /needs</code></dt>
+      <dd>Create a new need in the API. Returns a <code>HTTP 201</code> when successful.</dd>
+
+      <dt><code>GET /needs/<em>&lt;need id&gt;</em></code></dt>
+      <dd>Complete information about a single need, including history of most recent changes.</dd>
+
+      <dt><code>PUT /needs/<em>&lt;need id&gt;</em></code></dt>
+      <dd>Update an existing need in the API. Only provided attributes will be updated.</dd>
+
+      <dt><code>GET /organisations</code></dt>
+      <dd>Basic information about all organisations in the API.</dd>
+
+      <dt><code>GET /healthcheck</code></dt>
+      <dd>Returns a <code>HTTP 200</code> with the body <code>OK</code>. Used for Nagios health checks.</dd>
+    </dl>
+  </main>
+
+</body>
+</html>
