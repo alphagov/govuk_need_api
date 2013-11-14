@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    PriorityQueue (0.1.2)
     actionmailer (3.2.14)
       actionpack (= 3.2.14)
       mail (~> 2.5.4)
@@ -49,6 +50,12 @@ GEM
       railties (>= 3.0.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
+    gds-api-adapters (7.19.0)
+      link_header
+      lrucache (~> 0.1.1)
+      null_logger
+      plek
+      rest-client (~> 1.6.3)
     gds-sso (3.1.0)
       omniauth-gds (~> 0.0.3)
       rack-accept (~> 0.4.4)
@@ -63,6 +70,9 @@ GEM
     jwt (0.1.8)
       multi_json (>= 1.5)
     kgio (2.8.0)
+    link_header (0.0.7)
+    lrucache (0.1.4)
+      PriorityQueue (~> 0.1.2)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -78,6 +88,7 @@ GEM
       tzinfo (~> 0.3.22)
     multi_json (1.8.0)
     multipart-post (1.2.0)
+    null_logger (0.0.1)
     oauth2 (0.8.1)
       faraday (~> 0.8)
       httpauth (~> 0.1)
@@ -122,6 +133,8 @@ GEM
     rake (10.1.0)
     rdoc (3.12.2)
       json (~> 1.4)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     shoulda-context (1.1.5)
     simplecov (0.7.1)
       multi_json (~> 1.0)
@@ -157,6 +170,7 @@ DEPENDENCIES
   database_cleaner (= 1.1.1)
   exception_notification (= 2.6.1)
   factory_girl_rails (= 4.2.1)
+  gds-api-adapters (= 7.19.0)
   gds-sso (= 3.1.0)
   mocha (= 0.13.3)
   mongoid (= 2.8.1)
