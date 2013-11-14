@@ -5,8 +5,18 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
 
-    FactoryGirl.create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
-    FactoryGirl.create(:organisation, name: "HM Treasury", slug: "hm-treasury")
+    FactoryGirl.create(:organisation, name: "Department for Work and Pensions",
+                       slug: "department-for-work-and-pensions",
+                       abbreviation: "DWP",
+                       govuk_status: "live",
+                       parent_ids: ["pension-protection-fund"],
+                       child_ids: [])
+    FactoryGirl.create(:organisation, name: "HM Treasury",
+                       slug: "hm-treasury",
+                       abbreviation: "HMT",
+                       govuk_status: "live",
+                       parent_ids: ["treasury-solictor-s-department"],
+                       child_ids: ["treasury-valuation-commitee"])
 
     FactoryGirl.create(:need, role: "car owner",
                        goal: "renew my car tax",
@@ -45,6 +55,13 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
       assert_equal "hm-treasury", results[0]["organisations"][0]["id"]
       assert_equal "HM Treasury", results[0]["organisations"][0]["name"]
+
+      assert_equal ["treasury-valuation-commitee"], results[0]["organisations"][0]["child_ids"]
+      assert_equal ["treasury-solictor-s-department"], results[0]["organisations"][0]["parent_ids"]
+
+      assert_equal([], results[1]["organisations"][0]["child_ids"])
+      assert_equal(["pension-protection-fund"],
+                   results[1]["organisations"][0]["parent_ids"])
     end
   end
 
