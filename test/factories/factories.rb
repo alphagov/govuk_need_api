@@ -7,6 +7,10 @@ FactoryGirl.define do
   factory :organisation do
     name "Ministry of Plenty"
     slug "ministry-of-plenty"
+    abbreviation "MOP"
+    parent_ids ["ministry-of-much"]
+    child_ids ["ministry-of-a-lot", "ministry-of-much"]
+    govuk_status "live"
     _id { slug }
   end
 
