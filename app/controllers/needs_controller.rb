@@ -4,7 +4,7 @@ class NeedsController < ApplicationController
     @needs = if org.present?
                Need.where(:organisation_ids => org)
              else
-               Need.all
+               Need.all.page(params[:page])
              end
 
     set_expiry 0

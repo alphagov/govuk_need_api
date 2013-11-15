@@ -24,6 +24,8 @@ class Need
 
   default_scope order_by([:need_id, :desc])
 
+  paginates_per 50
+
   # This callback needs to be assigned before the `key` class method below, as
   # otherwise Mongoid will generate a new document's key before it assigns a
   # new need ID. Normally, ActiveModel would ensure `before_x` callbacks were

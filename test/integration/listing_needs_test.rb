@@ -79,23 +79,33 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal 0, body["results"].size
       end
     end
+  end
 
-    should "return all needs if no organisation is given" do
-      get "/needs?organisation_id="
-      body = JSON.parse(last_response.body)
-
-      assert_equal 200, last_response.status
-      assert_equal "ok", body["_response_info"]["status"]
-      assert_equal 3, body["results"].size
+  context "paginating needs" do
+    setup do
+      FactoryGirl.create_list(:need, 75)
     end
 
-    should "return no needs if the organisation has no needs" do
-      get "/needs?organisation_id=department-of-justice"
+    should "return a maximum of fifty needs per page" do
+      get "/needs"
+
       body = JSON.parse(last_response.body)
 
-      assert_equal 200, last_response.status
-      assert_equal "ok", body["_response_info"]["status"]
-      assert_equal 0, body["results"].size
+      assert_equal 50, body["results"].size
+
+      assert_equal 100075, body["results"].first["id"]
+      assert_equal 100026, body["results"].last["id"]
+    end
+
+    should "return the next page of needs" do
+      get "/needs?page=2"
+
+      body = JSON.parse(last_response.body)
+
+      assert_equal 25, body["results"].size
+
+      assert_equal 100025, body["results"].first["id"]
+      assert_equal 100001, body["results"].last["id"]
     end
   end
 end
