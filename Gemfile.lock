@@ -29,6 +29,7 @@ GEM
     activesupport (3.2.14)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
+    addressable (2.3.5)
     arel (3.0.2)
     aws-ses (0.5.0)
       builder
@@ -39,6 +40,8 @@ GEM
     bson_ext (1.9.2)
       bson (~> 1.9.2)
     builder (3.0.4)
+    crack (0.4.1)
+      safe_yaml (~> 0.9.0)
     database_cleaner (1.1.1)
     erubis (2.7.0)
     exception_notification (2.6.1)
@@ -78,7 +81,7 @@ GEM
       treetop (~> 1.4.8)
     metaclass (0.0.1)
     mime-types (1.25)
-    mocha (0.13.3)
+    mocha (0.14.0)
       metaclass (~> 0.0.1)
     mongo (1.9.2)
       bson (~> 1.9.2)
@@ -135,6 +138,7 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    safe_yaml (0.9.7)
     shoulda-context (1.1.5)
     simplecov (0.7.1)
       multi_json (~> 1.0)
@@ -159,6 +163,9 @@ GEM
       raindrops (~> 0.7)
     warden (1.2.3)
       rack (>= 1.0)
+    webmock (1.14.0)
+      addressable (>= 2.2.7)
+      crack (>= 0.3.2)
     xml-simple (1.1.2)
 
 PLATFORMS
@@ -172,7 +179,7 @@ DEPENDENCIES
   factory_girl_rails (= 4.2.1)
   gds-api-adapters (= 7.19.0)
   gds-sso (= 3.1.0)
-  mocha (= 0.13.3)
+  mocha (= 0.14.0)
   mongoid (= 2.8.1)
   plek (= 1.4.0)
   rails (= 3.2.14)
@@ -180,3 +187,4 @@ DEPENDENCIES
   simplecov (= 0.7.1)
   simplecov-rcov
   unicorn
+  webmock (= 1.14.0)
