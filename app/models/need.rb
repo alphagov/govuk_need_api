@@ -22,6 +22,8 @@ class Need
   after_update :record_update_revision
   after_create :record_create_revision
 
+  default_scope order_by([:need_id, :desc])
+
   # This callback needs to be assigned before the `key` class method below, as
   # otherwise Mongoid will generate a new document's key before it assigns a
   # new need ID. Normally, ActiveModel would ensure `before_x` callbacks were
