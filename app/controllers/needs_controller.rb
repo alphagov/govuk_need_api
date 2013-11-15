@@ -1,14 +1,14 @@
 class NeedsController < ApplicationController
   def index
-    org = params["organisation_id"]
-    @needs = if org.present?
-               Need.where(:organisation_ids => org)
-             else
-               Need.all.page(params[:page])
-             end
+    scope = Need
+
+    if org = params["organisation_id"] and org.present?
+      scope = scope.where(:organisation_ids => org)
+    end
+    @needs = scope.page(params[:page])
 
     set_expiry 0
-    render json: NeedResultSetPresenter.new(@needs).as_json
+    render json: NeedResultSetPresenter.new(@needs, view_context).as_json
   end
 
   def show

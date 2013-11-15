@@ -82,11 +82,9 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
   end
 
   context "paginating needs" do
-    setup do
-      FactoryGirl.create_list(:need, 75)
-    end
-
     should "return a maximum of fifty needs per page" do
+      FactoryGirl.create_list(:need, 75)
+
       get "/needs"
 
       body = JSON.parse(last_response.body)
@@ -98,6 +96,8 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
     end
 
     should "return the next page of needs" do
+      FactoryGirl.create_list(:need, 75)
+
       get "/needs?page=2"
 
       body = JSON.parse(last_response.body)
@@ -106,6 +106,50 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
       assert_equal 100025, body["results"].first["id"]
       assert_equal 100001, body["results"].last["id"]
+    end
+
+    context "next and previous links" do
+      setup do
+        FactoryGirl.create_list(:need, 101)
+      end
+
+      should "include information about the next and previous pages" do
+        get "/needs?page=2"
+
+        body = JSON.parse(last_response.body)
+        assert_equal "ok", body["_response_info"]["status"]
+
+        links = body["_response_info"]["links"]
+
+        assert_equal 3, links.size
+
+        assert_equal "http://example.org/needs?page=1", links[0]["href"]
+        assert_equal "previous", links[0]["rel"]
+
+        assert_equal "http://example.org/needs?page=3", links[1]["href"]
+        assert_equal "next", links[1]["rel"]
+
+        assert_equal "http://example.org/needs?page=2", links[2]["href"]
+        assert_equal "self", links[2]["rel"]
+      end
+
+      should "not display the previous link on the first page" do
+        get "/needs?page=1"
+
+        body = JSON.parse(last_response.body)
+        links = body["_response_info"]["links"]
+
+        assert_equal ["next", "self"], links.map {|l| l['rel']}
+      end
+
+      should "not display the next link on the last page" do
+        get "/needs?page=3"
+
+        body = JSON.parse(last_response.body)
+        links = body["_response_info"]["links"]
+
+        assert_equal ["previous", "self"], links.map {|l| l['rel']}
+      end
     end
   end
 end
