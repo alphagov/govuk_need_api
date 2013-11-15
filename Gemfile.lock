@@ -161,7 +161,7 @@ DEPENDENCIES
   exception_notification (= 2.6.1)
   factory_girl_rails (= 4.2.1)
   gds-sso (= 3.1.0)
-  kaminari
+  kaminari (= 0.14.1)
   mocha (= 0.13.3)
   mongoid (= 2.8.1)
   plek (= 1.4.0)
