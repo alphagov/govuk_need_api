@@ -10,6 +10,11 @@ class NeedResultSetPresenter
         status: "ok",
         links: links
       },
+      total: @needs.count,
+      current_page: @needs.current_page,
+      pages: @needs.total_pages,
+      start_index: start_index,
+      page_size: @needs.to_a.size,
       results: results
     }
   end
@@ -43,5 +48,9 @@ class NeedResultSetPresenter
         href: @view_context.needs_url(page: @needs.current_page)
       }
     }
+  end
+
+  def start_index
+    @needs.offset_value+1
   end
 end

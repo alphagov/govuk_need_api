@@ -43,7 +43,9 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       needs: needs,
       first_page?: false,
       last_page?: false,
-      current_page: 1
+      current_page: 1,
+      offset_value: 0,
+      total_pages: 1,
     )
 
     @view_context = stub
@@ -144,5 +146,43 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
 
     assert_equal "url to page 3", links[1][:href]
     assert_equal "self", links[1][:rel]
+  end
+
+  should "include the total number of needs" do
+    @needs.expects(:count).returns(50)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 50, response[:total]
+  end
+
+  should "include the start index" do
+    @needs.stubs(:offset_value).returns(20)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 21, response[:start_index]
+  end
+
+  should "include the current page" do
+    @needs.stubs(:current_page).returns(5)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 5, response[:current_page]
+  end
+
+  should "include the number of pages" do
+    @needs.stubs(:total_pages).returns(123)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 123, response[:pages]
+  end
+
+  should "include the size of the current page" do
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 2, response[:page_size]
   end
 end

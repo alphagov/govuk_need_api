@@ -151,5 +151,18 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal ["previous", "self"], links.map {|l| l['rel']}
       end
     end
+
+    should "return information about the result set" do
+      FactoryGirl.create_list(:need, 75)
+
+      get "/needs?page=2"
+      body = JSON.parse(last_response.body)
+
+      assert_equal 75, body["total"]
+      assert_equal 2, body["current_page"]
+      assert_equal 2, body["pages"]
+      assert_equal 51, body["start_index"]
+      assert_equal 25, body["page_size"]
+    end
   end
 end
