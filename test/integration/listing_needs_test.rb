@@ -5,8 +5,18 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
 
-    FactoryGirl.create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
-    FactoryGirl.create(:organisation, name: "HM Treasury", slug: "hm-treasury")
+    FactoryGirl.create(:organisation, name: "Department for Work and Pensions",
+                       slug: "department-for-work-and-pensions",
+                       abbreviation: "DWP",
+                       govuk_status: "live",
+                       parent_ids: ["pension-protection-fund"],
+                       child_ids: [])
+    FactoryGirl.create(:organisation, name: "HM Treasury",
+                       slug: "hm-treasury",
+                       abbreviation: "HMT",
+                       govuk_status: "live",
+                       parent_ids: ["treasury-solictor-s-department"],
+                       child_ids: ["treasury-valuation-commitee"])
 
     FactoryGirl.create(:need, role: "car owner",
                        goal: "renew my car tax",
@@ -43,8 +53,21 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map{|n| n["benefit"] }.sort
       assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }.sort
 
-      assert_equal "hm-treasury", results[0]["organisations"][0]["id"]
-      assert_equal "HM Treasury", results[0]["organisations"][0]["name"]
+      organisation = results[0]["organisations"][0]
+      assert_equal "hm-treasury", organisation["id"]
+      assert_equal "HM Treasury", organisation["name"]
+      assert_equal "HMT", organisation["abbreviation"]
+      assert_equal "live", organisation["govuk_status"]
+      assert_equal ["treasury-valuation-commitee"], organisation["child_ids"]
+      assert_equal ["treasury-solictor-s-department"], organisation["parent_ids"]
+
+      organisation = results[1]["organisations"][0]
+      assert_equal "department-for-work-and-pensions", organisation["id"]
+      assert_equal "Department for Work and Pensions", organisation["name"]
+      assert_equal "DWP", organisation["abbreviation"]
+      assert_equal "live", organisation["govuk_status"]
+      assert_equal([], organisation["child_ids"])
+      assert_equal(["pension-protection-fund"], organisation["parent_ids"])
     end
   end
 

@@ -8,6 +8,9 @@ require 'mocha/setup'
 require 'simplecov'
 require 'simplecov-rcov'
 
+require 'webmock/test_unit'
+WebMock.disable_net_connect!(:allow_localhost => true)
+
 SimpleCov.start 'rails'
 SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 

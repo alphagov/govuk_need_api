@@ -14,7 +14,11 @@ class OrganisationPresenter
   def present
     {
       id: @organisation.slug,
-      name: @organisation.name
+      name: @organisation.name,
+      govuk_status: @organisation.govuk_status,
+      abbreviation: @organisation.abbreviation,
+      parent_ids: @organisation.parent_ids,
+      child_ids: @organisation.child_ids
     }
   end
 end

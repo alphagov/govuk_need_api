@@ -24,20 +24,16 @@ class OrganisationsControllerTest < ActionController::TestCase
       assert_equal "ok", body["_response_info"]["status"]
     end
 
-    should "return a list of all organisations" do
+    should "present the organisations" do
+      stub_presenter = stub
+      OrganisationResultSetPresenter.expects(:new)
+        .with(@organisations)
+        .returns(stub_presenter)
+      stub_presenter.expects(:as_json).returns("foo")
+
       get :index
 
-      body = JSON.parse(response.body)
-      assert_equal 3, body["organisations"].size
-
-      assert_equal "department-for-transport", body["organisations"][0]["id"]
-      assert_equal "Department for Transport", body["organisations"][0]["name"]
-
-      assert_equal "home-office", body["organisations"][1]["id"]
-      assert_equal "Home Office", body["organisations"][1]["name"]
-
-      assert_equal "ministry-of-justice", body["organisations"][2]["id"]
-      assert_equal "Ministry of Justice", body["organisations"][2]["name"]
+      assert response.body.include?("foo")
     end
   end
 

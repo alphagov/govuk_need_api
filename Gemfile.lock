@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    PriorityQueue (0.1.2)
     actionmailer (3.2.14)
       actionpack (= 3.2.14)
       mail (~> 2.5.4)
@@ -28,6 +29,7 @@ GEM
     activesupport (3.2.14)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
+    addressable (2.3.5)
     arel (3.0.2)
     aws-ses (0.5.0)
       builder
@@ -38,6 +40,9 @@ GEM
     bson_ext (1.9.2)
       bson (~> 1.9.2)
     builder (3.0.4)
+    chronic (0.10.2)
+    crack (0.4.1)
+      safe_yaml (~> 0.9.0)
     database_cleaner (1.1.1)
     erubis (2.7.0)
     exception_notification (2.6.1)
@@ -49,6 +54,12 @@ GEM
       railties (>= 3.0.0)
     faraday (0.8.8)
       multipart-post (~> 1.2.0)
+    gds-api-adapters (7.19.0)
+      link_header
+      lrucache (~> 0.1.1)
+      null_logger
+      plek
+      rest-client (~> 1.6.3)
     gds-sso (3.1.0)
       omniauth-gds (~> 0.0.3)
       rack-accept (~> 0.4.4)
@@ -63,12 +74,15 @@ GEM
     jwt (0.1.8)
       multi_json (>= 1.5)
     kgio (2.8.0)
+    link_header (0.0.7)
+    lrucache (0.1.4)
+      PriorityQueue (~> 0.1.2)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     metaclass (0.0.1)
     mime-types (1.25)
-    mocha (0.13.3)
+    mocha (0.14.0)
       metaclass (~> 0.0.1)
     mongo (1.9.2)
       bson (~> 1.9.2)
@@ -78,6 +92,7 @@ GEM
       tzinfo (~> 0.3.22)
     multi_json (1.8.0)
     multipart-post (1.2.0)
+    null_logger (0.0.1)
     oauth2 (0.8.1)
       faraday (~> 0.8)
       httpauth (~> 0.1)
@@ -122,6 +137,9 @@ GEM
     rake (10.1.0)
     rdoc (3.12.2)
       json (~> 1.4)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    safe_yaml (0.9.7)
     shoulda-context (1.1.5)
     simplecov (0.7.1)
       multi_json (~> 1.0)
@@ -146,6 +164,12 @@ GEM
       raindrops (~> 0.7)
     warden (1.2.3)
       rack (>= 1.0)
+    webmock (1.14.0)
+      addressable (>= 2.2.7)
+      crack (>= 0.3.2)
+    whenever (0.8.4)
+      activesupport (>= 2.3.4)
+      chronic (>= 0.6.3)
     xml-simple (1.1.2)
 
 PLATFORMS
@@ -157,8 +181,9 @@ DEPENDENCIES
   database_cleaner (= 1.1.1)
   exception_notification (= 2.6.1)
   factory_girl_rails (= 4.2.1)
+  gds-api-adapters (= 7.19.0)
   gds-sso (= 3.1.0)
-  mocha (= 0.13.3)
+  mocha (= 0.14.0)
   mongoid (= 2.8.1)
   plek (= 1.4.0)
   rails (= 3.2.14)
@@ -166,3 +191,5 @@ DEPENDENCIES
   simplecov (= 0.7.1)
   simplecov-rcov
   unicorn
+  webmock (= 1.14.0)
+  whenever (= 0.8.4)
