@@ -31,12 +31,16 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
     )
   end
 
-  should "not update an organisation if no attributes have changed" do
+  def stub_and_verify_api_with(*organisations)
     stub_subsequent_pages = stub
     GdsApi::Organisations.any_instance.expects(:organisations)
       .returns(stub_subsequent_pages)
     stub_subsequent_pages.expects(:with_subsequent_pages)
-      .returns([@hm_treasury])
+      .returns(organisations)
+  end
+
+  should "not update an organisation if no attributes have changed" do
+    stub_and_verify_api_with(@hm_treasury)
 
     OrganisationImporter.new.run
 
@@ -49,12 +53,8 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
   end
 
   should "update an organisation if an attribute has changed" do
-    stub_subsequent_pages = stub
-    GdsApi::Organisations.any_instance.expects(:organisations)
-      .returns(stub_subsequent_pages)
     @hm_treasury.title = "HM Treasure Chest"
-    stub_subsequent_pages.expects(:with_subsequent_pages)
-      .returns([@hm_treasury])
+    stub_and_verify_api_with(@hm_treasury)
 
     OrganisationImporter.new.run
 
@@ -63,11 +63,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
   end
 
   should "update several organisations that have changed attributes" do
-    stub_subsequent_pages = stub
-    GdsApi::Organisations.any_instance.expects(:organisations)
-      .returns(stub_subsequent_pages)
-    stub_subsequent_pages.expects(:with_subsequent_pages)
-      .returns([@dwp, @hoc])
+    stub_and_verify_api_with(@dwp, @hoc)
 
     OrganisationImporter.new.run
 
@@ -79,7 +75,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
   end
 
   should "add a new organisation if not already present" do
-    mod = OpenStruct.new(
+    stubbed_mod = OpenStruct.new(
       details: OpenStruct.new(
         slug: "ministry-of-defence",
         govuk_status: "live"
@@ -89,11 +85,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
       child_organisations: [OpenStruct.new(id:"advisory-committee-on-conscientious-objectors")],
       parent_organisations: []
     )
-    stub_subsequent_pages = stub
-    GdsApi::Organisations.any_instance.expects(:organisations)
-      .returns(stub_subsequent_pages)
-    stub_subsequent_pages.expects(:with_subsequent_pages)
-      .returns([mod])
+    stub_and_verify_api_with(stubbed_mod)
 
     assert_nil Organisation.where(slug: "ministry-of-defence").first
 
