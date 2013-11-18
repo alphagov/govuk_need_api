@@ -8,9 +8,11 @@ class OrganisationsControllerTest < ActionController::TestCase
 
   context "GET index" do
     setup do
-      FactoryGirl.create(:organisation, name: "Department for Transport", slug: "department-for-transport")
-      FactoryGirl.create(:organisation, name: "Home Office", slug: "home-office")
-      FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+      @organisations = [
+        FactoryGirl.create(:organisation, name: "Department for Transport", slug: "department-for-transport"),
+        FactoryGirl.create(:organisation, name: "Home Office", slug: "home-office"),
+        FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+      ]
     end
 
     should "return a successful response" do
@@ -22,13 +24,16 @@ class OrganisationsControllerTest < ActionController::TestCase
       assert_equal "ok", body["_response_info"]["status"]
     end
 
-    should "present the organisations using as_json" do
-      result_set_presenter = OpenStruct.new(:as_json => "foo")
-      OrganisationResultSetPresenter.expects(:new).returns(result_set_presenter)
-
-      result_set_presenter.expects(:as_json)
+    should "present the organisations" do
+      stub_presenter = stub
+      OrganisationResultSetPresenter.expects(:new)
+        .with(@organisations)
+        .returns(stub_presenter)
+      stub_presenter.expects(:as_json).returns("foo")
 
       get :index
+
+      assert response.body.include?("foo")
     end
   end
 
