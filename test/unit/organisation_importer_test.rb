@@ -2,47 +2,31 @@ require './test/test_helper'
 require './lib/organisation_importer'
 
 class OrganisationImporterTest < ActionDispatch::IntegrationTest
-  setup do
-    FactoryGirl.create(:organisation, name: "HM Treasury", slug: "hm-treasury",
-                       child_ids: [], parent_ids: [])
-    @hm_treasury = OpenStruct.new(
-      details: OpenStruct.new(slug: "hm-treasury"),
-      title: "HM Treasury",
-      child_organisations: [],
-      parent_organisations: []
-    )
-
-    FactoryGirl.create(:organisation, name: "Department for Work & Pensions",
-                       slug: "department-for-work-and-pensions",
-                       child_ids: [], parent_ids: [])
-    @dwp = OpenStruct.new(
-      details: OpenStruct.new(slug: "department-for-work-and-pensions"),
-      title: "Department for Work & Pensions",
-      child_organisations: [OpenStruct.new(id:"equality-2025")],
-      parent_organisations: []
-    )
-
-    FactoryGirl.create(:organisation,
-                       name: "Office of the Leader of the House of Commons",
-                       slug: "office-of-the-leader-of-the-house-of-commons",
-                       child_ids: [], parent_ids: [])
-    @hoc = OpenStruct.new(
-      details: OpenStruct.new(slug: "the-office-of-the-leader-of-the-house-of-commons"),
-      title: "Office of the Leader of the House of Commons",
-      child_organisations: [], parent_organisations: [OpenStruct.new(id:"cabinet-office")]
-    )
-  end
-
-  def stub_and_verify_api_with(*organisations)
-    stub_subsequent_pages = stub
+  def stub_api_with_organisations(*organisations_atts)
+    organisations = organisations_atts.map {|o|
+      OpenStruct.new(
+        title: o[:name],
+        details: OpenStruct.new(slug: o[:slug],
+                                govuk_status: o[:govuk_status],
+                                abbreviation: o[:abbreviation]),
+        child_organisations: o[:child_ids],
+        parent_organisations: o[:parent_ids]
+      )
+    }
+    stub_subsequent_pages = stub(with_subsequent_pages: organisations)
     GdsApi::Organisations.any_instance.expects(:organisations)
       .returns(stub_subsequent_pages)
-    stub_subsequent_pages.expects(:with_subsequent_pages)
-      .returns(organisations)
   end
 
   should "not update an organisation if no attributes have changed" do
-    stub_and_verify_api_with(@hm_treasury)
+    organisation_atts = {
+      name: "HM Treasury",
+      slug: "hm-treasury",
+      child_ids: [],
+      parent_ids: []
+    }
+    Organisation.create!(organisation_atts)
+    stub_api_with_organisations(organisation_atts)
 
     OrganisationImporter.new.run
 
@@ -55,27 +39,48 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
   end
 
   should "update an organisation if an attribute has changed" do
-    @hm_treasury.title = "HM Treasure Chest"
-    stub_and_verify_api_with(@hm_treasury)
+    organisation_atts = {
+      name: "HM Treasury",
+      slug: "hm-treasury",
+      abbreviation: "HMT",
+      child_ids: [],
+      parent_ids: []
+    }
+    Organisation.create!(organisation_atts)
+    stub_api_with_organisations(organisation_atts.merge(abbreviation: "HT"))
 
     OrganisationImporter.new.run
 
-    assert_equal("HM Treasure Chest",
-                 Organisation.where(slug: "hm-treasury").first.name)
+    assert_equal("HT", Organisation.where(slug: "hm-treasury").first.abbreviation)
   end
 
   should "update/add several organisations that have changed" do
-    stubbed_mod = OpenStruct.new(
-      details: OpenStruct.new(
-        slug: "ministry-of-defence",
-        govuk_status: "live"
-      ),
-      title: "Ministry of Defence",
+    dwp_atts = {
+      slug: "department-for-work-and-pensions",
+      name: "Department for Work & Pensions",
+      child_ids: [OpenStruct.new(id:"equality-2025")],
+      parent_ids: []
+    }
+    Organisation.create!(dwp_atts.merge(child_ids: ["equality-2025"]))
+
+    hoc_atts = {
+      slug: "the-office-of-the-leader-of-the-house-of-commons",
+      name: "Office of the Leader of the House of Commons",
+      child_ids: [],
+      parent_ids: [OpenStruct.new(id:"cabinet-office")]
+    }
+    Organisation.create!(hoc_atts.merge(parent_ids: ["cabinet-office"]))
+
+    mod_atts = {
+      slug: "ministry-of-defence",
+      name: "Ministry of Defence",
       abbreviation: "mod",
-      child_organisations: [OpenStruct.new(id:"advisory-committee-on-conscientious-objectors")],
-      parent_organisations: []
-    )
-    stub_and_verify_api_with(@dwp, @hoc, stubbed_mod)
+      govuk_status: "live",
+      child_ids: [OpenStruct.new(id:"advisory-committee")],
+      parent_ids: []
+    }
+
+    stub_api_with_organisations(dwp_atts, hoc_atts, mod_atts)
 
     assert_nil Organisation.where(slug: "ministry-of-defence").first
 
@@ -91,7 +96,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
     assert_equal("ministry-of-defence", mod.slug)
     assert_equal("Ministry of Defence", mod.name)
     assert_equal("live", mod.govuk_status)
-    assert_equal(["advisory-committee-on-conscientious-objectors"], mod.child_ids)
+    assert_equal(["advisory-committee"], mod.child_ids)
     assert_equal([], mod.parent_ids)
   end
 end
