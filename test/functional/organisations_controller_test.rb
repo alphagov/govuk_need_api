@@ -20,7 +20,6 @@ class OrganisationsControllerTest < ActionController::TestCase
 
       body = JSON.parse(response.body)
       assert_equal "ok", body["_response_info"]["status"]
-      assert_equal 3, body["organisations"].size
     end
 
     should "present the organisations using as_json" do
