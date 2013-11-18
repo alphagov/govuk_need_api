@@ -64,19 +64,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
                  Organisation.where(slug: "hm-treasury").first.name)
   end
 
-  should "update several organisations that have changed attributes" do
-    stub_and_verify_api_with(@dwp, @hoc)
-
-    OrganisationImporter.new.run
-
-    dwp = Organisation.where(slug: "department-for-work-and-pensions").first
-    hoc = Organisation.where(slug: "the-office-of-the-leader-of-the-house-of-commons").first
-
-    assert_equal(["equality-2025"], dwp.child_ids)
-    assert_equal(["cabinet-office"], hoc.parent_ids)
-  end
-
-  should "add a new organisation if not already present" do
+  should "update/add several organisations that have changed" do
     stubbed_mod = OpenStruct.new(
       details: OpenStruct.new(
         slug: "ministry-of-defence",
@@ -87,13 +75,19 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
       child_organisations: [OpenStruct.new(id:"advisory-committee-on-conscientious-objectors")],
       parent_organisations: []
     )
-    stub_and_verify_api_with(stubbed_mod)
+    stub_and_verify_api_with(@dwp, @hoc, stubbed_mod)
 
     assert_nil Organisation.where(slug: "ministry-of-defence").first
 
     OrganisationImporter.new.run
-    mod = Organisation.where(slug: "ministry-of-defence").first
 
+    dwp = Organisation.where(slug: "department-for-work-and-pensions").first
+    assert_equal(["equality-2025"], dwp.child_ids)
+
+    hoc = Organisation.where(slug: "the-office-of-the-leader-of-the-house-of-commons").first
+    assert_equal(["cabinet-office"], hoc.parent_ids)
+
+    mod = Organisation.where(slug: "ministry-of-defence").first
     assert_equal("ministry-of-defence", mod.slug)
     assert_equal("Ministry of Defence", mod.name)
     assert_equal("live", mod.govuk_status)
