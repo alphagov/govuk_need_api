@@ -40,6 +40,7 @@ GEM
     bson_ext (1.9.2)
       bson (~> 1.9.2)
     builder (3.0.4)
+    chronic (0.10.2)
     crack (0.4.1)
       safe_yaml (~> 0.9.0)
     database_cleaner (1.1.1)
@@ -166,6 +167,9 @@ GEM
     webmock (1.14.0)
       addressable (>= 2.2.7)
       crack (>= 0.3.2)
+    whenever (0.8.4)
+      activesupport (>= 2.3.4)
+      chronic (>= 0.6.3)
     xml-simple (1.1.2)
 
 PLATFORMS
@@ -188,3 +192,4 @@ DEPENDENCIES
   simplecov-rcov
   unicorn
   webmock (= 1.14.0)
+  whenever (= 0.8.4)

@@ -27,3 +27,4 @@ end
 
 gem 'unicorn'
 gem 'exception_notification', '2.6.1'
+gem 'whenever', '0.8.4', :require => false
