@@ -5,25 +5,27 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
   setup do
     FactoryGirl.create(:organisation, name: "HM Treasury", slug: "hm-treasury",
                        child_ids: [], parent_ids: [])
-    FactoryGirl.create(:organisation, name: "Department for Work & Pensions",
-                       slug: "department-for-work-and-pensions",
-                       child_ids: [], parent_ids: [])
-    FactoryGirl.create(:organisation,
-                       name: "Office of the Leader of the House of Commons",
-                       slug: "office-of-the-leader-of-the-house-of-commons",
-                       child_ids: [], parent_ids: [])
     @hm_treasury = OpenStruct.new(
       details: OpenStruct.new(slug: "hm-treasury"),
       title: "HM Treasury",
       child_organisations: [],
       parent_organisations: []
     )
+
+    FactoryGirl.create(:organisation, name: "Department for Work & Pensions",
+                       slug: "department-for-work-and-pensions",
+                       child_ids: [], parent_ids: [])
     @dwp = OpenStruct.new(
       details: OpenStruct.new(slug: "department-for-work-and-pensions"),
       title: "Department for Work & Pensions",
       child_organisations: [OpenStruct.new(id:"equality-2025")],
       parent_organisations: []
     )
+
+    FactoryGirl.create(:organisation,
+                       name: "Office of the Leader of the House of Commons",
+                       slug: "office-of-the-leader-of-the-house-of-commons",
+                       child_ids: [], parent_ids: [])
     @hoc = OpenStruct.new(
       details: OpenStruct.new(slug: "the-office-of-the-leader-of-the-house-of-commons"),
       title: "Office of the Leader of the House of Commons",
