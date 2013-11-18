@@ -8,6 +8,8 @@ gem 'bson_ext', '1.9.2'
 gem 'plek', '1.4.0'
 gem 'aws-ses', :require => 'aws/ses'
 
+gem 'kaminari', '0.14.1'
+
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
