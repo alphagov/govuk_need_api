@@ -2,8 +2,19 @@ require_relative '../../test_helper'
 
 class NeedResultSetPresenterTest < ActiveSupport::TestCase
 
+  # this class imitates the behaviour of the Need class when it
+  # is scoped, with the ability to iterate over the needs whilst
+  # providing additional attribute accessors
+  class MockPaginatedNeeds < OpenStruct
+    include Enumerable
+
+    def each(&block)
+      needs.each(&block)
+    end
+  end
+
   setup do
-    @needs = [
+    needs = [
       OpenStruct.new(
         id: "blah-bson-id-one",
         need_id: 1,
@@ -27,11 +38,22 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         ]
       )
     ]
-    @presenter = NeedResultSetPresenter.new(@needs)
+
+    @needs = MockPaginatedNeeds.new(
+      needs: needs,
+      first_page?: false,
+      last_page?: false,
+      current_page: 1,
+      offset_value: 0,
+      total_pages: 1,
+    )
+
+    @view_context = stub
+    @view_context.stubs(:needs_url).returns("http://need-api.dev.gov.uk/needs")
   end
 
   should "return a collection of needs as json" do
-    response = @presenter.as_json
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
 
     assert_equal "ok", response[:_response_info][:status]
     assert_equal 2, response[:results].size
@@ -46,5 +68,121 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
     assert_equal 1, response[:results][0][:organisations].size
     assert_equal "Ministry of Testing", response[:results][0][:organisations][0][:name]
     assert_equal "ministry-of-testing", response[:results][0][:organisations][0][:id]
+  end
+
+  should "return links to the next and previous pages when paginated" do
+    @needs.current_page = 2
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 1))
+                    .returns("url to page 1")
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 2))
+                    .returns("url to page 2")
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 3))
+                    .returns("url to page 3")
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+    links = response[:_response_info][:links]
+
+    assert_equal 3, links.size
+
+    assert_equal "url to page 1", links[0][:href]
+    assert_equal "previous", links[0][:rel]
+
+    assert_equal "url to page 3", links[1][:href]
+    assert_equal "next", links[1][:rel]
+
+    assert_equal "url to page 2", links[2][:href]
+    assert_equal "self", links[2][:rel]
+  end
+
+  should "not return links to the previous page when on the first page" do
+    @needs.current_page = 1
+    @needs.expects(:first_page?).returns(true)
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 1))
+                    .returns("url to page 1")
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 2))
+                    .returns("url to page 2")
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+    links = response[:_response_info][:links]
+
+    assert_equal 2, links.size
+
+    assert_equal "url to page 2", links[0][:href]
+    assert_equal "next", links[0][:rel]
+
+    assert_equal "url to page 1", links[1][:href]
+    assert_equal "self", links[1][:rel]
+  end
+
+  should "not return links to the next page when on the last page" do
+    @needs.current_page = 3
+    @needs.expects(:last_page?).returns(true)
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 2))
+                    .returns("url to page 2")
+
+    @view_context.expects(:needs_url)
+                    .with(has_entry(:page, 3))
+                    .returns("url to page 3")
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+    links = response[:_response_info][:links]
+
+    assert_equal 2, links.size
+
+    assert_equal "url to page 2", links[0][:href]
+    assert_equal "previous", links[0][:rel]
+
+    assert_equal "url to page 3", links[1][:href]
+    assert_equal "self", links[1][:rel]
+  end
+
+  should "include the total number of needs" do
+    @needs.expects(:count).returns(50)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 50, response[:total]
+  end
+
+  should "include the start index" do
+    @needs.stubs(:offset_value).returns(20)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 21, response[:start_index]
+  end
+
+  should "include the current page" do
+    @needs.stubs(:current_page).returns(5)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 5, response[:current_page]
+  end
+
+  should "include the number of pages" do
+    @needs.stubs(:total_pages).returns(123)
+
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 123, response[:pages]
+  end
+
+  should "include the size of the current page" do
+    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+
+    assert_equal 2, response[:page_size]
   end
 end
