@@ -11,7 +11,6 @@ class IndexableNeedTest < ActiveSupport::TestCase
       met_when: ["Criteria 1", "Criteria 2"],
       legislation: ["Legislation 1", "Legislation 2"],
       other_evidence: ["Evidence 1", "Evidence 2"],
-      organisation_ids: ["org-1"],
       justifications: ["Justification 1"],
       impact: "impact",
       monthly_user_contacts: 1000,
