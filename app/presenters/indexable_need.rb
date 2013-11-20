@@ -9,6 +9,7 @@ class IndexableNeed
       role: @need.role,
       goal: @need.goal,
       benefit: @need.benefit,
+      organisation_ids: @need.organisation_ids,
       met_when: @need.met_when,
       legislation: @need.legislation,
       other_evidence: @need.other_evidence,
