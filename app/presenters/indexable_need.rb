@@ -4,5 +4,14 @@ class IndexableNeed
   end
 
   def present
+    {
+      id: @need.need_id,
+      role: @need.role,
+      goal: @need.goal,
+      benefit: @need.benefit,
+      met_when: @need.met_when,
+      legislation: @need.legislation,
+      other_evidence: @need.other_evidence
+    }
   end
 end
