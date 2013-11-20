@@ -30,6 +30,8 @@ class IndexableNeedTest < ActiveSupport::TestCase
     assert_equal ["Criteria 1", "Criteria 2"], @indexable_need[:met_when]
     assert_equal ["Legislation 1", "Legislation 2"], @indexable_need[:legislation]
     assert_equal ["Evidence 1", "Evidence 2"], @indexable_need[:other_evidence]
+    assert_equal "need", @indexable_need[:_type]
+    assert_equal 123456, @indexable_need[:_id]
   end
 
   should "only index free-text fields" do

@@ -11,7 +11,9 @@ class IndexableNeed
       benefit: @need.benefit,
       met_when: @need.met_when,
       legislation: @need.legislation,
-      other_evidence: @need.other_evidence
+      other_evidence: @need.other_evidence,
+      _type: "need",
+      _id: @need.need_id
     }
   end
 end
