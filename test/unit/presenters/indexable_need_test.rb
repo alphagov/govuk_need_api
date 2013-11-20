@@ -23,7 +23,7 @@ class IndexableNeedTest < ActiveSupport::TestCase
   end
 
   should "present an indexable need" do
-    assert_equal 123456, @indexable_need[:id]
+    assert_equal 123456, @indexable_need[:need_id]
     assert_equal "Role", @indexable_need[:role]
     assert_equal "Goal", @indexable_need[:goal]
     assert_equal "Benefit", @indexable_need[:benefit]

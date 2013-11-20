@@ -5,7 +5,7 @@ class IndexableNeed
 
   def present
     {
-      id: @need.need_id,
+      need_id: @need.need_id,
       role: @need.role,
       goal: @need.goal,
       benefit: @need.benefit,
