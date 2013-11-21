@@ -12,9 +12,7 @@ class IndexableNeed
       organisation_ids: @need.organisation_ids,
       met_when: @need.met_when,
       legislation: @need.legislation,
-      other_evidence: @need.other_evidence,
-      _type: "need",
-      _id: @need.need_id
+      other_evidence: @need.other_evidence
     }
   end
 end
