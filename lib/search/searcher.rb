@@ -1,9 +1,18 @@
 module Search
   class Searcher
-    def initialize(something_something_settings)
+    def initialize(search_client, index_name, type)
+      @client = search_client
+      @index_name, @type = index_name, type
     end
 
     def search(query)
+      results = @client.search(
+        index: @index_name,
+        type: @type,
+        body: { "query" => { "match" => { "_all" => query } } }
+      )
+
+      results["hits"]["hits"]
     end
   end
 end
