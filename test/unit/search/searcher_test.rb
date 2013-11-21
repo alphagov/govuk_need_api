@@ -17,13 +17,13 @@ class SearcherTest < ActiveSupport::TestCase
       ).returns(
         "hits" => {
           "hits" => [
-            :foo
+            { "_source" => { "role" => "fishmonger" } }
           ]
         }
       )
     end
 
     results = Search::Searcher.new(client, "foo", "bang").search("cheese")
-    assert_equal [:foo], results
+    assert_equal ["fishmonger"], results.map(&:role)
   end
 end
