@@ -19,28 +19,36 @@ class IndexableNeedTest < ActiveSupport::TestCase
       monthly_searches: 1000,
       currently_met: false
     )
-    @indexable_need = IndexableNeed.new(need).present
+    @indexable_need = IndexableNeed.new(need)
+  end
+
+  should "return the need's ID" do
+    assert_equal 123456, @indexable_need.need_id
   end
 
   should "present an indexable need" do
-    assert_equal 123456, @indexable_need[:need_id]
-    assert_equal "Role", @indexable_need[:role]
-    assert_equal "Goal", @indexable_need[:goal]
-    assert_equal "Benefit", @indexable_need[:benefit]
-    assert_equal ["org-1"], @indexable_need[:organisation_ids]
-    assert_equal ["Criteria 1", "Criteria 2"], @indexable_need[:met_when]
-    assert_equal ["Legislation 1", "Legislation 2"], @indexable_need[:legislation]
-    assert_equal ["Evidence 1", "Evidence 2"], @indexable_need[:other_evidence]
+    presented_need = @indexable_need.present
+
+    assert_equal 123456, presented_need[:need_id]
+    assert_equal "Role", presented_need[:role]
+    assert_equal "Goal", presented_need[:goal]
+    assert_equal "Benefit", presented_need[:benefit]
+    assert_equal ["org-1"], presented_need[:organisation_ids]
+    assert_equal ["Criteria 1", "Criteria 2"], presented_need[:met_when]
+    assert_equal ["Legislation 1", "Legislation 2"], presented_need[:legislation]
+    assert_equal ["Evidence 1", "Evidence 2"], presented_need[:other_evidence]
   end
 
   should "only index free-text fields" do
-    assert_nil @indexable_need[:organisations]
-    assert_nil @indexable_need[:justifications]
-    assert_nil @indexable_need[:impact]
-    assert_nil @indexable_need[:monthly_user_contacts]
-    assert_nil @indexable_need[:monthly_site_views]
-    assert_nil @indexable_need[:monthly_need_views]
-    assert_nil @indexable_need[:monthly_searches]
-    assert_nil @indexable_need[:currently_met]
+    presented_need = @indexable_need.present
+
+    assert_nil presented_need[:organisations]
+    assert_nil presented_need[:justifications]
+    assert_nil presented_need[:impact]
+    assert_nil presented_need[:monthly_user_contacts]
+    assert_nil presented_need[:monthly_site_views]
+    assert_nil presented_need[:monthly_need_views]
+    assert_nil presented_need[:monthly_searches]
+    assert_nil presented_need[:currently_met]
   end
 end

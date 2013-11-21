@@ -3,6 +3,10 @@ class IndexableNeed
     @need = need
   end
 
+  def need_id
+    @need.need_id
+  end
+
   def present
     {
       need_id: @need.need_id,
