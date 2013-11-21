@@ -5,7 +5,7 @@ class NeedsControllerTest < ActionController::TestCase
   setup do
     login_as_stub_user
 
-    FactoryGirl.create(:organisation, slug: "cabinet-office")
+    FactoryGirl.create(:organisation, slug: "cabinet-office", name: "Cabinet Office")
     FactoryGirl.create(:organisation, slug: "department-for-transport")
   end
 
@@ -40,6 +40,51 @@ class NeedsControllerTest < ActionController::TestCase
       get :index
 
       assert_equal "max-age=0, public", response.headers["Cache-Control"]
+    end
+  end
+
+  context "GET index with search parameter" do
+    setup do
+      @results = [
+        NeedSearchResult.new(
+          "need_id" => 100001,
+          "role" => "fishmonger",
+          "goal" => "sell fish",
+          "benefit" => "earn a living",
+          "organisation_ids" => ["cabinet-office"]
+        )
+      ]
+      mock_searcher = mock("searcher")
+      mock_searcher.expects(:search).with("fish").returns(@results)
+      GovukNeedApi.stubs(:searcher).returns(mock_searcher)
+    end
+
+    should "return success status" do
+      get :index, q: "fish"
+
+      assert_response :success
+
+      body = JSON.parse(response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+    end
+
+    should "display search results" do
+      get :index, q: "fish"
+
+      body = JSON.parse(response.body)
+      assert_equal 1, body["results"].size
+      assert_equal 100001, body["results"][0]["id"]
+      assert_equal "fishmonger", body["results"][0]["role"]
+      assert_equal "sell fish", body["results"][0]["goal"]
+      assert_equal "earn a living", body["results"][0]["benefit"]
+    end
+
+    should "display organisation information" do
+      get :index, q: "fish"
+
+      body = JSON.parse(response.body)
+      organisations = body["results"][0]["organisations"]
+      assert_equal ["Cabinet Office"], organisations.map { |o| o["name"] }
     end
   end
 

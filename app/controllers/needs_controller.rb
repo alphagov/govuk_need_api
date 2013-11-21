@@ -2,6 +2,10 @@ class NeedsController < ApplicationController
   def index
     scope = Need
 
+    if params["q"].present?
+      search(params["q"]) and return
+    end
+
     if org = params["organisation_id"] and org.present?
       scope = scope.where(:organisation_ids => org)
     end
@@ -79,6 +83,16 @@ class NeedsController < ApplicationController
   end
 
   private
+
+  def search(query)
+    # TODO: reject page parameter
+
+    results = GovukNeedApi.searcher.search(query)
+    set_expiry 0
+
+    presenter = NeedSearchResultSetPresenter.new(results, query, view_context)
+    render json: presenter.as_json
+  end
 
   def filtered_params
     params.except(:action, :controller, :author)
