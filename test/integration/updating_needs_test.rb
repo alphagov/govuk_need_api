@@ -14,7 +14,7 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
       }
     }
 
-    stub_search
+    use_test_index
   end
 
   teardown do

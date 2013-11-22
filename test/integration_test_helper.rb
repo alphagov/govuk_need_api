@@ -11,7 +11,7 @@ class ActionDispatch::IntegrationTest
     post url, body, { "CONTENT_TYPE" => "application/json" }.merge(headers)
   end
 
-  def stub_search
+  def use_test_index
     GovukNeedApi.stubs(:searcher).returns(
       Search::Searcher.new(GovukNeedApi.search_client, "maslow_test", "need")
     )

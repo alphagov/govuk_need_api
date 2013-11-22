@@ -4,7 +4,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
 
   setup do
     login_as_stub_user
-    stub_search
+    use_test_index
   end
 
   teardown do
