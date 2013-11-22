@@ -261,4 +261,131 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "PUT update" do
+    setup do
+      @need_instance = FactoryGirl.create(:need)
+    end
+
+    context "given a valid update" do
+      setup do
+        @updates = {
+          id: @need_instance.need_id,
+          role: "council tax payer",
+          justifications: ["legislation"],
+          monthly_user_contacts: 726
+        }
+      end
+
+      context "given author details" do
+        setup do
+          @updates_with_author = @updates.merge author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
+        end
+
+        should "return a success response" do
+          put :update, @updates_with_author
+          assert_response 204
+        end
+
+        should "update the need" do
+          put :update, @updates_with_author
+
+          updated_need = Need.find(@need_instance.need_id)
+          assert_equal "council tax payer", updated_need.role
+          assert_equal ["legislation"], updated_need.justifications
+          assert_equal 726, updated_need.monthly_user_contacts
+        end
+
+        should "leave existing values unchanged" do
+          put :update, @updates_with_author
+
+          updated_need = Need.find(@need_instance.need_id)
+          [:goal, :benefit, :impact, :met_when].each do |field|
+            assert_equal @need_instance.send(field), updated_need.send(field)
+          end
+        end
+      end
+
+      context "when no author details are provided" do
+        should "return a 422 status code" do
+          put :update, @updates
+
+          assert_equal 422, response.status
+        end
+
+        should "return an error in the json response" do
+          put :update, @updates
+
+          body = JSON.parse(response.body)
+          assert_equal "author_not_provided", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal "Author details must be provided", body["errors"].first
+        end
+
+        should "not update the need" do
+          Need.any_instance.expects(:save_as).never
+          put :update, @updates
+        end
+      end
+    end
+
+    context "given an invalid update" do
+      setup do
+        @updates = {
+          id: @need_instance.need_id,
+          monthly_user_contacts: "lots"
+        }
+      end
+
+      context "with author details" do
+        setup do
+          @updates_with_author = @updates.merge author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
+        end
+
+        should "return a 422 status" do
+          put :update, @updates_with_author
+          assert_response 422
+        end
+
+        should "return an error in the response" do
+          put :update, @updates_with_author
+
+          body = JSON.parse(response.body)
+          assert_equal "invalid_attributes", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal(
+            "Monthly user contacts is not a number",
+            body["errors"].first
+          )
+        end
+
+        should "not save the need" do
+          Need.any_instance.expects(:save_as).never
+          put :update, @updates_with_author
+        end
+      end
+
+      should "return a 422 status" do
+        put :update, @updates
+        assert_response 422
+      end
+
+      should "return an error in the response" do
+        put :update, @updates
+
+        body = JSON.parse(response.body)
+        assert_equal "author_not_provided", body["_response_info"]["status"]
+      end
+
+      should "not save the need" do
+        Need.any_instance.expects(:save_as).never
+        put :update, @updates
+      end
+    end
+  end
 end
