@@ -12,16 +12,22 @@ class ActionDispatch::IntegrationTest
   end
 
   def use_test_index
+    search_client = GovukNeedApi.search_client
     GovukNeedApi.stubs(:searcher).returns(
-      Search::Searcher.new(GovukNeedApi.search_client, "maslow_test", "need")
+      Search::Searcher.new(search_client, "maslow_test", "need")
     )
     GovukNeedApi.stubs(:indexer).returns(
-      Search::Indexer.new(GovukNeedApi.search_client, "maslow_test", "need")
+      Search::Indexer.new(search_client, "maslow_test", "need")
     )
+    search_client.indices.create(index: "maslow_test")
   end
 
   def delete_test_index
     indices = GovukNeedApi.search_client.indices
     indices.delete(index: "maslow_test") if indices.exists(index: "maslow_test")
+  end
+
+  def refresh_index
+    GovukNeedApi.search_client.indices.refresh(index: "maslow_test")
   end
 end
