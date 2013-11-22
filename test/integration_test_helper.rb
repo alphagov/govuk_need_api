@@ -10,4 +10,18 @@ class ActionDispatch::IntegrationTest
   def post_json(url, body, headers = {})
     post url, body, { "CONTENT_TYPE" => "application/json" }.merge(headers)
   end
+
+  def stub_search
+    GovukNeedApi.stubs(:searcher).returns(
+      Search::Searcher.new(GovukNeedApi.search_client, "maslow_test", "need")
+    )
+    GovukNeedApi.stubs(:indexer).returns(
+      Search::Indexer.new(GovukNeedApi.search_client, "maslow_test", "need")
+    )
+  end
+
+  def delete_test_index
+    indices = GovukNeedApi.search_client.indices
+    indices.delete(index: "maslow_test") if indices.exists(index: "maslow_test")
+  end
 end

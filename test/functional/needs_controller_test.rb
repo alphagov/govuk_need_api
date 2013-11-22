@@ -115,6 +115,8 @@ class NeedsControllerTest < ActionController::TestCase
             name: "Winston Smith-Churchill",
             email: "winston@alphagov.co.uk"
           })
+
+          GovukNeedApi.indexer.stubs(:index)
         end
 
         should "persist the need and create a revision given author information" do
@@ -164,6 +166,14 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "find my local council", body["goal"]
           assert_equal "contact them about a local enquiry", body["benefit"]
         end
+
+        should "attempt to index the new need" do
+          indexable_need = stub("indexable need")
+          IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          GovukNeedApi.indexer.expects(:index).with(indexable_need)
+
+          post :create, @need_with_author
+        end
       end
 
 
@@ -196,6 +206,7 @@ class NeedsControllerTest < ActionController::TestCase
           "email" => "email",
           "uid" => "uid"
         ).returns(true)
+        GovukNeedApi.indexer.stubs(:index)
 
         post :create, @need.merge(author: {
           name: "name",
@@ -274,6 +285,7 @@ class NeedsControllerTest < ActionController::TestCase
           justifications: ["legislation"],
           monthly_user_contacts: 726
         }
+        GovukNeedApi.indexer.stubs(:index)
       end
 
       context "given author details" do
@@ -306,6 +318,14 @@ class NeedsControllerTest < ActionController::TestCase
             assert_equal @need_instance.send(field), updated_need.send(field)
           end
         end
+
+        should "attempt to index the new need" do
+          indexable_need = stub("indexable need")
+          IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          GovukNeedApi.indexer.expects(:index).with(indexable_need)
+
+          put :update, @updates_with_author
+        end
       end
 
       context "when no author details are provided" do
@@ -337,6 +357,7 @@ class NeedsControllerTest < ActionController::TestCase
           id: @need_instance.need_id,
           monthly_user_contacts: "lots"
         }
+        GovukNeedApi.indexer.stubs(:index)
       end
 
       context "with author details" do
@@ -368,6 +389,11 @@ class NeedsControllerTest < ActionController::TestCase
           Need.any_instance.expects(:save_as).never
           put :update, @updates_with_author
         end
+
+        should "not attempt to index the need" do
+          GovukNeedApi.indexer.expects(:index).never
+          put :update, @updates_with_author
+        end
       end
 
       should "return a 422 status" do
@@ -384,6 +410,11 @@ class NeedsControllerTest < ActionController::TestCase
 
       should "not save the need" do
         Need.any_instance.expects(:save_as).never
+        put :update, @updates
+      end
+
+      should "not attempt to index the need" do
+        GovukNeedApi.indexer.expects(:index).never
         put :update, @updates
       end
     end
