@@ -45,7 +45,7 @@ class NeedsController < ApplicationController
     end
 
     if @need.save_as(author_params)
-      index_need(@need)
+      try_index_need(@need)
       decorated_need = NeedWithChangesets.new(@need)
       render json: NeedPresenter.new(decorated_need).as_json(status: :created),
              status: :created
@@ -75,7 +75,7 @@ class NeedsController < ApplicationController
 
     @need.assign_attributes(filtered_params)
     if @need.valid? and @need.save_as(author_params)
-      index_need(@need)
+      try_index_need(@need)
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
@@ -105,7 +105,11 @@ class NeedsController < ApplicationController
     author.slice(:name, :email, :uid)
   end
 
-  def index_need(need)
+  def try_index_need(need)
     GovukNeedApi.indexer.index(IndexableNeed.new(need))
+    true
+  rescue Search::Indexer::IndexingFailed => e
+    ExceptionNotifier::Notifier.background_exception_notification(e)
+    false
   end
 end

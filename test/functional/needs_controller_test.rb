@@ -174,6 +174,25 @@ class NeedsControllerTest < ActionController::TestCase
 
           post :create, @need_with_author
         end
+
+        context "indexing fails" do
+          setup do
+            @exception = Search::Indexer::IndexingFailed.new(123456)
+            GovukNeedApi.indexer.expects(:index).raises(@exception)
+          end
+
+          should "return a 201 status code" do
+            post :create, @need_with_author
+            assert_response :created
+          end
+
+          should "send out an exception report" do
+            ExceptionNotifier::Notifier
+              .expects(:background_exception_notification)
+              .with(@exception)
+            post :create, @need_with_author
+          end
+        end
       end
 
 
@@ -325,6 +344,25 @@ class NeedsControllerTest < ActionController::TestCase
           GovukNeedApi.indexer.expects(:index).with(indexable_need)
 
           put :update, @updates_with_author
+        end
+
+        context "indexing fails" do
+          setup do
+            @exception = Search::Indexer::IndexingFailed.new(123456)
+            GovukNeedApi.indexer.expects(:index).raises(@exception)
+          end
+
+          should "return a 204 status code" do
+            put :update, @updates_with_author
+            assert_response 204
+          end
+
+          should "send out an exception report" do
+            ExceptionNotifier::Notifier
+              .expects(:background_exception_notification)
+              .with(@exception)
+            put :update, @updates_with_author
+          end
         end
       end
 
