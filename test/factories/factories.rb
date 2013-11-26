@@ -28,7 +28,6 @@ FactoryGirl.define do
     monthly_need_views 20000
     monthly_searches 6000
 
-    currently_met false
     other_evidence "This is important"
     legislation "Council Tax Act 1994"
   end
