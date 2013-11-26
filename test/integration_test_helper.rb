@@ -20,6 +20,13 @@ class ActionDispatch::IntegrationTest
       Search::Indexer.new(search_client, "maslow_test", "need")
     )
     search_client.indices.create(index: "maslow_test")
+
+    # Wait until the new index reports it's started up
+    timeout(2) do
+      until(elasticsearch_index_ready("maslow_test"))
+        # Do nothing: the conditional does the work
+      end
+    end
   end
 
   def delete_test_index
@@ -29,5 +36,12 @@ class ActionDispatch::IntegrationTest
 
   def refresh_index
     GovukNeedApi.search_client.indices.refresh(index: "maslow_test")
+  end
+
+  def elasticsearch_index_ready(index_name)
+    index_status = GovukNeedApi.search_client.indices.status(index: index_name)
+    shards_by_node = index_status["indices"][index_name]["shards"]
+    all_shards = shards_by_node.values.flatten
+    all_shards.all? { |shard| shard["state"] == "STARTED" }
   end
 end
