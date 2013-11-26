@@ -24,6 +24,7 @@ group :test do
   gem 'shoulda-context', '1.1.5'
   gem 'simplecov', '0.7.1'
   gem 'simplecov-rcov'
+  gem 'timecop', '0.6.3'
   gem 'webmock', '1.14.0'
 end
 
