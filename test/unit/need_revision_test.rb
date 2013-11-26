@@ -22,9 +22,11 @@ class NeedRevisionTest < ActiveSupport::TestCase
     end
 
     should "store the timestamp of the action" do
-      revision = NeedRevision.create(@atts)
+      Timecop.freeze do
+        revision = NeedRevision.create(@atts)
 
-      assert_equal Time.now.to_s, revision.created_at.to_s
+        assert_equal Time.now.to_s, revision.created_at.to_s
+      end
     end
 
     should "be invalid if the action type is not 'create' or 'update'" do
