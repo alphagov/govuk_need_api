@@ -51,4 +51,29 @@ class SearchRakeTest < ActiveSupport::TestCase
       @rake["search:delete_index"].invoke
     end
   end
+
+  context "index_needs" do
+    should "index all needs" do
+      stub_needs = [stub("need 1"), stub("need 2")]
+      Need.expects(:all).at_least_once.returns(stub_needs)
+
+      stub_indexable_needs = [stub("indexable need 1"), stub("indexable need 2")]
+      stub_needs.zip(stub_indexable_needs).each do |need, indexable_need|
+        IndexableNeed.expects(:new).with(need).returns(indexable_need)
+        GovukNeedApi.indexer.expects(:index).with(indexable_need)
+      end
+
+      @rake["search:index_needs"].invoke
+    end
+
+    should "abort on failure" do
+      Need.expects(:all).at_least_once.returns([stub(), stub()])
+      IndexableNeed.expects(:new).once.returns(stub())
+      GovukNeedApi.indexer.expects(:index).raises(
+        Search::Indexer::IndexingFailed.new(123456)
+      )
+
+      assert_raises(RuntimeError) { @rake["search:index_needs"].invoke }
+    end
+  end
 end
