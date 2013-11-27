@@ -15,7 +15,6 @@ class Need
   field :monthly_site_views, type: Integer
   field :monthly_need_views, type: Integer
   field :monthly_searches, type: Integer
-  field :currently_met, type: Boolean
   field :other_evidence, type: String
   field :legislation, type: String
 

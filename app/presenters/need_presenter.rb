@@ -26,7 +26,6 @@ class NeedPresenter
       monthly_site_views: @need.monthly_site_views,
       monthly_need_views: @need.monthly_need_views,
       monthly_searches: @need.monthly_searches,
-      currently_met: @need.currently_met,
       other_evidence: @need.other_evidence,
       legislation: @need.legislation,
       revisions: revisions

@@ -31,7 +31,6 @@ class NeedPresenterTest < ActiveSupport::TestCase
       monthly_site_views: 10000,
       monthly_need_views: 1000,
       monthly_searches: 2000,
-      currently_met: false,
       other_evidence: "Other evidence",
       legislation: "link#1\nlink#2",
       changesets: [
@@ -77,7 +76,6 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal 10000, response[:monthly_site_views]
     assert_equal 1000, response[:monthly_need_views]
     assert_equal 2000, response[:monthly_searches]
-    assert_equal false, response[:currently_met]
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal "link#1\nlink#2", response[:legislation]
 

@@ -9,6 +9,8 @@ gem 'plek', '1.4.0'
 gem 'aws-ses', :require => 'aws/ses'
 gem 'gds-api-adapters', '7.19.0'
 
+gem "mongoid_rails_migrations", "1.0.1"
+
 gem 'kaminari', '0.14.1'
 
 if ENV['SSO_DEV']
