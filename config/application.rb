@@ -16,7 +16,7 @@ if defined?(Bundler)
 end
 
 module GovukNeedApi
-  mattr_accessor :search_client, :indexer, :searcher
+  mattr_accessor :search_client, :indexer, :searcher, :index_config
 
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
