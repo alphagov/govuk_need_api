@@ -51,4 +51,14 @@ class IndexableNeedTest < ActiveSupport::TestCase
     assert_nil presented_need[:monthly_searches]
     assert_nil presented_need[:currently_met]
   end
+
+  should "expose a list of fields" do
+    assert IndexableNeed.fields.any?
+    IndexableNeed.fields.each do |field|
+      assert field.respond_to?(:name)
+      assert field.respond_to?(:type)
+      assert field.respond_to?(:analyzed?)
+      assert field.respond_to?(:include_in_all?)
+    end
+  end
 end
