@@ -53,11 +53,21 @@ class OrganisationImporter
     output = case Rails.env
              when "development" then STDOUT
              when "test" then "/dev/null"
-             when "production" then Rails.root.join("log", "organisation_import.log")
+             when "production" then Rails.root.join("log", "organisation_import.json.log")
              end
 
     Logger.new(output).tap {|logger|
-      logger.formatter = Logger::Formatter.new
+      logger.formatter = json_log_formatter if Rails.env.production?
+    }
+  end
+
+  def json_log_formatter
+    proc {|severity, datetime, progname, message|
+      {
+        "@message" => message,
+        "@tags" => ["cron", "rake"],
+        "@timestamp" => datetime.iso8601
+      }.to_json + "\n"
     }
   end
 
