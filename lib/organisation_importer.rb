@@ -2,10 +2,15 @@ require 'gds_api/organisations'
 
 class OrganisationImporter
   def run
+    logger.info "Fetching all organisations from the Organisation API..."
     organisations = organisations_api.organisations.with_subsequent_pages.to_a
+    logger.info "Loaded #{organisations.size} organisations"
+
     organisations.each do |organisation|
       create_or_update_organisation(organisation)
     end
+
+    logger.info "Import complete"
   end
 
   private
@@ -27,8 +32,10 @@ class OrganisationImporter
 
     if existing_organisation.present?
       existing_organisation.update_attributes(organisation_atts)
+      logger.info "Updated #{existing_organisation.name}"
     else
       Organisation.new(organisation_atts).save
+      logger.info "Created #{organisation_atts[:name]}"
     end
   end
 
@@ -36,6 +43,18 @@ class OrganisationImporter
     arr.map do |a|
       a.id.split('/').last
     end
+  end
+
+  def logger
+    @logger ||= build_logger
+  end
+
+  def build_logger
+    output = Rails.env.production? ? Rails.root.join("log", "organisation_import.log") : STDOUT
+
+    Logger.new(output).tap {|logger|
+      logger.formatter = Logger::Formatter.new
+    }
   end
 
   def organisations_api
