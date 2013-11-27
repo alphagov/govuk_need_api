@@ -50,7 +50,11 @@ class OrganisationImporter
   end
 
   def build_logger
-    output = Rails.env.production? ? Rails.root.join("log", "organisation_import.log") : STDOUT
+    output = case Rails.env
+             when "development" then STDOUT
+             when "test" then "/dev/null"
+             when "production" then Rails.root.join("log", "organisation_import.log")
+             end
 
     Logger.new(output).tap {|logger|
       logger.formatter = Logger::Formatter.new
