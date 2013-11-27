@@ -2,9 +2,9 @@ require 'gds_api/organisations'
 
 class OrganisationImporter
   def run
-    api = GdsApi::Organisations.new(Plek.current.find('whitehall-admin'), ORGANISATIONS_API_CREDENTIALS)
-    api.organisations.with_subsequent_pages.to_a.each do |org|
-      create_or_update_organisation(org)
+    organisations = organisations_api.organisations.with_subsequent_pages.to_a
+    organisations.each do |organisation|
+      create_or_update_organisation(organisation)
     end
   end
 
@@ -36,5 +36,9 @@ class OrganisationImporter
     arr.map do |a|
       a.id.split('/').last
     end
+  end
+
+  def organisations_api
+    @api_client ||= GdsApi::Organisations.new(Plek.current.find('whitehall-admin'), ORGANISATIONS_API_CREDENTIALS)
   end
 end
