@@ -7,7 +7,7 @@ module Search
     end
 
     def create_index
-      @client.create(index: @index_name)
+      @client.create(index: @index_name, body: { "settings" => index_settings })
     end
 
     def delete_index
@@ -39,6 +39,16 @@ module Search
           "include_in_all" => field.include_in_all?
         }
       end
+    end
+
+    def index_settings
+      {
+        "analysis" => {
+          "analyzer" => {
+            "default" => { "type" => "snowball" }
+          }
+        }
+      }
     end
   end
 end

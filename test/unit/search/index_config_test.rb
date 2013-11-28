@@ -2,8 +2,18 @@ require "test_helper"
 
 class IndexConfigTest < ActiveSupport::TestCase
   should "create an index" do
-    mock_client = mock("index client") do
-      expects(:create).with(index: "maslow-test")
+    mock_client = mock("index client")
+    mock_client.expects(:create).with(has_entry(index: "maslow-test"))
+
+    Search::IndexConfig.new(mock_client, "maslow-test", nil, nil).create_index
+  end
+
+  should "pass in analysis settings" do
+    mock_client = mock("index client")
+    mock_client.expects(:create).with do |params|
+      params[:body] &&
+      params[:body]["settings"] &&
+      params[:body]["settings"]["analysis"]
     end
 
     Search::IndexConfig.new(mock_client, "maslow-test", nil, nil).create_index
