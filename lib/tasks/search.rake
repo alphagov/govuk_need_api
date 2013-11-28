@@ -1,18 +1,20 @@
 require "search/indexer"
 
+@logger = Logger.new(ENV["RAILS_ENV"] == "test" ? "/dev/null" : STDOUT)
+
 namespace :search do
   desc "Index all needs"
   task :index_needs => :environment do
     begin
-      puts "Indexing #{Need.all.count} needs..."
+      @logger.info "Indexing #{Need.all.count} needs..."
       Need.all.each do |need|
         GovukNeedApi.indexer.index(IndexableNeed.new(need))
       end
-      puts "Done."
+      @logger.info "Done."
     rescue Search::Indexer::IndexingFailed => e
-      puts "Failed to index need #{e.need_id}"
-      puts "Document body: #{e.document.present}" if e.document
-      puts "Exception: #{e.cause.inspect}" if e.cause
+      @logger.error "Failed to index need #{e.need_id}"
+      @logger.error "Document body: #{e.document.present}" if e.document
+      @logger.error "Exception: #{e.cause.inspect}" if e.cause
       raise "Indexing failed"
     end
   end
@@ -22,10 +24,10 @@ namespace :search do
     index_config = GovukNeedApi.index_config
 
     unless index_config.index_exists?
-      puts "Creating index"
+      @logger.info "Creating index"
       index_config.create_index
     end
-    puts "Setting mappings"
+    @logger.info "Setting mappings"
     index_config.put_mappings
   end
 
@@ -33,7 +35,7 @@ namespace :search do
   task :delete_index => :environment do
     index_config = GovukNeedApi.index_config
     if index_config.index_exists?
-      puts "Deleting index"
+      @logger.info "Deleting index"
       index_config.delete_index
     end
   end
