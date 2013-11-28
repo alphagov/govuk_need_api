@@ -9,6 +9,8 @@ There are no application dependencies required to get the Need API up and runnin
     bundle install
     bundle exec unicorn -p 3000
 
+The tests (and the search/indexing functionality) won't work unless you have an elasticsearch server running on localhost port 9200, or unless you change the configuration in `config/initializers/elasticsearch.rb`.
+
 ### GDS development
 
 If you're using the development VM, you should run the app from the `development` repository using Bowler and Foreman.
