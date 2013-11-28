@@ -1,4 +1,7 @@
 module Search
+
+  # A wrapper around a result hash returned from elasticsearch, which makes it
+  # look like a Need instance, so we can pass it into a BasicNeedPresenter.
   class NeedSearchResult < OpenStruct
     attr_reader :organisations
 
