@@ -17,7 +17,7 @@ class NeedSearchResultTest < ActiveSupport::TestCase
 
   setup do
     Organisation.stubs(:find).with(["org-1", "org-2"]).returns([:foo, :bang])
-    @need_result = NeedSearchResult.new(need_hash)
+    @need_result = Search::NeedSearchResult.new(need_hash)
   end
 
   should "present fields as methods" do
@@ -37,7 +37,7 @@ class NeedSearchResultTest < ActiveSupport::TestCase
 
   should "not search for an empty list of organisations" do
     Organisation.expects(:find).never
-    need_result = NeedSearchResult.new(need_hash.merge(organisation_ids: []))
+    need_result = Search::NeedSearchResult.new(need_hash.merge(organisation_ids: []))
     assert_equal [], need_result.organisations
   end
 

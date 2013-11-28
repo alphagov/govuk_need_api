@@ -1,5 +1,4 @@
 require "test_helper"
-require "search/searcher"
 
 class SearcherTest < ActiveSupport::TestCase
 

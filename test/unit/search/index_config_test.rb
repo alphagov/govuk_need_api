@@ -1,5 +1,4 @@
 require "test_helper"
-require "search/index_config"
 
 class IndexConfigTest < ActiveSupport::TestCase
   should "create an index" do

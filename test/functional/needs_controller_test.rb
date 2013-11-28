@@ -46,7 +46,7 @@ class NeedsControllerTest < ActionController::TestCase
   context "GET index with search parameter" do
     setup do
       @results = [
-        NeedSearchResult.new(
+        Search::NeedSearchResult.new(
           "need_id" => 100001,
           "role" => "fishmonger",
           "goal" => "sell fish",
@@ -169,7 +169,7 @@ class NeedsControllerTest < ActionController::TestCase
 
         should "attempt to index the new need" do
           indexable_need = stub("indexable need")
-          IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
           GovukNeedApi.indexer.expects(:index).with(indexable_need)
 
           post :create, @need_with_author
@@ -340,7 +340,7 @@ class NeedsControllerTest < ActionController::TestCase
 
         should "attempt to index the new need" do
           indexable_need = stub("indexable need")
-          IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
           GovukNeedApi.indexer.expects(:index).with(indexable_need)
 
           put :update, @updates_with_author

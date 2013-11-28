@@ -12,7 +12,7 @@ module Search
         body: { "query" => { "match" => { "_all" => query } } }
       )
 
-      results["hits"]["hits"].map { |r| NeedSearchResult.new(r["_source"]) }
+      results["hits"]["hits"].map { |r| Search::NeedSearchResult.new(r["_source"]) }
     end
   end
 end

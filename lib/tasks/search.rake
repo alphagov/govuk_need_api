@@ -1,5 +1,3 @@
-require "search/indexer"
-
 @logger = Logger.new(ENV["RAILS_ENV"] == "test" ? "/dev/null" : STDOUT)
 
 namespace :search do
@@ -8,7 +6,7 @@ namespace :search do
     begin
       @logger.info "Indexing #{Need.all.count} needs..."
       Need.all.each do |need|
-        GovukNeedApi.indexer.index(IndexableNeed.new(need))
+        GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
       end
       @logger.info "Done."
     rescue Search::Indexer::IndexingFailed => e

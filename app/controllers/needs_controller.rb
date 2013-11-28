@@ -106,7 +106,7 @@ class NeedsController < ApplicationController
   end
 
   def try_index_need(need)
-    GovukNeedApi.indexer.index(IndexableNeed.new(need))
+    GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
     true
   rescue Search::Indexer::IndexingFailed => e
     ExceptionNotifier::Notifier.background_exception_notification(e)

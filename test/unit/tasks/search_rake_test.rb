@@ -1,5 +1,4 @@
 require_relative '../../test_helper'
-require 'search/index_config'
 require 'rake'
 
 class SearchRakeTest < ActiveSupport::TestCase
@@ -59,7 +58,7 @@ class SearchRakeTest < ActiveSupport::TestCase
 
       stub_indexable_needs = [stub("indexable need 1"), stub("indexable need 2")]
       stub_needs.zip(stub_indexable_needs).each do |need, indexable_need|
-        IndexableNeed.expects(:new).with(need).returns(indexable_need)
+        Search::IndexableNeed.expects(:new).with(need).returns(indexable_need)
         GovukNeedApi.indexer.expects(:index).with(indexable_need)
       end
 
@@ -68,7 +67,7 @@ class SearchRakeTest < ActiveSupport::TestCase
 
     should "abort on failure" do
       Need.expects(:all).at_least_once.returns([stub(), stub()])
-      IndexableNeed.expects(:new).once.returns(stub())
+      Search::IndexableNeed.expects(:new).once.returns(stub())
       GovukNeedApi.indexer.expects(:index).raises(
         Search::Indexer::IndexingFailed.new(123456)
       )

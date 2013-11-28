@@ -1,7 +1,3 @@
-require "search/searcher"
-require "search/indexer"
-require "search/index_config"
-
 # This requires the `elasticsearch.rb` initialiser. Due to the fact
 # initialisers load in alphabetical order, this will work
 search_client = GovukNeedApi.search_client
@@ -12,5 +8,5 @@ GovukNeedApi.index_config = Search::IndexConfig.new(
   search_client.indices,
   "maslow",
   "need",
-  IndexableNeed
+  Search::IndexableNeed
 )

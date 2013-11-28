@@ -1,5 +1,4 @@
 require "test_helper"
-require "search/indexer"
 
 class IndexerTest < ActiveSupport::TestCase
   should "index a presented document" do
