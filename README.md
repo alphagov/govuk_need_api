@@ -23,3 +23,10 @@ From your host machine, you should be able to access the running app at <http://
 If you're running the Need API in the development environment when using the [GDS-SSO](https://github.com/alphagov/gds-sso) mock strategy (set by default), you'll need to create a test user in the database. The seed task will do this for you:
 
     bundle exec rake db:seed
+
+### Importing organisations
+
+Organisations are imported from the [Whitehall](https://github.com/alphagov/whitehall) Organisations API. This import is automated using a Rake task:
+
+    GOVUK_APP_DOMAIN=production.alphagov.co.uk bundle exec rake organisations:import
+
