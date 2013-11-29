@@ -11,6 +11,8 @@ There are no application dependencies required to get the Need API up and runnin
 
 The tests (and the search/indexing functionality) won't work unless you have an elasticsearch server running on localhost port 9200, or unless you change the configuration in `config/initializers/elasticsearch.rb`.
 
+To set up the search index (or to clear out an old one and start again), you can run the `search:reset` Rake task, which will replace any existing index and re-index all needs. There are other Rake tasks available if you want to do this piece by piece, or update mappings for an existing index.
+
 ### GDS development
 
 If you're using the development VM, you should run the app from the `development` repository using Bowler and Foreman.
