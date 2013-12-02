@@ -14,10 +14,10 @@ module Search
         other_evidence: ["Evidence 1", "Evidence 2"],
         justifications: ["Justification 1"],
         impact: "impact",
-        monthly_user_contacts: 1000,
-        monthly_site_views: 1000,
-        monthly_need_views: 1000,
-        monthly_searches: 1000,
+        yearly_user_contacts: 1000,
+        yearly_site_views: 1000,
+        yearly_need_views: 1000,
+        yearly_searches: 1000,
         currently_met: false
       )
       @indexable_need = IndexableNeed.new(need)
@@ -46,10 +46,10 @@ module Search
       assert_nil presented_need[:organisations]
       assert_nil presented_need[:justifications]
       assert_nil presented_need[:impact]
-      assert_nil presented_need[:monthly_user_contacts]
-      assert_nil presented_need[:monthly_site_views]
-      assert_nil presented_need[:monthly_need_views]
-      assert_nil presented_need[:monthly_searches]
+      assert_nil presented_need[:yearly_user_contacts]
+      assert_nil presented_need[:yearly_site_views]
+      assert_nil presented_need[:yearly_need_views]
+      assert_nil presented_need[:yearly_searches]
       assert_nil presented_need[:currently_met]
     end
 
