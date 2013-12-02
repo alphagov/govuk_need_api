@@ -4,6 +4,11 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
 
   setup do
     login_as_stub_user
+    use_test_index
+  end
+
+  teardown do
+    delete_test_index
   end
 
   should "create a need given valid attributes" do

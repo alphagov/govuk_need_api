@@ -5,7 +5,7 @@ class NeedsControllerTest < ActionController::TestCase
   setup do
     login_as_stub_user
 
-    FactoryGirl.create(:organisation, slug: "cabinet-office")
+    FactoryGirl.create(:organisation, slug: "cabinet-office", name: "Cabinet Office")
     FactoryGirl.create(:organisation, slug: "department-for-transport")
   end
 
@@ -43,6 +43,51 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "GET index with search parameter" do
+    setup do
+      @results = [
+        Search::NeedSearchResult.new(
+          "need_id" => 100001,
+          "role" => "fishmonger",
+          "goal" => "sell fish",
+          "benefit" => "earn a living",
+          "organisation_ids" => ["cabinet-office"]
+        )
+      ]
+      mock_searcher = mock("searcher")
+      mock_searcher.expects(:search).with("fish").returns(@results)
+      GovukNeedApi.stubs(:searcher).returns(mock_searcher)
+    end
+
+    should "return success status" do
+      get :index, q: "fish"
+
+      assert_response :success
+
+      body = JSON.parse(response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+    end
+
+    should "display search results" do
+      get :index, q: "fish"
+
+      body = JSON.parse(response.body)
+      assert_equal 1, body["results"].size
+      assert_equal 100001, body["results"][0]["id"]
+      assert_equal "fishmonger", body["results"][0]["role"]
+      assert_equal "sell fish", body["results"][0]["goal"]
+      assert_equal "earn a living", body["results"][0]["benefit"]
+    end
+
+    should "display organisation information" do
+      get :index, q: "fish"
+
+      body = JSON.parse(response.body)
+      organisations = body["results"][0]["organisations"]
+      assert_equal ["Cabinet Office"], organisations.map { |o| o["name"] }
+    end
+  end
+
   context "POST create" do
     context "given a valid need" do
       setup do
@@ -69,6 +114,8 @@ class NeedsControllerTest < ActionController::TestCase
             name: "Winston Smith-Churchill",
             email: "winston@alphagov.co.uk"
           })
+
+          GovukNeedApi.indexer.stubs(:index)
         end
 
         should "persist the need and create a revision given author information" do
@@ -116,6 +163,33 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "find my local council", body["goal"]
           assert_equal "contact them about a local enquiry", body["benefit"]
         end
+
+        should "attempt to index the new need" do
+          indexable_need = stub("indexable need")
+          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          GovukNeedApi.indexer.expects(:index).with(indexable_need)
+
+          post :create, @need_with_author
+        end
+
+        context "indexing fails" do
+          setup do
+            @exception = Search::Indexer::IndexingFailed.new(123456)
+            GovukNeedApi.indexer.expects(:index).raises(@exception)
+          end
+
+          should "return a 201 status code" do
+            post :create, @need_with_author
+            assert_response :created
+          end
+
+          should "send out an exception report" do
+            ExceptionNotifier::Notifier
+              .expects(:background_exception_notification)
+              .with(@exception)
+            post :create, @need_with_author
+          end
+        end
       end
 
 
@@ -148,6 +222,7 @@ class NeedsControllerTest < ActionController::TestCase
           "email" => "email",
           "uid" => "uid"
         ).returns(true)
+        GovukNeedApi.indexer.stubs(:index)
 
         post :create, @need.merge(author: {
           name: "name",
@@ -213,4 +288,170 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "PUT update" do
+    setup do
+      @need_instance = FactoryGirl.create(:need)
+    end
+
+    context "given a valid update" do
+      setup do
+        @updates = {
+          id: @need_instance.need_id,
+          role: "council tax payer",
+          justifications: ["legislation"],
+          monthly_user_contacts: 726
+        }
+        GovukNeedApi.indexer.stubs(:index)
+      end
+
+      context "given author details" do
+        setup do
+          @updates_with_author = @updates.merge author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
+        end
+
+        should "return a success response" do
+          put :update, @updates_with_author
+          assert_response 204
+        end
+
+        should "update the need" do
+          put :update, @updates_with_author
+
+          updated_need = Need.find(@need_instance.need_id)
+          assert_equal "council tax payer", updated_need.role
+          assert_equal ["legislation"], updated_need.justifications
+          assert_equal 726, updated_need.monthly_user_contacts
+        end
+
+        should "leave existing values unchanged" do
+          put :update, @updates_with_author
+
+          updated_need = Need.find(@need_instance.need_id)
+          [:goal, :benefit, :impact, :met_when].each do |field|
+            assert_equal @need_instance.send(field), updated_need.send(field)
+          end
+        end
+
+        should "attempt to index the new need" do
+          indexable_need = stub("indexable need")
+          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          GovukNeedApi.indexer.expects(:index).with(indexable_need)
+
+          put :update, @updates_with_author
+        end
+
+        context "indexing fails" do
+          setup do
+            @exception = Search::Indexer::IndexingFailed.new(123456)
+            GovukNeedApi.indexer.expects(:index).raises(@exception)
+          end
+
+          should "return a 204 status code" do
+            put :update, @updates_with_author
+            assert_response 204
+          end
+
+          should "send out an exception report" do
+            ExceptionNotifier::Notifier
+              .expects(:background_exception_notification)
+              .with(@exception)
+            put :update, @updates_with_author
+          end
+        end
+      end
+
+      context "when no author details are provided" do
+        should "return a 422 status code" do
+          put :update, @updates
+
+          assert_equal 422, response.status
+        end
+
+        should "return an error in the json response" do
+          put :update, @updates
+
+          body = JSON.parse(response.body)
+          assert_equal "author_not_provided", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal "Author details must be provided", body["errors"].first
+        end
+
+        should "not update the need" do
+          Need.any_instance.expects(:save_as).never
+          put :update, @updates
+        end
+      end
+    end
+
+    context "given an invalid update" do
+      setup do
+        @updates = {
+          id: @need_instance.need_id,
+          monthly_user_contacts: "lots"
+        }
+        GovukNeedApi.indexer.stubs(:index)
+      end
+
+      context "with author details" do
+        setup do
+          @updates_with_author = @updates.merge author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
+        end
+
+        should "return a 422 status" do
+          put :update, @updates_with_author
+          assert_response 422
+        end
+
+        should "return an error in the response" do
+          put :update, @updates_with_author
+
+          body = JSON.parse(response.body)
+          assert_equal "invalid_attributes", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal(
+            "Monthly user contacts is not a number",
+            body["errors"].first
+          )
+        end
+
+        should "not save the need" do
+          Need.any_instance.expects(:save_as).never
+          put :update, @updates_with_author
+        end
+
+        should "not attempt to index the need" do
+          GovukNeedApi.indexer.expects(:index).never
+          put :update, @updates_with_author
+        end
+      end
+
+      should "return a 422 status" do
+        put :update, @updates
+        assert_response 422
+      end
+
+      should "return an error in the response" do
+        put :update, @updates
+
+        body = JSON.parse(response.body)
+        assert_equal "author_not_provided", body["_response_info"]["status"]
+      end
+
+      should "not save the need" do
+        Need.any_instance.expects(:save_as).never
+        put :update, @updates
+      end
+
+      should "not attempt to index the need" do
+        GovukNeedApi.indexer.expects(:index).never
+        put :update, @updates
+      end
+    end
+  end
 end

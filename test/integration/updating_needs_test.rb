@@ -13,6 +13,12 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
         email: "winston@alphagov.co.uk"
       }
     }
+
+    use_test_index
+  end
+
+  teardown do
+    delete_test_index
   end
 
   should "404 if the need doesn't exist" do

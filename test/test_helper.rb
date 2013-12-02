@@ -9,7 +9,7 @@ require 'simplecov'
 require 'simplecov-rcov'
 
 require 'webmock/test_unit'
-WebMock.disable_net_connect!(:allow_localhost => true)
+WebMock.disable_net_connect!(allow: %r{http://localhost:9200/maslow_test(/|$)})
 
 SimpleCov.start 'rails'
 SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter

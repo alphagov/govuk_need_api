@@ -13,6 +13,8 @@ gem "mongoid_rails_migrations", "1.0.1"
 
 gem 'kaminari', '0.14.1'
 
+gem 'elasticsearch', '0.4.1'
+
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else

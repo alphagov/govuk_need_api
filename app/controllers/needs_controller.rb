@@ -2,6 +2,10 @@ class NeedsController < ApplicationController
   def index
     scope = Need
 
+    if params["q"].present?
+      search(params["q"]) and return
+    end
+
     if org = params["organisation_id"] and org.present?
       scope = scope.where(:organisation_ids => org)
     end
@@ -41,6 +45,7 @@ class NeedsController < ApplicationController
     end
 
     if @need.save_as(author_params)
+      try_index_need(@need)
       decorated_need = NeedWithChangesets.new(@need)
       render json: NeedPresenter.new(decorated_need).as_json(status: :created),
              status: :created
@@ -70,6 +75,7 @@ class NeedsController < ApplicationController
 
     @need.assign_attributes(filtered_params)
     if @need.valid? and @need.save_as(author_params)
+      try_index_need(@need)
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
@@ -80,6 +86,16 @@ class NeedsController < ApplicationController
 
   private
 
+  def search(query)
+    # TODO: reject page parameter
+
+    results = GovukNeedApi.searcher.search(query)
+    set_expiry 0
+
+    presenter = NeedSearchResultSetPresenter.new(results, query, view_context)
+    render json: presenter.as_json
+  end
+
   def filtered_params
     params.except(:action, :controller, :author)
   end
@@ -87,5 +103,13 @@ class NeedsController < ApplicationController
   def author_params
     author = params[:author] || { }
     author.slice(:name, :email, :uid)
+  end
+
+  def try_index_need(need)
+    GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
+    true
+  rescue Search::Indexer::IndexingFailed => e
+    ExceptionNotifier::Notifier.background_exception_notification(e)
+    false
   end
 end
