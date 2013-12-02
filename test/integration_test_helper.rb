@@ -19,7 +19,15 @@ class ActionDispatch::IntegrationTest
     GovukNeedApi.stubs(:indexer).returns(
       Search::Indexer.new(search_client, "maslow_test", "need")
     )
-    search_client.indices.create(index: "maslow_test")
+    GovukNeedApi.stubs(:index_config).returns(
+      Search::IndexConfig.new(
+        search_client.indices,
+        "maslow_test",
+        "need",
+        Search::IndexableNeed
+      )
+    )
+    GovukNeedApi.index_config.create_index
 
     # Wait until the new index reports it's started up
     timeout(2) do
