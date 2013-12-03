@@ -11,10 +11,10 @@ class Need
   field :justifications, type: Array
   field :impact, type: String
   field :met_when, type: Array
-  field :monthly_user_contacts, type: Integer
-  field :monthly_site_views, type: Integer
-  field :monthly_need_views, type: Integer
-  field :monthly_searches, type: Integer
+  field :yearly_user_contacts, type: Integer
+  field :yearly_site_views, type: Integer
+  field :yearly_need_views, type: Integer
+  field :yearly_searches, type: Integer
   field :other_evidence, type: String
   field :legislation, type: String
 
@@ -40,10 +40,10 @@ class Need
   validates :role, presence: true
   validates :goal, presence: true
   validates :benefit, presence: true
-  validates_numericality_of :monthly_user_contacts, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
-  validates_numericality_of :monthly_site_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
-  validates_numericality_of :monthly_need_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
-  validates_numericality_of :monthly_searches, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+  validates_numericality_of :yearly_user_contacts, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+  validates_numericality_of :yearly_site_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+  validates_numericality_of :yearly_need_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+  validates_numericality_of :yearly_searches, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
 
   validate :organisation_ids_must_exist
 

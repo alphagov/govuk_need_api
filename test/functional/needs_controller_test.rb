@@ -99,10 +99,10 @@ class NeedsControllerTest < ActionController::TestCase
           justifications: ["legislation","other"],
           impact: "Noticed by an expert audience",
           met_when: ["criteria #1","criteria #2"],
-          monthly_user_contacts: 1000,
-          monthly_site_views: 10000,
-          monthly_need_views: 1000,
-          monthly_searches: 2000,
+          yearly_user_contacts: 1000,
+          yearly_site_views: 10000,
+          yearly_need_views: 1000,
+          yearly_searches: 2000,
           other_evidence: "Other evidence",
           legislation: "Sale of Pugs Act 2004"
         }
@@ -131,10 +131,10 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal ["legislation", "other"], need.justifications
           assert_equal "Noticed by an expert audience", need.impact
           assert_equal ["criteria #1", "criteria #2"], need.met_when
-          assert_equal 1000, need.monthly_user_contacts
-          assert_equal 10000, need.monthly_site_views
-          assert_equal 1000, need.monthly_need_views
-          assert_equal 2000, need.monthly_searches
+          assert_equal 1000, need.yearly_user_contacts
+          assert_equal 10000, need.yearly_site_views
+          assert_equal 1000, need.yearly_need_views
+          assert_equal 2000, need.yearly_searches
           assert_equal "Sale of Pugs Act 2004", need.legislation
 
           assert_equal 1, need.revisions.count
@@ -299,7 +299,7 @@ class NeedsControllerTest < ActionController::TestCase
           id: @need_instance.need_id,
           role: "council tax payer",
           justifications: ["legislation"],
-          monthly_user_contacts: 726
+          yearly_user_contacts: 726
         }
         GovukNeedApi.indexer.stubs(:index)
       end
@@ -323,7 +323,7 @@ class NeedsControllerTest < ActionController::TestCase
           updated_need = Need.find(@need_instance.need_id)
           assert_equal "council tax payer", updated_need.role
           assert_equal ["legislation"], updated_need.justifications
-          assert_equal 726, updated_need.monthly_user_contacts
+          assert_equal 726, updated_need.yearly_user_contacts
         end
 
         should "leave existing values unchanged" do
@@ -390,7 +390,7 @@ class NeedsControllerTest < ActionController::TestCase
       setup do
         @updates = {
           id: @need_instance.need_id,
-          monthly_user_contacts: "lots"
+          yearly_user_contacts: "lots"
         }
         GovukNeedApi.indexer.stubs(:index)
       end
@@ -415,7 +415,7 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "invalid_attributes", body["_response_info"]["status"]
           assert_equal 1, body["errors"].length
           assert_equal(
-            "Monthly user contacts is not a number",
+            "Yearly user contacts is not a number",
             body["errors"].first
           )
         end

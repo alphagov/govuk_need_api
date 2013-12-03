@@ -26,10 +26,10 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
         "The user sees the minimum wage",
         "The user sees information about the age groups"
       ],
-      "monthly_user_contacts" => 1000,
-      "monthly_site_views" => 10000,
-      "monthly_need_views" => 1000,
-      "monthly_searches" => 2000,
+      "yearly_user_contacts" => 1000,
+      "yearly_site_views" => 10000,
+      "yearly_need_views" => 1000,
+      "yearly_searches" => 2000,
       "other_evidence" => "Other evidence",
       "legislation" => "link#1\nlink#2",
       "author" => {
@@ -58,10 +58,10 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "HM Treasury", body["organisations"][1]["name"]
     assert_equal "hm-treasury", body["organisations"][1]["id"]
 
-    assert_equal 1000, body["monthly_user_contacts"]
-    assert_equal 10000, body["monthly_site_views"]
-    assert_equal 1000, body["monthly_need_views"]
-    assert_equal 2000, body["monthly_searches"]
+    assert_equal 1000, body["yearly_user_contacts"]
+    assert_equal 10000, body["yearly_site_views"]
+    assert_equal 1000, body["yearly_need_views"]
+    assert_equal 2000, body["yearly_searches"]
     assert_equal "Other evidence", body["other_evidence"]
     assert_equal "link#1\nlink#2", body["legislation"]
   end
