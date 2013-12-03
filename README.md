@@ -1,17 +1,21 @@
 # GOV.UK Need API
 
-This app exposes information about user needs on GOV.UK.
+The Need API is a JSON read and write API for information about user needs on GOV.UK. It's a Rails app which is part of the GOV.UK Publishing Platform.
+
+## Dependencies
+
+- Ruby (1.9.3)
+- Bundler
+- Elasticsearch (running on port 9200)
+
+The Need API is not dependent on any other GOV.UK appliations in order to run.
 
 ## Getting started
 
-There are no application dependencies required to get the Need API up and running. Once you've checked out the repo and installed the gem dependencies, you should be ready to go:
+The bootstrap script should get you up and running. It runs Bundler, sets up a stub user in the database, imports a list of government organisations from GOV.UK and creates the Elasticsearch index.
 
-    bundle install
+    ./script/bootstrap
     bundle exec unicorn -p 3000
-
-The tests (and the search/indexing functionality) won't work unless you have an elasticsearch server running on localhost port 9200, or unless you change the configuration in `config/initializers/elasticsearch.rb`.
-
-To set up the search index (or to clear out an old one and start again), you can run the `search:reset` Rake task, which will replace any existing index and re-index all needs. There are other Rake tasks available if you want to do this piece by piece, or update mappings for an existing index.
 
 ### GDS development
 
@@ -22,15 +26,20 @@ If you're using the development VM, you should run the app from the `development
 
 From your host machine, you should be able to access the running app at <http://need-api.dev.gov.uk/>.
 
-### Creating the seed user
+## User accounts
 
-If you're running the Need API in the development environment when using the [GDS-SSO](https://github.com/alphagov/gds-sso) mock strategy (set by default), you'll need to create a test user in the database. The seed task will do this for you:
+Authentication is provided by the [GDS-SSO](https://github.com/alphagov/gds-sso) gem, and in the production environemt an instance of [Signon](https://github.com/alphagov/signonotron2) must be running in order to sign in.
 
-    bundle exec rake db:seed
+In the development environment, the mock strategy is used by default. This removes the requirement for authentication, instead returning the first user in the database as the current user. For this to work, a user must exist - there's a user defined in `db/seeds.rb` which will be created with the bootstrap script.
 
-### Importing organisations
+## Organisations
 
 Organisations are imported from the [Whitehall](https://github.com/alphagov/whitehall) Organisations API. This import is automated using a Rake task:
 
     GOVUK_APP_DOMAIN=production.alphagov.co.uk bundle exec rake organisations:import
 
+## Search
+
+The tests (and the search/indexing functionality) won't work unless you have an elasticsearch server running on localhost port 9200, or unless you change the configuration in `config/initializers/elasticsearch.rb`.
+
+To set up the search index (or to clear out an old one and start again), you can run the `search:reset` Rake task, which will replace any existing index and re-index all needs. There are other Rake tasks available if you want to do this piece by piece, or update mappings for an existing index.
