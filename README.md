@@ -18,6 +18,8 @@ The bootstrap script should get you up and running. It runs Bundler, sets up a s
     ./script/bootstrap
     bundle exec unicorn -p 3000
 
+Once Unicorn is running, visit <http://localhost:3000> for a list of all the endpoints provided by the API.
+
 ### GDS development
 
 If you're using the development VM, you should run the app from the `development` repository using Bowler and Foreman.
