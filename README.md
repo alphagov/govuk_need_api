@@ -6,6 +6,7 @@ The Need API is a JSON read and write API for information about user needs on GO
 
 - Ruby (1.9.3)
 - Bundler
+- MongoDB
 - Elasticsearch (running on port 9200)
 
 The Need API is not dependent on any other GOV.UK appliations in order to run.
@@ -16,6 +17,8 @@ The bootstrap script should get you up and running. It runs Bundler, sets up a s
 
     ./script/bootstrap
     bundle exec unicorn -p 3000
+
+Once Unicorn is running, visit <http://localhost:3000> for a list of all the endpoints provided by the API.
 
 ### GDS development
 
