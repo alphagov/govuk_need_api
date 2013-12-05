@@ -33,6 +33,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       yearly_searches: 2000,
       other_evidence: "Other evidence",
       legislation: "link#1\nlink#2",
+      applies_to_all_organisations: true,
       changesets: [
         { author: "Author 1" },
         { author: "Author 2" },
@@ -65,8 +66,8 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal "I can charge my customers the correct amount", response[:benefit]
 
     assert_equal ["ministry-of-testing"], response[:organisation_ids]
-
     assert_equal [ "presented organisation" ], response[:organisations]
+    assert_equal true, response[:applies_to_all_organisations]
 
     assert_equal ["legislation", "other"], response[:justifications]
     assert_equal "Noticed by an expert audience", response[:impact]

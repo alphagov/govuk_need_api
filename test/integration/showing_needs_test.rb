@@ -15,7 +15,8 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
                                         goal: "find out school holiday dates for my local school",
                                         benefit: "I can plan around the school holidays",
                                         organisation_ids: ["department-for-work-and-pensions"],
-                                        need_id: 100001)
+                                        need_id: 100001,
+                                        applies_to_all_organisations: false)
       @need.revisions.first.destroy # delete the automatically-created first revision
     end
 
@@ -36,6 +37,8 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal 1, body["organisations"].size
       assert_equal "department-for-work-and-pensions", body["organisations"].first["id"]
       assert_equal "Department for Work and Pensions", body["organisations"].first["name"]
+
+      assert_equal false, body["applies_to_all_organisations"]
     end
 
     should "include the need revisions" do
