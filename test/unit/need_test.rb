@@ -22,7 +22,8 @@ class NeedTest < ActiveSupport::TestCase
         yearly_need_views: 1000,
         yearly_searches: 2000,
         other_evidence: "Other evidence",
-        legislation: "link#1\nlink#2"
+        legislation: "link#1\nlink#2",
+        applies_to_all_organisations: true
       }
     end
 
@@ -47,6 +48,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal 2000, need.yearly_searches
       assert_equal "Other evidence", need.other_evidence
       assert_equal "link#1\nlink#2", need.legislation
+      assert_equal true, need.applies_to_all_organisations
     end
 
     context "assigning need ids" do
@@ -158,6 +160,13 @@ class NeedTest < ActiveSupport::TestCase
 
       need = Need.new(@atts.merge(:organisation_ids => []))
       assert need.valid?
+    end
+
+    should "default applies_to_all_organisations to false" do
+      need = Need.create!(@atts.merge(applies_to_all_organisations: nil))
+      need.reload
+
+      assert_equal false, need.applies_to_all_organisations
     end
 
     context "creating revisions" do

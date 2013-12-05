@@ -17,7 +17,9 @@ class Need
   field :yearly_searches, type: Integer
   field :other_evidence, type: String
   field :legislation, type: String
+  field :applies_to_all_organisations, type: Boolean, default: false
 
+  before_validation :default_booleans_to_false
   after_update :record_update_revision
   after_create :record_create_revision
 
@@ -102,5 +104,12 @@ class Need
     Need.set_callback(:update, :after, :record_update_revision)
 
     save_status
+  end
+
+  def default_booleans_to_false
+    self.applies_to_all_organisations ||= false
+
+    # return nil here so that it doesn't break the callback chain
+    return
   end
 end
