@@ -19,6 +19,7 @@ module Search
         Field.new(:goal, "string", true, true),
         Field.new(:benefit, "string", true, true),
         Field.new(:organisation_ids, "string", false, false),
+        Field.new(:applies_to_all_organisations, "boolean", false, false),
         Field.new(:met_when, "string", true, true),
         Field.new(:legislation, "string", false, false),
         Field.new(:other_evidence, "string", true, true),
