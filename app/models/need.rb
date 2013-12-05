@@ -48,6 +48,7 @@ class Need
   validates_numericality_of :yearly_searches, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
 
   validate :organisation_ids_must_exist
+  validate :no_organisations_if_applies_to_all
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -71,6 +72,15 @@ class Need
     org_ids = (organisation_ids || []).uniq
     if Organisation.any_in(_id: org_ids).count < org_ids.size
       errors.add(:organisation_ids, "must exist")
+    end
+  end
+
+  def no_organisations_if_applies_to_all
+    if applies_to_all_organisations && organisation_ids.present?
+      errors.add(
+        :organisation_ids,
+        "cannot exist if applies_to_all_organisations is set"
+      )
     end
   end
 

@@ -32,7 +32,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "yearly_searches" => 2000,
       "other_evidence" => "Other evidence",
       "legislation" => "link#1\nlink#2",
-      "applies_to_all_organisations" => true,
+      "applies_to_all_organisations" => false,
       "author" => {
         "name" => "Winston Smith-Churchill",
         "email" => "winston@alphagov.co.uk"
@@ -49,7 +49,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "find out the minimum wage", body["goal"]
     assert_equal "I can work out if I am being paid the correct amount", body["benefit"]
     assert_equal ["department-for-work-and-pensions", "hm-treasury"], body["organisation_ids"]
-    assert_equal true, body["applies_to_all_organisations"]
+    assert_equal false, body["applies_to_all_organisations"]
 
     assert_equal ["legislation"], body["justifications"]
     assert_equal "Noticed by many citizens", body["impact"]
