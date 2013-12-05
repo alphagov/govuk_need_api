@@ -23,7 +23,7 @@ class NeedTest < ActiveSupport::TestCase
         yearly_searches: 2000,
         other_evidence: "Other evidence",
         legislation: "link#1\nlink#2",
-        applies_to_all_organisations: true
+        applies_to_all_organisations: false
       }
     end
 
@@ -48,7 +48,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal 2000, need.yearly_searches
       assert_equal "Other evidence", need.other_evidence
       assert_equal "link#1\nlink#2", need.legislation
-      assert_equal true, need.applies_to_all_organisations
+      assert_equal false, need.applies_to_all_organisations
     end
 
     context "assigning need ids" do
@@ -167,6 +167,31 @@ class NeedTest < ActiveSupport::TestCase
       need.reload
 
       assert_equal false, need.applies_to_all_organisations
+    end
+
+    should "disallow applies_to_all_organisations with explicit organisations" do
+      need_atts = @atts.merge(
+        applies_to_all_organisations: true,
+        organisation_ids: ["cabinet-office"]
+      )
+      need = Need.new(need_atts)
+      refute need.valid?
+    end
+
+    should "allow applies_to_all_organisations with no organisations" do
+      need_atts = @atts.merge(
+        applies_to_all_organisations: true,
+        organisation_ids: []
+      )
+      need = Need.new(need_atts)
+      assert need.valid?
+    end
+
+    should "allow applies_to_all_organisations with organisation IDs not set" do
+      need_atts = @atts.merge(applies_to_all_organisations: true)
+        .except(:organisation_ids)
+      need = Need.new(need_atts)
+      assert need.valid?
     end
 
     context "creating revisions" do
