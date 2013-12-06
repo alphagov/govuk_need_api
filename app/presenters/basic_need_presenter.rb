@@ -18,7 +18,8 @@ class BasicNeedPresenter
       goal: @need.goal,
       benefit: @need.benefit,
       organisation_ids: @need.organisation_ids,
-      organisations: organisations
+      organisations: organisations,
+      applies_to_all_organisations: @need.applies_to_all_organisations
     }
   end
 

@@ -19,6 +19,7 @@ class NeedPresenter
       benefit: @need.benefit,
       organisation_ids: @need.organisation_ids,
       organisations: organisations,
+      applies_to_all_organisations: @need.applies_to_all_organisations,
       justifications: @need.justifications,
       impact: @need.impact,
       met_when: @need.met_when,

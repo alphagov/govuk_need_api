@@ -9,6 +9,7 @@ module Search
         goal: "Goal",
         benefit: "Benefit",
         organisation_ids: ["org-1"],
+        applies_to_all_organisations: true,
         met_when: ["Criteria 1", "Criteria 2"],
         legislation: ["Legislation 1", "Legislation 2"],
         other_evidence: ["Evidence 1", "Evidence 2"],
@@ -35,6 +36,7 @@ module Search
       assert_equal "Goal", presented_need[:goal]
       assert_equal "Benefit", presented_need[:benefit]
       assert_equal ["org-1"], presented_need[:organisation_ids]
+      assert_equal true, presented_need[:applies_to_all_organisations]
       assert_equal ["Criteria 1", "Criteria 2"], presented_need[:met_when]
       assert_equal ["Legislation 1", "Legislation 2"], presented_need[:legislation]
       assert_equal ["Evidence 1", "Evidence 2"], presented_need[:other_evidence]
