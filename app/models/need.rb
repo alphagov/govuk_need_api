@@ -18,6 +18,7 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
+  field :duplicate_of, type: Integer
 
   before_validation :default_booleans_to_false
   after_update :record_update_revision
@@ -49,6 +50,7 @@ class Need
 
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
+  validate :duplicate
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -80,6 +82,15 @@ class Need
       errors.add(
         :organisation_ids,
         "cannot exist if applies_to_all_organisations is set"
+      )
+    end
+  end
+
+  def duplicate
+    if duplicate_of.present? && !Need.where(need_id: duplicate_of).first
+      errors.add(
+        :duplicate_of,
+        "Must be a duplicate of an existing need"
       )
     end
   end

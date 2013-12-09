@@ -313,4 +313,28 @@ class NeedTest < ActiveSupport::TestCase
     end
   end
 
+  context "duplicate needs" do
+    setup do
+      @main_need_id = FactoryGirl.create(:need, goal: "pay my car tax",
+                                         duplicate_of: nil).need_id
+      @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
+                                           duplicate_of: nil)
+    end
+
+    should "be able to set a need as a duplicate" do
+      @duplicate_need.duplicate_of = @main_need_id
+      @duplicate_need.save_as(name: "Winston Smith-Churchill",
+                              email: "winston@alphagov.co.uk")
+      @duplicate_need.reload
+      assert_equal(@main_need_id, @duplicate_need.duplicate_of)
+    end
+
+    should "be invalid if given an incorrect need id" do
+      @duplicate_need.duplicate_of = :incorrect_need_id
+      @duplicate_need.save_as(name: "Winston Smith-Churchill",
+                              email: "winston@alphagov.co.uk")
+      refute @duplicate_need.valid?
+    end
+  end
+
 end
