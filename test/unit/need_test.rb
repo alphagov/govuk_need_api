@@ -320,18 +320,18 @@ class NeedTest < ActiveSupport::TestCase
                    email: "winston@alphagov.co.uk")
     end
 
-    context "inferior needs" do
       setup do
-        @main_need_id = FactoryGirl.create(:need, goal: "pay my car tax",
-                                           duplicate_of: nil).need_id
+        @main_need = FactoryGirl.create(:need, goal: "pay my car tax",
+                                        duplicate_of: nil)
         @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
                                              duplicate_of: nil)
       end
 
+    context "inferior needs" do
       should "be able to set a need as a duplicate" do
-        set_duplicate(@duplicate_need, @main_need_id)
+        set_duplicate(@duplicate_need, @main_need.need_id)
         @duplicate_need.reload
-        assert_equal(@main_need_id, @duplicate_need.duplicate_of)
+        assert_equal(@main_need.need_id, @duplicate_need.duplicate_of)
       end
 
       should "be invalid if given an incorrect need id" do
@@ -345,7 +345,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "be invalid if given a need id already marked as a duplicate" do
-        set_duplicate(@duplicate_need, @main_need_id)
+        set_duplicate(@duplicate_need, @main_need.need_id)
         @duplicate_need.reload
         @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
                                               duplicate_of: nil)
@@ -355,13 +355,6 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     context "superior needs" do
-      setup do
-        @main_need = FactoryGirl.create(:need, goal: "pay my car tax",
-                                        duplicate_of: nil)
-        @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
-                                             duplicate_of: nil)
-      end
-
       should "show it has a duplicate" do
         set_duplicate(@duplicate_need, @main_need.need_id)
         @main_need.reload
