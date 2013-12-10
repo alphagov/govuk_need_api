@@ -318,7 +318,6 @@ class NeedTest < ActiveSupport::TestCase
       need.duplicate_of = id
       need.save_as(name: "Winston Smith-Churchill",
                    email: "winston@alphagov.co.uk")
-
     end
 
     setup do
@@ -342,6 +341,15 @@ class NeedTest < ActiveSupport::TestCase
     should "be invalid if given its own need id" do
       set_duplicate(@duplicate_need, @duplicate_need.need_id)
       refute @duplicate_need.valid?
+    end
+
+    should "be invalid if given a need id already marked as a duplicate" do
+      set_duplicate(@duplicate_need, @main_need_id)
+      @duplicate_need.reload
+      @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
+                                           duplicate_of: nil)
+      set_duplicate(@triplicate_need, @duplicate_need.need_id)
+      refute @triplicate_need.valid?
     end
   end
 
