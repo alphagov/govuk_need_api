@@ -18,7 +18,7 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
-  field :duplicate_of, type: Integer
+  field :duplicate_of, type: Integer, default: nil
   field :duplicates, type: Array, default: []
 
   before_validation :default_booleans_to_false

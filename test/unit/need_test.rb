@@ -321,10 +321,8 @@ class NeedTest < ActiveSupport::TestCase
     end
 
       setup do
-        @main_need = FactoryGirl.create(:need, goal: "pay my car tax",
-                                        duplicate_of: nil)
-        @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
-                                             duplicate_of: nil)
+        @main_need = FactoryGirl.create(:need, goal: "pay my car tax")
+        @duplicate_need = FactoryGirl.create(:need, goal: "tax my car")
       end
 
     context "inferior needs" do
@@ -347,8 +345,7 @@ class NeedTest < ActiveSupport::TestCase
       should "be invalid if given a need id already marked as a duplicate" do
         set_duplicate(@duplicate_need, @main_need.need_id)
         @duplicate_need.reload
-        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
-                                              duplicate_of: nil)
+        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
         set_duplicate(@triplicate_need, @duplicate_need.need_id)
         refute @triplicate_need.valid?
       end
@@ -364,8 +361,7 @@ class NeedTest < ActiveSupport::TestCase
 
       should "show it has multiple duplicates" do
         set_duplicate(@duplicate_need, @main_need.need_id)
-        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
-                                              duplicate_of: nil)
+        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
         set_duplicate(@triplicate_need, @main_need.need_id)
         @main_need.reload
 
