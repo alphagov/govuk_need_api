@@ -320,36 +320,38 @@ class NeedTest < ActiveSupport::TestCase
                    email: "winston@alphagov.co.uk")
     end
 
-    setup do
-      @main_need_id = FactoryGirl.create(:need, goal: "pay my car tax",
-                                         duplicate_of: nil).need_id
-      @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
-                                           duplicate_of: nil)
-    end
+    context "inferior needs" do
+      setup do
+        @main_need_id = FactoryGirl.create(:need, goal: "pay my car tax",
+                                           duplicate_of: nil).need_id
+        @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
+                                             duplicate_of: nil)
+      end
 
-    should "be able to set a need as a duplicate" do
-      set_duplicate(@duplicate_need, @main_need_id)
-      @duplicate_need.reload
-      assert_equal(@main_need_id, @duplicate_need.duplicate_of)
-    end
+      should "be able to set a need as a duplicate" do
+        set_duplicate(@duplicate_need, @main_need_id)
+        @duplicate_need.reload
+        assert_equal(@main_need_id, @duplicate_need.duplicate_of)
+      end
 
-    should "be invalid if given an incorrect need id" do
-      set_duplicate(@duplicate_need, :incorrect_need_id)
-      refute @duplicate_need.valid?
-    end
+      should "be invalid if given an incorrect need id" do
+        set_duplicate(@duplicate_need, :incorrect_need_id)
+        refute @duplicate_need.valid?
+      end
 
-    should "be invalid if given its own need id" do
-      set_duplicate(@duplicate_need, @duplicate_need.need_id)
-      refute @duplicate_need.valid?
-    end
+      should "be invalid if given its own need id" do
+        set_duplicate(@duplicate_need, @duplicate_need.need_id)
+        refute @duplicate_need.valid?
+      end
 
-    should "be invalid if given a need id already marked as a duplicate" do
-      set_duplicate(@duplicate_need, @main_need_id)
-      @duplicate_need.reload
-      @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
-                                           duplicate_of: nil)
-      set_duplicate(@triplicate_need, @duplicate_need.need_id)
-      refute @triplicate_need.valid?
+      should "be invalid if given a need id already marked as a duplicate" do
+        set_duplicate(@duplicate_need, @main_need_id)
+        @duplicate_need.reload
+        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
+                                              duplicate_of: nil)
+        set_duplicate(@triplicate_need, @duplicate_need.need_id)
+        refute @triplicate_need.valid?
+      end
     end
   end
 
