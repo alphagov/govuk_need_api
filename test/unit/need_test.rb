@@ -353,6 +353,22 @@ class NeedTest < ActiveSupport::TestCase
         refute @triplicate_need.valid?
       end
     end
+
+    context "superior needs" do
+      setup do
+        @main_need = FactoryGirl.create(:need, goal: "pay my car tax",
+                                        duplicate_of: nil)
+        @duplicate_need = FactoryGirl.create(:need, goal: "tax my car",
+                                             duplicate_of: nil)
+      end
+
+      should "show it has a duplicate" do
+        set_duplicate(@duplicate_need, @main_need.need_id)
+        @main_need.reload
+        assert_equal(@duplicate_need.need_id,
+                     @main_need.duplicates)
+      end
+    end
   end
 
 end

@@ -19,6 +19,7 @@ class Need
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
   field :duplicate_of, type: Integer
+  field :duplicates, type: Integer
 
   before_validation :default_booleans_to_false
   after_update :record_update_revision
@@ -56,10 +57,11 @@ class Need
   has_many :revisions, class_name: "NeedRevision"
 
   def save_as(user)
+    @user = user
     action = new_record? ? "create" : "update"
 
     if saved = save_without_callbacks
-      record_revision(action, user)
+      record_revision(action, @user)
     end
     saved
   end
@@ -96,6 +98,9 @@ class Need
         :duplicate_of,
         "Must be a duplicate of an existing need"
       )
+    else
+      main_need.duplicates = need_id
+      main_need.save_as(@user)
     end
   end
 
