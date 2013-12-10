@@ -87,7 +87,9 @@ class Need
   end
 
   def duplicate
-    if duplicate_of.present? && !Need.where(need_id: duplicate_of).first
+    if duplicate_of.present? &&
+       (!Need.where(need_id: duplicate_of).first ||
+       duplicate_of == need_id)
       errors.add(
         :duplicate_of,
         "Must be a duplicate of an existing need"

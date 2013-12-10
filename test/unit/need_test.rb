@@ -335,6 +335,13 @@ class NeedTest < ActiveSupport::TestCase
                               email: "winston@alphagov.co.uk")
       refute @duplicate_need.valid?
     end
+
+    should "be invalid if given its own need id" do
+      @duplicate_need.duplicate_of = @duplicate_need.need_id
+      @duplicate_need.save_as(name: "Winston Smith-Churchill",
+                              email: "winston@alphagov.co.uk")
+      refute @duplicate_need.valid?
+    end
   end
 
 end
