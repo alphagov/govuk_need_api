@@ -359,6 +359,17 @@ class NeedTest < ActiveSupport::TestCase
         set_duplicate(@duplicate_need, @main_need.need_id)
         @main_need.reload
         assert_equal(@duplicate_need.need_id,
+                     @main_need.duplicates.first)
+      end
+
+      should "show it has multiple duplicates" do
+        set_duplicate(@duplicate_need, @main_need.need_id)
+        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah",
+                                              duplicate_of: nil)
+        set_duplicate(@triplicate_need, @main_need.need_id)
+        @main_need.reload
+
+        assert_equal([@duplicate_need.need_id, @triplicate_need.need_id],
                      @main_need.duplicates)
       end
     end

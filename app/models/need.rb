@@ -19,7 +19,7 @@ class Need
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
   field :duplicate_of, type: Integer
-  field :duplicates, type: Integer
+  field :duplicates, type: Array, default: []
 
   before_validation :default_booleans_to_false
   after_update :record_update_revision
@@ -66,6 +66,10 @@ class Need
     saved
   end
 
+  def add_duplicate(need_id)
+    self.duplicates << need_id
+  end
+
   private
   def assign_new_id
     last_assigned = Need.order_by([:need_id, :desc]).first
@@ -99,7 +103,7 @@ class Need
         "Must be a duplicate of an existing need"
       )
     else
-      main_need.duplicates = need_id
+      main_need.add_duplicate(need_id)
       main_need.save_as(@user)
     end
   end
