@@ -10,6 +10,8 @@ class Organisation
 
   key :slug
 
+  index :name
+
   validates :name, :slug, presence: true
   validates :slug, uniqueness: { case_sensitive: false }
 
