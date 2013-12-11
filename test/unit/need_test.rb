@@ -326,6 +326,10 @@ class NeedTest < ActiveSupport::TestCase
       @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
     end
 
+    should "have no duplicates by default" do
+      refute @main_need.has_duplicates?
+    end
+
     context "inferior needs" do
       should "be able to set a need as a duplicate" do
         set_duplicate(@duplicate_need, @main_need.need_id)
@@ -356,10 +360,6 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     context "superior needs" do
-      should "have no duplicates by default" do
-        refute @main_need.has_duplicates?
-      end
-
       should "show it has a duplicate" do
         set_duplicate(@duplicate_need, @main_need.need_id)
         @main_need.reload
