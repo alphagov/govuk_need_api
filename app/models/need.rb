@@ -39,6 +39,8 @@ class Need
   # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
   key :need_id
 
+  index :organisation_ids
+
   validates :role, presence: true
   validates :goal, presence: true
   validates :benefit, presence: true
