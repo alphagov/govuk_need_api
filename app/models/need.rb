@@ -23,7 +23,7 @@ class Need
   after_update :record_update_revision
   after_create :record_create_revision
 
-  default_scope order_by([:need_id, :desc])
+  default_scope order_by([:_id, :desc])
 
   paginates_per 50
 
