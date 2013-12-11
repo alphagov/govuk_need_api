@@ -19,7 +19,8 @@ class BasicNeedPresenter
       benefit: @need.benefit,
       organisation_ids: @need.organisation_ids,
       organisations: organisations,
-      applies_to_all_organisations: @need.applies_to_all_organisations
+      applies_to_all_organisations: @need.applies_to_all_organisations,
+      in_scope: @need.in_scope
     }
   end
 
