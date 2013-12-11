@@ -352,11 +352,14 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     context "superior needs" do
+      should "have no duplicates by default" do
+        refute @main_need.has_duplicates?
+      end
+
       should "show it has a duplicate" do
         set_duplicate(@duplicate_need, @main_need.need_id)
         @main_need.reload
-        assert_equal(@duplicate_need.need_id,
-                     @main_need.duplicates.first)
+        assert @main_need.has_duplicates?
       end
 
       should "show it has multiple duplicates" do
@@ -365,8 +368,15 @@ class NeedTest < ActiveSupport::TestCase
         set_duplicate(@triplicate_need, @main_need.need_id)
         @main_need.reload
 
-        assert_equal([@duplicate_need.need_id, @triplicate_need.need_id],
-                     @main_need.duplicates)
+        assert @main_need.has_duplicates?
+      end
+
+      should "not allow duplicate chains" do
+        @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
+        set_duplicate(@triplicate_need, @duplicate_need.need_id)
+
+        set_duplicate(@duplicate_need, @main_need.need_id)
+        refute @duplicate_need.valid?
       end
     end
   end

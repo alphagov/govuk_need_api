@@ -19,7 +19,6 @@ class Need
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
   field :duplicate_of, type: Integer, default: nil
-  field :duplicates, type: Array, default: []
 
   before_validation :default_booleans_to_false
   after_update :record_update_revision
@@ -40,6 +39,7 @@ class Need
 
   # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
   key :need_id
+  index :duplicate_of
 
   validates :role, presence: true
   validates :goal, presence: true
@@ -66,8 +66,8 @@ class Need
     saved
   end
 
-  def add_duplicate(need_id)
-    self.duplicates << need_id
+  def has_duplicates?
+    Need.where(duplicate_of: need_id).present?
   end
 
   private
@@ -95,16 +95,14 @@ class Need
   def duplicate
     return unless duplicate_of.present?
     main_need = Need.where(need_id: duplicate_of).first
-    if !main_need ||
+    if !main_need.present? ||
        duplicate_of == need_id ||
+       has_duplicates? ||
        main_need.duplicate_of.present?
       errors.add(
         :duplicate_of,
         "Must be a duplicate of an existing need"
       )
-    else
-      main_need.add_duplicate(need_id)
-      main_need.save_as(@user)
     end
   end
 
