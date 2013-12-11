@@ -33,7 +33,8 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       FactoryGirl.create(:need, role: "jobseeker",
                          goal: "search for jobs",
                          benefit: "I can get into work",
-                         organisation_ids: ["department-for-work-and-pensions", "hm-treasury"])
+                         organisation_ids: ["department-for-work-and-pensions", "hm-treasury"],
+                         in_scope: false)
     end
 
     should "return basic information about all the needs" do
@@ -54,6 +55,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal ["apply for student finance", "renew my car tax", "search for jobs"], results.map{|n| n["goal"] }.sort
       assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map{|n| n["benefit"] }.sort
       assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }.sort
+      assert_equal [nil, nil, false], results.map{|n| n["in_scope"] }
 
       organisation = results[0]["organisations"][0]
       assert_equal "hm-treasury", organisation["id"]
