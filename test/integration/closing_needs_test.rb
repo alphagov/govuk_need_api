@@ -4,20 +4,22 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
 
   setup do
     login_as_stub_user
-    @main_need = FactoryGirl.create(:need, role: "parent",
-                                           goal: "find out school holiday dates for my local school",
-                                           benefit: "I can plan around my child's education")
-    @duplicate = FactoryGirl.create(:need, role: "grand-parent",
-                                           goal: "find out school holiday dates for my local school",
-                                           benefit: "I can plan around my grandchild's education")
-    @author = {
-      author: {
-        name: "Winston Smith-Churchill",
-        email: "winston@alphagov.co.uk"
-      }
-    }
-
     use_test_index
+    Timecop.freeze(-2) do # Avoid race condition on creation timestamps
+      @main_need = FactoryGirl.create(:need, role: "parent",
+                                             goal: "find out school holiday dates for my local school",
+                                             benefit: "I can plan around my child's education")
+      @duplicate = FactoryGirl.create(:need, role: "grand-parent",
+                                             goal: "find out school holiday dates for my local school",
+                                             benefit: "I can plan around my grandchild's education")
+      @author = {
+        author: {
+          name: "Winston Smith-Churchill",
+          email: "winston@alphagov.co.uk"
+        }
+      }
+
+    end
   end
 
   teardown do
@@ -45,5 +47,17 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
     @duplicate.reload
 
     assert_equal @main_need.need_id, @duplicate.duplicate_of
+  end
+
+  should "have close as the action type in revision history" do
+    put("/needs/#{@duplicate.need_id}/closed",
+        @author.merge(duplicate_of: @main_need.need_id))
+
+    @duplicate.reload
+    revision = @duplicate.revisions[0]
+
+    assert_equal "close", revision.action_type
+    assert_equal "Winston Smith-Churchill", revision.author["name"]
+    assert_equal "winston@alphagov.co.uk", revision.author["email"]
   end
 end
