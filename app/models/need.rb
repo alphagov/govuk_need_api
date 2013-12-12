@@ -51,7 +51,7 @@ class Need
 
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
-  validate :duplicate
+  validate :validate_duplicate
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -91,9 +91,12 @@ class Need
     end
   end
 
-  def duplicate
+  def validate_duplicate
     return unless duplicate_of.present?
     main_need = Need.where(need_id: duplicate_of).first
+    # There are various criteria for being a valid duplicate:
+    # the least obvious crierion is to not allow duplicate chains
+    # i.e. A -> B -> C
     if !main_need.present? ||
        duplicate_of == need_id ||
        has_duplicates? ||
