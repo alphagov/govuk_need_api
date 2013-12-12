@@ -218,9 +218,10 @@ class NeedsControllerTest < ActionController::TestCase
 
       should "only pass through selected fields for an author" do
         Need.any_instance.expects(:save_as).with(
-          "name" => "name",
+          {"name" => "name",
           "email" => "email",
-          "uid" => "uid"
+          "uid" => "uid"},
+          "create"
         ).returns(true)
         GovukNeedApi.indexer.stubs(:index)
 

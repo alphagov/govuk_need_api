@@ -56,9 +56,8 @@ class Need
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
 
-  def save_as(user)
+  def save_as(user, action)
     @user = user
-    action = new_record? ? "create" : "update"
 
     if saved = save_without_callbacks
       record_revision(action, @user)
@@ -101,7 +100,7 @@ class Need
        main_need.duplicate_of.present?
       errors.add(
         :duplicate_of,
-        "Must be a duplicate of an existing need"
+        "Can not close this need as a duplicate"
       )
     end
   end

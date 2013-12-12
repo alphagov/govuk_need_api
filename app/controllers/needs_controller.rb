@@ -44,7 +44,7 @@ class NeedsController < ApplicationController
       return
     end
 
-    if @need.save_as(author_params)
+    if @need.save_as(author_params, "create")
       try_index_need(@need)
       decorated_need = NeedWithChangesets.new(@need)
       render json: NeedPresenter.new(decorated_need).as_json(status: :created),
@@ -74,7 +74,7 @@ class NeedsController < ApplicationController
     end
 
     @need.assign_attributes(filtered_params)
-    if @need.valid? and @need.save_as(author_params)
+    if @need.valid? and @need.save_as(author_params, "update")
       try_index_need(@need)
       render nothing: true, status: 204
     else
@@ -99,7 +99,7 @@ class NeedsController < ApplicationController
     end
     @need.duplicate_of = duplicate_of
 
-    if @need.valid? and @need.save_as(author_params)
+    if @need.valid? and @need.save_as(author_params, "close")
       try_index_need(@need)
       render nothing: true, status: 204
     else
