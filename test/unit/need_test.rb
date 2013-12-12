@@ -210,7 +210,7 @@ class NeedTest < ActiveSupport::TestCase
 
       should "store user information in the revision if provided" do
         need = Need.new(@atts.merge(goal: "get a premises licence"))
-        need.save_as({name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk"}, "create")
+        need.save_as("create", name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
         need.reload
 
         assert_equal 1, need.revisions.count
@@ -226,7 +226,7 @@ class NeedTest < ActiveSupport::TestCase
         need = Need.new(@atts.merge(role: ""))
 
         refute need.save
-        refute need.save_as({name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk"}, "create")
+        refute need.save_as("create", name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
 
         assert_equal 0, need.revisions.count
       end
@@ -262,7 +262,7 @@ class NeedTest < ActiveSupport::TestCase
 
     should "persist the changes" do
       @need.goal = "find travel advice for Turks and Caicos Islands"
-      assert @need.save_as({name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk"}, "update")
+      assert @need.save_as("update", name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
 
       @need.reload
 
@@ -286,7 +286,7 @@ class NeedTest < ActiveSupport::TestCase
 
     should "save user information in the revision if provided" do
       @need.goal = "find travel advice for Portugal"
-      @need.save_as({name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk"}, "update")
+      @need.save_as("update", name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
 
       @need.reload
 
@@ -304,7 +304,7 @@ class NeedTest < ActiveSupport::TestCase
       @need.role = ""
 
       refute @need.save
-      refute @need.save_as({name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk"}, "create")
+      refute @need.save_as("create", name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
 
       @need.reload
 
@@ -316,9 +316,10 @@ class NeedTest < ActiveSupport::TestCase
   context "duplicate needs" do
     def set_duplicate(need, main_need_id)
       need.duplicate_of = main_need_id
-      need.save_as({name: "Winston Smith-Churchill",
-                   email: "winston@alphagov.co.uk"},
-                  "close")
+      need.save_as("close",
+                   name: "Winston Smith-Churchill",
+                   email: "winston@alphagov.co.uk"
+                  )
     end
 
     setup do

@@ -56,7 +56,7 @@ class Need
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
 
-  def save_as(user, action)
+  def save_as(action, user)
     @user = user
 
     if saved = save_without_callbacks
