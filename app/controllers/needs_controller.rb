@@ -84,6 +84,31 @@ class NeedsController < ApplicationController
     error 404, message: :not_found, error: "No need exists with this ID"
   end
 
+  def closed
+    @need = Need.find(params["id"])
+
+    unless author_params.any?
+      error 422, message: :author_not_provided, errors: ["Author details must be provided"]
+      return
+    end
+
+    duplicate_of = params["duplicate_of"]
+    unless duplicate_of.present?
+      error 422, message: :duplicate_of_not_provided, errors: ["'Duplicate Of' id must be provided"]
+      return
+    end
+    @need.duplicate_of = duplicate_of
+
+    if @need.valid? and @need.save_as(author_params)
+      try_index_need(@need)
+      render nothing: true, status: 204
+    else
+      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+    end
+  rescue Mongoid::Errors::DocumentNotFound
+    error 404, message: :not_found, error: "No need exists with this ID"
+  end
+
   private
 
   def search(query)

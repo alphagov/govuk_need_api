@@ -454,4 +454,167 @@ class NeedsControllerTest < ActionController::TestCase
       end
     end
   end
+
+  context "PUT closed" do
+    setup do
+      @main_need = FactoryGirl.create(:need)
+      @duplicate = FactoryGirl.create(:need)
+    end
+
+    context "given a valid update" do
+      setup do
+        @closed = {
+          id: @duplicate.need_id,
+          duplicate_of: @main_need.need_id
+        }
+        GovukNeedApi.indexer.stubs(:index)
+      end
+
+      context "given author details" do
+        setup do
+          @closed_with_author = @closed.merge author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
+        end
+
+        should "return a success response" do
+          put :closed, @closed_with_author
+          assert_response 204
+        end
+
+        should "marks the need as a duplicate of another need" do
+          put :closed, @closed_with_author
+
+          closed_need = Need.find(@duplicate.need_id)
+          assert_equal @main_need.need_id, closed_need.duplicate_of
+        end
+
+        should "leave existing values unchanged" do
+          put :closed, @closed_with_author
+
+          closed_need = Need.find(@duplicate.need_id)
+          [:goal, :benefit, :impact, :met_when].each do |field|
+            assert_equal @duplicate.send(field), closed_need.send(field)
+          end
+        end
+
+        should "attempt to index the new need" do
+          indexable_need = stub("indexable need")
+          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
+          GovukNeedApi.indexer.expects(:index).with(indexable_need)
+
+          put :closed, @closed_with_author
+        end
+
+        context "indexing fails" do
+          setup do
+            @exception = Search::Indexer::IndexingFailed.new(123456)
+            GovukNeedApi.indexer.expects(:index).raises(@exception)
+          end
+
+          should "return a 204 status code" do
+            put :closed, @closed_with_author
+            assert_response 204
+          end
+
+          should "send out an exception report" do
+            ExceptionNotifier::Notifier
+              .expects(:background_exception_notification)
+              .with(@exception)
+            put :update, @closed_with_author
+          end
+        end
+      end
+
+      context "when no author details are provided" do
+        should "return a 422 status code" do
+          put :closed, @closed
+
+          assert_equal 422, response.status
+        end
+
+        should "return an error in the json response" do
+          put :closed, @closed
+
+          body = JSON.parse(response.body)
+          assert_equal "author_not_provided", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal "Author details must be provided", body["errors"].first
+        end
+
+        should "not update the need" do
+          Need.any_instance.expects(:save_as).never
+          put :closed, @closed
+        end
+      end
+    end
+
+    context "given an invalid update" do
+      setup do
+        @closed = {
+          id: @duplicate.need_id,
+        }
+        GovukNeedApi.indexer.stubs(:index)
+      end
+
+      context "with author details" do
+        setup do
+          @closed_with_author = @closed.merge author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
+        end
+
+        should "return a 422 status" do
+          put :closed, @closed_with_author
+          assert_response 422
+        end
+
+        should "return an error in the response" do
+          put :closed, @closed_with_author
+
+          body = JSON.parse(response.body)
+          assert_equal "duplicate_of_not_provided", body["_response_info"]["status"]
+          assert_equal 1, body["errors"].length
+          assert_equal(
+            "'Duplicate Of' id must be provided",
+            body["errors"].first
+          )
+        end
+
+        should "not save the need" do
+          Need.any_instance.expects(:save_as).never
+          put :closed, @closed_with_author
+        end
+
+        should "not attempt to index the need" do
+          GovukNeedApi.indexer.expects(:index).never
+          put :closed, @closed_with_author
+        end
+      end
+
+      should "return a 422 status" do
+        put :closed, @closed
+        assert_response 422
+      end
+
+      should "return an error in the response" do
+        put :closed, @closed
+
+        body = JSON.parse(response.body)
+        assert_equal "author_not_provided", body["_response_info"]["status"]
+      end
+
+      should "not save the need" do
+        Need.any_instance.expects(:save_as).never
+        put :closed, @closed
+      end
+
+      should "not attempt to index the need" do
+        GovukNeedApi.indexer.expects(:index).never
+        put :closed, @closed
+      end
+    end
+  end
 end
