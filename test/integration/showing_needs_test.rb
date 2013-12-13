@@ -11,11 +11,16 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       FactoryGirl.create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
       FactoryGirl.create(:organisation, name: "Department for Dinosaur Care", slug: "department-for-dinosaur-care")
 
+      FactoryGirl.create(:need, role: "grandparent",
+                                goal: "find school holidays",
+                                benefit: "plan around school holidays",
+                                need_id: 100000)
       @need = FactoryGirl.create(:need, role: "parent",
                                         goal: "find out school holiday dates for my local school",
                                         benefit: "I can plan around the school holidays",
                                         organisation_ids: ["department-for-work-and-pensions"],
                                         need_id: 100001,
+                                        duplicate_of: 100000,
                                         applies_to_all_organisations: false)
       @need.revisions.first.destroy # delete the automatically-created first revision
     end
@@ -39,6 +44,8 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal "Department for Work and Pensions", body["organisations"].first["name"]
 
       assert_equal false, body["applies_to_all_organisations"]
+
+      assert_equal 100000, body["duplicate_of"]
     end
 
     should "include the need revisions" do

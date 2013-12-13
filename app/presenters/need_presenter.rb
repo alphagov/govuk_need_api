@@ -29,7 +29,8 @@ class NeedPresenter
       yearly_searches: @need.yearly_searches,
       other_evidence: @need.other_evidence,
       legislation: @need.legislation,
-      revisions: revisions
+      revisions: revisions,
+      duplicate_of: @need.duplicate_of
     }
   end
 

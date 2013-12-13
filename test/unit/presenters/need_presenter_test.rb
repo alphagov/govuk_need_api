@@ -34,6 +34,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       other_evidence: "Other evidence",
       legislation: "link#1\nlink#2",
       applies_to_all_organisations: true,
+      duplicate_of: 100001,
       changesets: [
         { author: "Author 1" },
         { author: "Author 2" },
@@ -79,6 +80,9 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal 2000, response[:yearly_searches]
     assert_equal "Other evidence", response[:other_evidence]
     assert_equal "link#1\nlink#2", response[:legislation]
+
+
+    assert_equal 100001, response[:duplicate_of]
 
     assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
   end
