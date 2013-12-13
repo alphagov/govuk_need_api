@@ -24,7 +24,7 @@ class Need
   after_update :record_update_revision
   after_create :record_create_revision
 
-  default_scope order_by([:need_id, :desc])
+  default_scope order_by([:_id, :desc])
 
   paginates_per 50
 
@@ -39,6 +39,8 @@ class Need
 
   # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
   key :need_id
+
+  index :organisation_ids
 
   validates :role, presence: true
   validates :goal, presence: true
