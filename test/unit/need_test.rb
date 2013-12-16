@@ -23,7 +23,8 @@ class NeedTest < ActiveSupport::TestCase
         yearly_searches: 2000,
         other_evidence: "Other evidence",
         legislation: "link#1\nlink#2",
-        applies_to_all_organisations: false
+        applies_to_all_organisations: false,
+        in_scope: false
       }
     end
 
@@ -49,6 +50,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "Other evidence", need.other_evidence
       assert_equal "link#1\nlink#2", need.legislation
       assert_equal false, need.applies_to_all_organisations
+      assert_equal false, need.in_scope
     end
 
     context "assigning need ids" do
@@ -192,6 +194,13 @@ class NeedTest < ActiveSupport::TestCase
         .except(:organisation_ids)
       need = Need.new(need_atts)
       assert need.valid?
+    end
+
+    should "be invalid if in_scope is set to true" do
+      need = Need.new(@atts.merge(:in_scope => true))
+
+      refute need.valid?
+      assert need.errors.has_key?(:in_scope)
     end
 
     context "creating revisions" do

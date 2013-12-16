@@ -33,6 +33,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "other_evidence" => "Other evidence",
       "legislation" => "link#1\nlink#2",
       "applies_to_all_organisations" => false,
+      "in_scope" => false,
       "author" => {
         "name" => "Winston Smith-Churchill",
         "email" => "winston@alphagov.co.uk"
@@ -67,6 +68,8 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal 2000, body["yearly_searches"]
     assert_equal "Other evidence", body["other_evidence"]
     assert_equal "link#1\nlink#2", body["legislation"]
+
+    assert_equal false, body["in_scope"]
   end
 
   should "return errors given invalid attributes" do

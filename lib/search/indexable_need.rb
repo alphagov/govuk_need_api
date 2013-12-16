@@ -23,6 +23,7 @@ module Search
         Field.new(:met_when, "string", true, true),
         Field.new(:legislation, "string", false, false),
         Field.new(:other_evidence, "string", true, true),
+        Field.new(:in_scope, "boolean", false, false),
       ]
     end
 

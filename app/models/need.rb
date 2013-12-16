@@ -18,13 +18,14 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
+  field :in_scope, type: Boolean
   field :duplicate_of, type: Integer, default: nil
 
   before_validation :default_booleans_to_false
   after_update :record_update_revision
   after_create :record_create_revision
 
-  default_scope order_by([:need_id, :desc])
+  default_scope order_by([:_id, :desc])
 
   paginates_per 50
 
@@ -41,6 +42,8 @@ class Need
   key :need_id
   index :duplicate_of
 
+  index :organisation_ids
+
   validates :role, presence: true
   validates :goal, presence: true
   validates :benefit, presence: true
@@ -48,6 +51,9 @@ class Need
   validates_numericality_of :yearly_site_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
   validates_numericality_of :yearly_need_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
   validates_numericality_of :yearly_searches, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+
+  # at current, we only allow a need to be marked as out of scope and not in scope
+  validates :in_scope, inclusion: { in: [ nil,  false ] }
 
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all

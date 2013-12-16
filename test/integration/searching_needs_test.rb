@@ -23,7 +23,8 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
        goal: "apply for student finance",
        benefit: "I can get the money I need to go to university",
        author: { name: "Bob", email: "bob@example.com" },
-       applies_to_all_organisations: true
+       applies_to_all_organisations: true,
+       in_scope: false
     }.to_json
 
     assert_equal 201, last_response.status
@@ -35,6 +36,7 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal 1, body["results"].count
     assert_equal "apply for student finance", body["results"].first["goal"]
     assert_equal true, body["results"].first["applies_to_all_organisations"]
+    assert_equal false, body["results"].first["in_scope"]
   end
 
   should "match a result with a similar word" do

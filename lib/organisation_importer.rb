@@ -28,7 +28,8 @@ class OrganisationImporter
       :child_ids => child_ids
     }
 
-    existing_organisation = Organisation.where(slug: organisation_from_api.details.slug).first
+    slug = organisation_from_api.details.slug
+    existing_organisation = Organisation.where(_id: slug).first
 
     if existing_organisation.present?
       existing_organisation.update_attributes(organisation_atts)

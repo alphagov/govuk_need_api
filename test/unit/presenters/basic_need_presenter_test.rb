@@ -13,7 +13,8 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
       organisations: [
         OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
       ],
-      applies_to_all_organisations: true
+      applies_to_all_organisations: true,
+      in_scope: false
     )
     @presenter = BasicNeedPresenter.new(@need)
   end
@@ -35,6 +36,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
     assert_equal "ministry-of-testing", response[:organisations][0][:id]
 
     assert_equal true, response[:applies_to_all_organisations]
+    assert_equal false, response[:in_scope]
   end
 
 end
