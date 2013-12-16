@@ -9,7 +9,18 @@ module Search
       results = @client.search(
         index: @index_name,
         type: @type,
-        body: { "query" => { "match" => { "_all" => query } } }
+        body: {
+          "query" => {
+            "multi_match" => {
+              "fields" => [ "_all", "need_id" ],
+              "query" => query,
+
+              # The 'lenient' flag prevents an exception being raised when a string
+              # is searched for on the numeric need_id field.
+              "lenient" => true
+            }
+          }
+        }
       )
 
       results["hits"]["hits"].map { |r| Search::NeedSearchResult.new(r["_source"]) }
