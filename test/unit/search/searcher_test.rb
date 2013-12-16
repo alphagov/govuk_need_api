@@ -3,7 +3,15 @@ require "test_helper"
 class SearcherTest < ActiveSupport::TestCase
 
   def body_for_query(query)
-    { "query" => { "match" => { "_all" => query } } }
+    {
+      "query" => {
+        "multi_match" => {
+          "fields" => ["_all", "need_id"],
+          "query" => query,
+          "lenient" => true
+        }
+      }
+    }
   end
 
   should "do a search" do

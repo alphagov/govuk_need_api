@@ -56,4 +56,24 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal 1, body["results"].count
     assert_equal "apply for student finance", body["results"].first["goal"]
   end
+
+  should "match a result on the need ID" do
+    post_json "/needs", {
+       role: "student",
+       goal: "apply for student finance",
+       benefit: "I can get the money I need to go to university",
+       author: { name: "Bob", email: "bob@example.com" }
+    }.to_json
+
+    assert_equal 201, last_response.status
+    submitted_need = JSON.parse(last_response.body)
+
+    refresh_index
+
+    get "/needs?q=#{submitted_need["id"]}"
+
+    body = JSON.parse(last_response.body)
+    assert_equal 1, body["results"].count
+    assert_equal "apply for student finance", body["results"].first["goal"]
+  end
 end
