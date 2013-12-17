@@ -134,6 +134,5 @@ class Need
     #
     needs = Need.where(role: role, goal: goal, benefit: benefit)
     errors.add(:base, "This need already exists") if needs.any?
-
   end
 end
