@@ -517,31 +517,11 @@ class NeedsControllerTest < ActionController::TestCase
           end
         end
 
-        should "attempt to index the new need" do
+        should "not attempt to index the new need" do
           indexable_need = stub("indexable need")
-          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
-          GovukNeedApi.indexer.expects(:index).with(indexable_need)
+          GovukNeedApi.indexer.expects(:index).never
 
           put :closed, @closed_with_author
-        end
-
-        context "indexing fails" do
-          setup do
-            @exception = Search::Indexer::IndexingFailed.new(123456)
-            GovukNeedApi.indexer.expects(:index).raises(@exception)
-          end
-
-          should "return a 204 status code" do
-            put :closed, @closed_with_author
-            assert_response 204
-          end
-
-          should "send out an exception report" do
-            ExceptionNotifier::Notifier
-              .expects(:background_exception_notification)
-              .with(@exception)
-            put :update, @closed_with_author
-          end
         end
       end
 
@@ -573,7 +553,6 @@ class NeedsControllerTest < ActionController::TestCase
         @closed = {
           id: @duplicate.need_id,
         }
-        GovukNeedApi.indexer.stubs(:index)
       end
 
       context "with author details" do

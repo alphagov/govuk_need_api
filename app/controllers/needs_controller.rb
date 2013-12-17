@@ -105,7 +105,6 @@ class NeedsController < ApplicationController
     @need.duplicate_of = duplicate_of
 
     if @need.valid? and @need.save_as("close", author_params)
-      try_index_need(@need)
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
