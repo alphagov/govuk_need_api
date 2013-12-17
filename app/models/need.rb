@@ -105,13 +105,25 @@ class Need
     # There are various criteria for being a valid duplicate:
     # the least obvious crierion is to not allow duplicate chains
     # i.e. A -> B -> C
-    if !canonical_need.present? ||
-       duplicate_of == need_id ||
-       has_duplicates? ||
-       canonical_need.duplicate_of.present?
+    if canonical_need.nil?
       errors.add(
         :duplicate_of,
-        "Can not close this need as a duplicate"
+        "The need ID doesn't exist"
+      )
+    elsif duplicate_of == need_id
+      errors.add(
+        :duplicate_of,
+        "A need cannot be a duplicate of itself"
+      )
+    elsif has_duplicates?
+      errors.add(
+        :duplicate_of,
+        "This need has duplicates, it can not be marked as a duplicate of another need"
+      )
+    elsif canonical_need.duplicate_of.present?
+      errors.add(
+        :duplicate_of,
+        "The need ID is already a duplicate of another need"
       )
     end
   end

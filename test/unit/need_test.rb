@@ -364,12 +364,14 @@ class NeedTest < ActiveSupport::TestCase
         set_duplicate(@duplicate_need, :incorrect_need_id)
 
         refute @duplicate_need.valid?
+        assert @duplicate_need.errors.has_key?(:duplicate_of)
       end
 
       should "be invalid if given its own need id" do
         set_duplicate(@duplicate_need, @duplicate_need.need_id)
 
         refute @duplicate_need.valid?
+        assert @duplicate_need.errors.has_key?(:duplicate_of)
       end
 
       should "be invalid if given a need id already marked as a duplicate" do
@@ -378,6 +380,7 @@ class NeedTest < ActiveSupport::TestCase
         set_duplicate(@triplicate_need, @duplicate_need.need_id)
 
         refute @triplicate_need.valid?
+        assert @triplicate_need.errors.has_key?(:duplicate_of)
       end
     end
 
@@ -402,6 +405,7 @@ class NeedTest < ActiveSupport::TestCase
         set_duplicate(@duplicate_need, @main_need.need_id)
 
         refute @duplicate_need.valid?
+        assert @duplicate_need.errors.has_key?(:duplicate_of)
       end
     end
   end
