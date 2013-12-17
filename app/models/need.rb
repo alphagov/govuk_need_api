@@ -72,7 +72,7 @@ class Need
   end
 
   def has_duplicates?
-    Need.where(duplicate_of: need_id).present?
+    Need.where(duplicate_of: need_id).exists?
   end
 
   def closed?
