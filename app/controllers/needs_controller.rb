@@ -44,7 +44,7 @@ class NeedsController < ApplicationController
       return
     end
 
-    if @need.save_as("create", author_params)
+    if @need.save_as(author_params)
       try_index_need(@need)
       decorated_need = NeedWithChangesets.new(@need)
       render json: NeedPresenter.new(decorated_need).as_json(status: :created),
@@ -79,7 +79,7 @@ class NeedsController < ApplicationController
     end
 
     @need.assign_attributes(filtered_params)
-    if @need.valid? and @need.save_as("update", author_params)
+    if @need.valid? and @need.save_as(author_params)
       try_index_need(@need)
       render nothing: true, status: 204
     else
@@ -102,9 +102,8 @@ class NeedsController < ApplicationController
       error 422, message: :duplicate_of_not_provided, errors: ["'Duplicate Of' id must be provided"]
       return
     end
-    @need.duplicate_of = duplicate_of
 
-    if @need.valid? and @need.save_as("close", author_params)
+    if @need.close(duplicate_of, author_params)
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages

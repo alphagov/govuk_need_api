@@ -218,7 +218,6 @@ class NeedsControllerTest < ActionController::TestCase
 
       should "only pass through selected fields for an author" do
         Need.any_instance.expects(:save_as).with(
-          "create",
           "name" => "name",
           "email" => "email",
           "uid" => "uid"

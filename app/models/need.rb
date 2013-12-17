@@ -62,9 +62,20 @@ class Need
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
 
-  def save_as(action, user)
+  def save_as(user)
+    action = new_record? ? "create" : "update"
+
     if saved = save_without_callbacks
       record_revision(action, user)
+    end
+    saved
+  end
+
+  def close(canonical_id, user)
+    self.duplicate_of = canonical_id
+
+    if saved = save_without_callbacks
+      record_revision("close", user)
     end
     saved
   end
