@@ -15,7 +15,7 @@ FactoryGirl.define do
   end
 
   factory :need do
-    role "user"
+    sequence(:role) {|n| "user #{n}" }
     goal "pay my council tax"
     benefit "I don't receive a fine"
 

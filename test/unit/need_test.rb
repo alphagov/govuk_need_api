@@ -56,15 +56,15 @@ class NeedTest < ActiveSupport::TestCase
     context "assigning need ids" do
       should "assign an incremented identifier to a new need, starting at 100001" do
         need_one = Need.create!(@atts)
-        need_two = Need.create!(@atts)
+        need_two = Need.create!(@atts.merge(role: "Need two"))
 
         assert_equal 100001, need_one.need_id
         assert_equal 100002, need_two.need_id
 
-        need_three = Need.new(@atts)
+        need_three = Need.new(@atts.merge(role: "Need three"))
         need_three.need_id = 100005
         need_three.save!
-        need_four = Need.create!(@atts)
+        need_four = Need.create!(@atts.merge(role: "Need four"))
 
         assert_equal 100005, need_three.need_id
         assert_equal 100006, need_four.need_id
@@ -201,6 +201,14 @@ class NeedTest < ActiveSupport::TestCase
 
       refute need.valid?
       assert need.errors.has_key?(:in_scope)
+    end
+
+    should "be invalid if an identical need already exists" do
+      Need.create!(@atts)
+      need = Need.new(@atts)
+
+      refute need.valid?
+      assert need.errors.full_messages.include?("This need already exists")
     end
 
     context "creating revisions" do

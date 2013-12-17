@@ -53,6 +53,7 @@ class Need
 
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
+  validate :need_is_unique, on: :create
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -125,5 +126,14 @@ class Need
 
     # return nil here so that it doesn't break the callback chain
     return
+  end
+
+  def need_is_unique
+    # this is a custom validation method instead of a `validate` statement because
+    # we want to customise the message and not set it on a single particular field
+    #
+    needs = Need.where(role: role, goal: goal, benefit: benefit)
+    errors.add(:base, "This need already exists") if needs.any?
+
   end
 end
