@@ -42,13 +42,11 @@ class Need
 
   index :organisation_ids
 
-  validates :role, presence: true
-  validates :goal, presence: true
-  validates :benefit, presence: true
-  validates_numericality_of :yearly_user_contacts, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
-  validates_numericality_of :yearly_site_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
-  validates_numericality_of :yearly_need_views, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
-  validates_numericality_of :yearly_searches, :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+  validates :role, :goal, :benefit, presence: true
+  validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
+            numericality: {
+              greater_than_or_equal_to: 0, allow_nil: true, only_integer: true
+            }
 
   # at current, we only allow a need to be marked as out of scope and not in scope
   validates :in_scope, inclusion: { in: [ nil,  false ] }
