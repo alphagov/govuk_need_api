@@ -101,14 +101,14 @@ class Need
 
   def validate_duplicate
     return unless duplicate_of.present?
-    main_need = Need.where(need_id: duplicate_of).first
+    canonical_need = Need.where(need_id: duplicate_of).first
     # There are various criteria for being a valid duplicate:
     # the least obvious crierion is to not allow duplicate chains
     # i.e. A -> B -> C
-    if !main_need.present? ||
+    if !canonical_need.present? ||
        duplicate_of == need_id ||
        has_duplicates? ||
-       main_need.duplicate_of.present?
+       canonical_need.duplicate_of.present?
       errors.add(
         :duplicate_of,
         "Can not close this need as a duplicate"
