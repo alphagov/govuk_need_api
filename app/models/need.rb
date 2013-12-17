@@ -63,10 +63,8 @@ class Need
   has_many :revisions, class_name: "NeedRevision"
 
   def save_as(action, user)
-    @user = user
-
     if saved = save_without_callbacks
-      record_revision(action, @user)
+      record_revision(action, user)
     end
     saved
   end
