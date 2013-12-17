@@ -45,7 +45,7 @@ class Need
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
             numericality: {
-              :greater_than_or_equal_to => 0, :allow_nil => true, :only_integer => true
+              greater_than_or_equal_to: 0, allow_nil: true, only_integer: true
             }
 
   # at current, we only allow a need to be marked as out of scope and not in scope
