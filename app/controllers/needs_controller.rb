@@ -61,6 +61,11 @@ class NeedsController < ApplicationController
   def update
     @need = Need.find(params["id"])
 
+    if @need.closed?
+      error 409, message: "Cannot update a closed need"
+      return
+    end
+
     # Fail explicitly on need ID change
     # `attr_protected`, by default, will silently fail to update the field
     if params["need_id"] && params["need_id"].to_i != @need.need_id

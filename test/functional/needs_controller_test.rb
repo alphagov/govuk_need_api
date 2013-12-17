@@ -454,6 +454,23 @@ class NeedsControllerTest < ActionController::TestCase
         put :update, @updates
       end
     end
+
+    context "attempting to update a closed need" do
+      setup do
+        @updates = {
+          id: @need_instance.need_id,
+          role: "council tax payer",
+        }
+      end
+
+      should "return a 409" do
+        Need.any_instance.expects(:closed?).returns(true)
+        Need.any_instance.expects(:save_as).never
+        put :update, @updates
+
+        assert_response 409
+      end
+    end
   end
 
   context "PUT closed" do

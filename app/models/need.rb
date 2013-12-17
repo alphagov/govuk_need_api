@@ -75,6 +75,10 @@ class Need
     Need.where(duplicate_of: need_id).present?
   end
 
+  def closed?
+    duplicate_of.present?
+  end
+
   private
   def assign_new_id
     last_assigned = Need.order_by([:need_id, :desc]).first

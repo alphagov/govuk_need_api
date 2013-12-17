@@ -341,12 +341,23 @@ class NeedTest < ActiveSupport::TestCase
       refute @main_need.has_duplicates?
     end
 
+    should "not be closed by default" do
+      refute @main_need.closed?
+    end
+
     context "inferior needs" do
       should "be able to set a need as a duplicate" do
         set_duplicate(@duplicate_need, @main_need.need_id)
         @duplicate_need.reload
 
         assert_equal(@main_need.need_id, @duplicate_need.duplicate_of)
+      end
+
+      should "be closed once it is closed" do
+        set_duplicate(@duplicate_need, @main_need.need_id)
+        @duplicate_need.reload
+
+        assert @duplicate_need.closed?
       end
 
       should "be invalid if given an incorrect need id" do
