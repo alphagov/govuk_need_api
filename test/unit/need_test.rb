@@ -420,6 +420,33 @@ class NeedTest < ActiveSupport::TestCase
         assert @duplicate_need.errors.has_key?(:duplicate_of)
       end
     end
-  end
 
+    context "reopening needs" do
+      def reopen(need)
+        need.reopen(name: "Winston Smith-Churchill",
+                    email: "winston@alphagov.co.uk")
+        need.reload
+      end
+
+      setup do
+        set_duplicate(@duplicate_need, @main_need.need_id)
+        @duplicate_need.reload
+      end
+
+      should "no longer be closed" do
+        reopen(@duplicate_need)
+        refute @duplicate_need.closed?
+      end
+
+      should "not have duplicate_of set" do
+        reopen(@duplicate_need)
+        assert_nil @duplicate_need.duplicate_of
+      end
+
+      should "mark the canonical need as having no duplicates" do
+        reopen(@duplicate_need)
+        refute @main_need.has_duplicates?
+      end
+    end
+  end
 end
