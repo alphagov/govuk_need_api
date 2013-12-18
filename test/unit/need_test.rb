@@ -78,9 +78,7 @@ class NeedTest < ActiveSupport::TestCase
         need_two.need_id = 123456
 
         assert need_one.save
-        assert_raise Mongo::OperationFailure do
-          need_two.save
-        end
+        refute need_two.save
 
         assert need_one.persisted?
         refute need_two.persisted?
@@ -203,12 +201,20 @@ class NeedTest < ActiveSupport::TestCase
       assert need.errors.has_key?(:in_scope)
     end
 
-    should "be invalid if an identical need already exists" do
-      Need.create!(@atts)
-      need = Need.new(@atts)
+    context "with indexes set up" do
+      setup do
+        # Make sure the indexes are set up to the current version
+        Need.collection.drop_indexes
+        Need.create_indexes
+      end
 
-      refute need.valid?
-      assert need.errors.full_messages.include?("This need already exists")
+      should "not save if an identical need already exists" do
+        Need.create!(@atts)
+        need = Need.new(@atts)
+
+        refute need.save
+        assert need.errors.full_messages.include?("This need already exists")
+      end
     end
 
     context "creating revisions" do
