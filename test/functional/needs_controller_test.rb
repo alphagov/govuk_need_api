@@ -459,6 +459,10 @@ class NeedsControllerTest < ActionController::TestCase
         @updates = {
           id: @need_instance.need_id,
           role: "council tax payer",
+          author: {
+            name: "Winston Smith-Churchill",
+            email: "winston@alphagov.co.uk"
+          }
         }
       end
 
