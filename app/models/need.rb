@@ -42,6 +42,16 @@ class Need
 
   index :organisation_ids
 
+  # uniqueness constraint to avoid simple forms of duplication
+  index(
+    [
+      [:role, Mongo::ASCENDING],
+      [:goal, Mongo::ASCENDING],
+      [:benefit, Mongo::ASCENDING]
+    ],
+    unique: true
+  )
+
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
             numericality: {
@@ -53,7 +63,6 @@ class Need
 
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
-  validate :need_is_unique, on: :create
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -65,6 +74,17 @@ class Need
       record_revision(action, user)
     end
     saved
+  end
+
+  def save(*args)
+    super
+  rescue Mongo::OperationFailure => e
+    if e.error_code == 11000  # Duplicate key error
+      errors.add(:base, "This need already exists")
+      return false
+    else
+      raise
+    end
   end
 
   private
@@ -126,13 +146,5 @@ class Need
 
     # return nil here so that it doesn't break the callback chain
     return
-  end
-
-  def need_is_unique
-    # this is a custom validation method instead of a `validate` statement because
-    # we want to customise the message and not set it on a single particular field
-    #
-    needs = Need.where(role: role, goal: goal, benefit: benefit)
-    errors.add(:base, "This need already exists") if needs.any?
   end
 end
