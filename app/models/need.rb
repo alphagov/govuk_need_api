@@ -42,6 +42,16 @@ class Need
 
   index :organisation_ids
 
+  # uniqueness constraint to avoid simple forms of duplication
+  index(
+    [
+      [:role, Mongo::ASCENDING],
+      [:goal, Mongo::ASCENDING],
+      [:benefit, Mongo::ASCENDING]
+    ],
+    unique: true
+  )
+
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
             numericality: {
@@ -64,6 +74,17 @@ class Need
       record_revision(action, user)
     end
     saved
+  end
+
+  def save(*args)
+    super
+  rescue Mongo::OperationFailure => e
+    if e.error_code == 11000  # Duplicate key error
+      errors.add(:base, "This need already exists")
+      return false
+    else
+      raise
+    end
   end
 
   private
