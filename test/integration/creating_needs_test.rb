@@ -115,7 +115,11 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "role" => "user",
       "goal" => "find out the minimum wage",
       "benefit" => "I can work out if I am being paid the correct amount",
-      "need_id" => 972
+      "need_id" => 972,
+      "author" => {
+        "name" => "Winston Smith-Churchill",
+        "email" => "winston@alphagov.co.uk"
+      }
     }.to_json
 
     post_json '/needs', request_body

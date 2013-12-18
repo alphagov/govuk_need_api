@@ -35,6 +35,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       legislation: "link#1\nlink#2",
       applies_to_all_organisations: true,
       in_scope: false,
+      duplicate_of: 100001,
       changesets: [
         { author: "Author 1" },
         { author: "Author 2" },
@@ -82,6 +83,8 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal "link#1\nlink#2", response[:legislation]
 
     assert_equal false, response[:in_scope]
+
+    assert_equal 100001, response[:duplicate_of]
 
     assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
   end

@@ -19,6 +19,7 @@ class Need
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
   field :in_scope, type: Boolean
+  field :duplicate_of, type: Integer, default: nil
 
   before_validation :default_booleans_to_false
   after_update :record_update_revision
@@ -39,6 +40,7 @@ class Need
 
   # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
   key :need_id
+  index :duplicate_of
 
   index :organisation_ids
 
@@ -63,17 +65,34 @@ class Need
 
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
+  validate :validate_duplicate
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
 
   def save_as(user)
     action = new_record? ? "create" : "update"
+    save_with_revision(action, user)
+  end
 
+  def close(canonical_id, user)
+    self.duplicate_of = canonical_id
+    save_with_revision("close", user)
+  end
+
+  def save_with_revision(action, user)
     if saved = save_without_callbacks
       record_revision(action, user)
     end
     saved
+  end
+
+  def has_duplicates?
+    Need.where(duplicate_of: need_id).exists?
+  end
+
+  def closed?
+    duplicate_of.present?
   end
 
   def save(*args)
@@ -105,6 +124,35 @@ class Need
       errors.add(
         :organisation_ids,
         "cannot exist if applies_to_all_organisations is set"
+      )
+    end
+  end
+
+  def validate_duplicate
+    return unless duplicate_of.present?
+    canonical_need = Need.where(need_id: duplicate_of).first
+    # There are various criteria for being a valid duplicate:
+    # the least obvious crierion is to not allow duplicate chains
+    # i.e. A -> B -> C
+    if canonical_need.nil?
+      errors.add(
+        :duplicate_of,
+        "The need ID doesn't exist"
+      )
+    elsif duplicate_of == need_id
+      errors.add(
+        :duplicate_of,
+        "A need cannot be a duplicate of itself"
+      )
+    elsif has_duplicates?
+      errors.add(
+        :duplicate_of,
+        "This need has duplicates, it can not be marked as a duplicate of another need"
+      )
+    elsif canonical_need.duplicate_of.present?
+      errors.add(
+        :duplicate_of,
+        "The need ID is already a duplicate of another need"
       )
     end
   end

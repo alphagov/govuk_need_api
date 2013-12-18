@@ -30,7 +30,8 @@ class NeedPresenter
       other_evidence: @need.other_evidence,
       legislation: @need.legislation,
       revisions: revisions,
-      in_scope: @need.in_scope
+      in_scope: @need.in_scope,
+      duplicate_of: @need.duplicate_of
     }
   end
 
