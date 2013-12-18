@@ -64,18 +64,17 @@ class Need
 
   def save_as(user)
     action = new_record? ? "create" : "update"
-
-    if saved = save_without_callbacks
-      record_revision(action, user)
-    end
-    saved
+    save_with_revision(action, user)
   end
 
   def close(canonical_id, user)
     self.duplicate_of = canonical_id
+    save_with_revision("close", user)
+  end
 
+  def save_with_revision(action, user)
     if saved = save_without_callbacks
-      record_revision("close", user)
+      record_revision(action, user)
     end
     saved
   end
