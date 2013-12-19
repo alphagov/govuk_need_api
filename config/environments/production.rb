@@ -64,5 +64,5 @@ GovukNeedApi::Application.configure do
   # Enable JSON-style logging
   config.logstasher.enabled = true
   config.logstasher.logger = Logger.new("#{Rails.root}/log/#{Rails.env}.json.log")
-  config.logstasher.supress_app_log = true
+  config.logstasher.suppress_app_log = true
 end
