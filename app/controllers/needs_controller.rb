@@ -1,6 +1,6 @@
 class NeedsController < ApplicationController
   before_filter :load_need
-  before_filter :check_for_author_params, only: [:create, :update, :closed]
+  before_filter :check_for_author_params, only: [:create, :update, :closed, :reopen]
 
   def index
     scope = Need
@@ -83,6 +83,20 @@ class NeedsController < ApplicationController
     end
 
     if @need.close(duplicate_of, author_params)
+      render nothing: true, status: 204
+    else
+      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+    end
+  end
+
+  def reopen
+    unless @need.closed?
+      error 404, message: :not_found, error: "This need is not closed"
+      return
+    end
+
+    if @need.reopen(author_params)
+      @need.reload
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages

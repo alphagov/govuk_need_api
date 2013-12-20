@@ -617,4 +617,69 @@ class NeedsControllerTest < ActionController::TestCase
       end
     end
   end
+
+  context "DELETE reopen" do
+    setup do
+      @canonical = FactoryGirl.create(:need)
+      @duplicate = FactoryGirl.create(:need)
+      @closed = {
+        id: @duplicate.need_id,
+        duplicate_of: @canonical.need_id
+      }
+      @author = {
+        author: {
+          name: "Winston Smith-Churchill",
+          email: "winston@alphagov.co.uk"
+        }
+      }
+    end
+
+    context "given a closed need" do
+      setup do
+        @closed_with_author = @closed.merge @author
+        put :closed, @closed_with_author
+      end
+
+      should "return a success response" do
+        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        assert_response 204
+      end
+
+      should "not have duplicate_of set" do
+        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        reopened = Need.find(@duplicate.need_id)
+        refute reopened.duplicate_of
+      end
+
+      should "return a 422 if no author details are present" do
+        delete :reopen, { id: @duplicate.need_id }
+        assert_response 422
+      end
+
+      should "contain an error message" do
+        delete :reopen, { id: @duplicate.need_id }
+        assert JSON.parse(response.body)["errors"]
+      end
+
+      should "return a 422 if reopen fails" do
+        Need.any_instance.expects(:reopen).returns(false)
+        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        assert_response 422
+      end
+    end
+
+    context "given an open need" do
+      setup do
+        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+      end
+
+      should "not be able to reopen an open need" do
+        assert_response 404
+      end
+
+      should "contain an error message" do
+        assert JSON.parse(response.body)["error"]
+      end
+    end
+  end
 end
