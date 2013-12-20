@@ -478,7 +478,7 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "PUT closed" do
     setup do
-      @main_need = FactoryGirl.create(:need)
+      @canonical_need = FactoryGirl.create(:need)
       @duplicate = FactoryGirl.create(:need)
     end
 
@@ -486,7 +486,7 @@ class NeedsControllerTest < ActionController::TestCase
       setup do
         @closed = {
           id: @duplicate.need_id,
-          duplicate_of: @main_need.need_id
+          duplicate_of: @canonical_need.need_id
         }
         GovukNeedApi.indexer.stubs(:index)
       end
@@ -508,7 +508,7 @@ class NeedsControllerTest < ActionController::TestCase
           put :closed, @closed_with_author
 
           closed_need = Need.find(@duplicate.need_id)
-          assert_equal @main_need.need_id, closed_need.duplicate_of
+          assert_equal @canonical_need.need_id, closed_need.duplicate_of
         end
 
         should "leave existing values unchanged" do
