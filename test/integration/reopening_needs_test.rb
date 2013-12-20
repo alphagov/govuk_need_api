@@ -6,9 +6,9 @@ class ReopeningNeedsTest < ActionDispatch::IntegrationTest
     login_as_stub_user
     use_test_index
     Timecop.freeze(-2) do # Avoid race condition on creation timestamps
-      @main_need = FactoryGirl.create(:need, role: "parent",
-                                             goal: "find out school holiday dates for my local school",
-                                             benefit: "I can plan around my child's education")
+      @canonical_need = FactoryGirl.create(:need, role: "parent",
+                                                  goal: "find out school holiday dates for my local school",
+                                                  benefit: "I can plan around my child's education")
       @duplicate = FactoryGirl.create(:need, role: "grand-parent",
                                              goal: "find out school holiday dates for my local school",
                                              benefit: "I can plan around my grandchild's education")
@@ -21,7 +21,7 @@ class ReopeningNeedsTest < ActionDispatch::IntegrationTest
     end
     Timecop.freeze(-1) do
       put("/needs/#{@duplicate.need_id}/closed",
-          @author.merge(duplicate_of: @main_need.need_id))
+          @author.merge(duplicate_of: @canonical_need.need_id))
     end
   end
 
@@ -42,6 +42,9 @@ class ReopeningNeedsTest < ActionDispatch::IntegrationTest
 
     @duplicate.reload
     refute @duplicate.duplicate_of
+
+    @canonical_need.reload
+    refute @canonical_need.has_duplicates?
   end
 
   should "404 if the need doesn't exist" do
