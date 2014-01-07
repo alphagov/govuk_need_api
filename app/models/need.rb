@@ -80,6 +80,11 @@ class Need
     save_with_revision("close", user)
   end
 
+  def reopen(user)
+    self.duplicate_of = nil
+    save_with_revision("reopen", user)
+  end
+
   def save_with_revision(action, user)
     if saved = save_without_callbacks
       record_revision(action, user)

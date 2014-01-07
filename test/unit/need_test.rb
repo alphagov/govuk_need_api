@@ -336,37 +336,37 @@ class NeedTest < ActiveSupport::TestCase
     end
   end
 
-  context "duplicate needs" do
-    def set_duplicate(need, main_need_id)
-      need.close(main_need_id,
+  context "duplicated needs" do
+    def set_duplicate(need, canonical_id)
+      need.close(canonical_id,
                  name: "Winston Smith-Churchill",
                  email: "winston@alphagov.co.uk")
     end
 
     setup do
-      @main_need = FactoryGirl.create(:need, goal: "pay my car tax")
+      @canonical_need = FactoryGirl.create(:need, goal: "pay my car tax")
       @duplicate_need = FactoryGirl.create(:need, goal: "tax my car")
       @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
     end
 
     should "have no duplicates by default" do
-      refute @main_need.has_duplicates?
+      refute @canonical_need.has_duplicates?
     end
 
     should "not be closed by default" do
-      refute @main_need.closed?
+      refute @canonical_need.closed?
     end
 
-    context "inferior needs" do
+    context "duplicate needs" do
       should "be able to set a need as a duplicate" do
-        set_duplicate(@duplicate_need, @main_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
 
-        assert_equal(@main_need.need_id, @duplicate_need.duplicate_of)
+        assert_equal(@canonical_need.need_id, @duplicate_need.duplicate_of)
       end
 
       should "be closed once it is closed" do
-        set_duplicate(@duplicate_need, @main_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
 
         assert @duplicate_need.closed?
@@ -387,7 +387,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "be invalid if given a need id already marked as a duplicate" do
-        set_duplicate(@duplicate_need, @main_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
         set_duplicate(@triplicate_need, @duplicate_need.need_id)
 
@@ -396,30 +396,57 @@ class NeedTest < ActiveSupport::TestCase
       end
     end
 
-    context "superior needs" do
+    context "canonical needs" do
       should "show it has a duplicate" do
-        set_duplicate(@duplicate_need, @main_need.need_id)
-        @main_need.reload
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
+        @canonical_need.reload
 
-        assert @main_need.has_duplicates?
+        assert @canonical_need.has_duplicates?
       end
 
       should "show it has multiple duplicates" do
-        set_duplicate(@duplicate_need, @main_need.need_id)
-        set_duplicate(@triplicate_need, @main_need.need_id)
-        @main_need.reload
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
+        set_duplicate(@triplicate_need, @canonical_need.need_id)
+        @canonical_need.reload
 
-        assert @main_need.has_duplicates?
+        assert @canonical_need.has_duplicates?
       end
 
       should "not allow duplicate chains" do
         set_duplicate(@triplicate_need, @duplicate_need.need_id)
-        set_duplicate(@duplicate_need, @main_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
 
         refute @duplicate_need.valid?
         assert @duplicate_need.errors.has_key?(:duplicate_of)
       end
     end
-  end
 
+    context "reopening needs" do
+      def reopen(need)
+        need.reopen(name: "Winston Smith-Churchill",
+                    email: "winston@alphagov.co.uk")
+        need.reload
+      end
+
+      setup do
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
+        @duplicate_need.reload
+      end
+
+      should "no longer be closed" do
+        reopen(@duplicate_need)
+        refute @duplicate_need.closed?
+      end
+
+      should "not have duplicate_of set" do
+        reopen(@duplicate_need)
+        assert_nil @duplicate_need.duplicate_of
+      end
+
+      should "mark the canonical need as having no duplicates" do
+        reopen(@duplicate_need)
+        refute @canonical_need.has_duplicates?
+      end
+    end
+  end
 end

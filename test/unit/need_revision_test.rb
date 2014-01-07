@@ -29,7 +29,7 @@ class NeedRevisionTest < ActiveSupport::TestCase
       end
     end
 
-    should "be invalid if the action type is not 'create' or 'update'" do
+    should "be invalid if the action type is not recognised" do
       revision = NeedRevision.new(@atts.merge(action_type: "replace"))
 
       refute revision.valid?
