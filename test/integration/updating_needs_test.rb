@@ -79,4 +79,14 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
 
     assert_equal "Author details must be provided", body["errors"].first
   end
+
+  should "refuse to update the need if duplicate_of is present" do
+    canonical_need = FactoryGirl.create(:need)
+    put "/needs/#{@need.need_id}", @author.merge(duplicate_of: canonical_need.need_id, benefit: "Stuff")
+    assert_equal 422, last_response.status
+
+    body = JSON.parse(last_response.body)
+    assert_equal "invalid_attributes", body["_response_info"]["status"]
+    assert_equal "'Duplicate Of' ID cannot be set with an update", body["errors"].first
+  end
 end

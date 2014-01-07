@@ -66,6 +66,11 @@ class NeedsController < ApplicationController
       return
     end
 
+    if params["duplicate_of"]
+      error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set with an update"]
+      return
+    end
+
     @need.assign_attributes(filtered_params)
     if @need.valid? and @need.save_as(author_params)
       try_index_need(@need)
