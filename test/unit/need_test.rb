@@ -344,29 +344,29 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     setup do
-      @canoncial_need = FactoryGirl.create(:need, goal: "pay my car tax")
+      @canonical_need = FactoryGirl.create(:need, goal: "pay my car tax")
       @duplicate_need = FactoryGirl.create(:need, goal: "tax my car")
       @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
     end
 
     should "have no duplicates by default" do
-      refute @canoncial_need.has_duplicates?
+      refute @canonical_need.has_duplicates?
     end
 
     should "not be closed by default" do
-      refute @canoncial_need.closed?
+      refute @canonical_need.closed?
     end
 
     context "duplicate needs" do
       should "be able to set a need as a duplicate" do
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
 
-        assert_equal(@canoncial_need.need_id, @duplicate_need.duplicate_of)
+        assert_equal(@canonical_need.need_id, @duplicate_need.duplicate_of)
       end
 
       should "be closed once it is closed" do
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
 
         assert @duplicate_need.closed?
@@ -387,7 +387,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "be invalid if given a need id already marked as a duplicate" do
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
         set_duplicate(@triplicate_need, @duplicate_need.need_id)
 
@@ -398,23 +398,23 @@ class NeedTest < ActiveSupport::TestCase
 
     context "canonical needs" do
       should "show it has a duplicate" do
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
-        @canoncial_need.reload
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
+        @canonical_need.reload
 
-        assert @canoncial_need.has_duplicates?
+        assert @canonical_need.has_duplicates?
       end
 
       should "show it has multiple duplicates" do
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
-        set_duplicate(@triplicate_need, @canoncial_need.need_id)
-        @canoncial_need.reload
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
+        set_duplicate(@triplicate_need, @canonical_need.need_id)
+        @canonical_need.reload
 
-        assert @canoncial_need.has_duplicates?
+        assert @canonical_need.has_duplicates?
       end
 
       should "not allow duplicate chains" do
         set_duplicate(@triplicate_need, @duplicate_need.need_id)
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
 
         refute @duplicate_need.valid?
         assert @duplicate_need.errors.has_key?(:duplicate_of)
@@ -429,7 +429,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       setup do
-        set_duplicate(@duplicate_need, @canoncial_need.need_id)
+        set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
       end
 
@@ -445,7 +445,7 @@ class NeedTest < ActiveSupport::TestCase
 
       should "mark the canonical need as having no duplicates" do
         reopen(@duplicate_need)
-        refute @canoncial_need.has_duplicates?
+        refute @canonical_need.has_duplicates?
       end
     end
   end
