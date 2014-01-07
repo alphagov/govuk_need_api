@@ -96,7 +96,6 @@ class NeedsController < ApplicationController
     end
 
     if @need.reopen(author_params)
-      @need.reload
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
