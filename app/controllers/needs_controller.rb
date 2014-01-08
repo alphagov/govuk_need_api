@@ -77,7 +77,7 @@ class NeedsController < ApplicationController
 
   def closed
     if @need.closed?
-      error 409, message: "This need has already closed"
+      error 409, message: "This need has already been closed"
       return
     end
 
