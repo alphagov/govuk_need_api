@@ -66,7 +66,7 @@ class NeedsController < ApplicationController
       return
     end
 
-    if params["duplicate_of"]
+    if params.has_key? "duplicate_of"
       error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set with an update"]
       return
     end
