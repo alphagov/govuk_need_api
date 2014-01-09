@@ -408,6 +408,17 @@ class NeedsControllerTest < ActionController::TestCase
           assert_response 422
         end
 
+        should "not accept duplicate_of as a parameter" do
+          canonical_need = FactoryGirl.create(:need)
+          put :update, @updates_with_author.merge(duplicate_of: canonical_need.need_id)
+          body = JSON.parse(response.body)
+          assert_response 422
+          assert_equal(
+            "'Duplicate Of' ID cannot be set with an update",
+            body["errors"].first
+          )
+        end
+
         should "return an error in the response" do
           put :update, @updates_with_author
 
