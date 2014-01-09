@@ -482,7 +482,7 @@ class NeedsControllerTest < ActionController::TestCase
       @duplicate = FactoryGirl.create(:need)
     end
 
-    context "given a valid update" do
+    context "given a valid close" do
       setup do
         @closed = {
           id: @duplicate.need_id,
@@ -525,6 +525,14 @@ class NeedsControllerTest < ActionController::TestCase
           GovukNeedApi.indexer.expects(:index).never
 
           put :closed, @closed_with_author
+        end
+
+        should "only be able to close once (without reopening)" do
+          @duplicate.duplicate_of = @canonical_need.need_id
+          @duplicate.save
+
+          put :closed, @closed_with_author
+          assert_response 409
         end
       end
 

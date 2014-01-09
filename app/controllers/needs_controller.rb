@@ -76,6 +76,11 @@ class NeedsController < ApplicationController
   end
 
   def closed
+    if @need.closed?
+      error 409, message: "This need has already been closed"
+      return
+    end
+
     duplicate_of = params["duplicate_of"]
     unless duplicate_of.present?
       error 422, message: :duplicate_of_not_provided, errors: ["'Duplicate Of' id must be provided"]

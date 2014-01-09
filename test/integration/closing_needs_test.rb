@@ -60,4 +60,14 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "Winston Smith-Churchill", revision.author["name"]
     assert_equal "winston@alphagov.co.uk", revision.author["email"]
   end
+
+  should "409 if the need is already closed" do
+    put("/needs/#{@duplicate.need_id}/closed",
+        @author.merge(duplicate_of: @main_need.need_id))
+    assert [200, 204].include?(last_response.status)
+
+    put("/needs/#{@duplicate.need_id}/closed",
+        @author.merge(duplicate_of: @main_need.need_id))
+    assert_equal 409, last_response.status
+  end
 end
