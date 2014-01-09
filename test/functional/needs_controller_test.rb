@@ -528,8 +528,8 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "only be able to close once (without reopening)" do
-          put :closed, @closed_with_author
-          assert_response 204
+          @duplicate.duplicate_of = @canonical_need.need_id
+          @duplicate.save
 
           put :closed, @closed_with_author
           assert_response 409
