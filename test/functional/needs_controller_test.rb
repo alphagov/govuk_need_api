@@ -267,6 +267,20 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal 1, body["errors"].length
           assert_equal "Goal can't be blank", body["errors"].first
         end
+
+        context "`duplicate_of` set" do
+          setup do
+            @canonical_need = FactoryGirl.create(:need)
+          end
+
+          should "not accept `duplicate_of` with a value in the parameters" do
+            post :create, @need_with_author.merge(duplicate_of: @canonical_need.need_id)
+
+            body = JSON.parse(response.body)
+            assert_response 422
+            assert_equal "'Duplicate Of' ID cannot be set during create", body["errors"].first
+          end
+        end
       end
 
       context "without author details" do
@@ -408,13 +422,13 @@ class NeedsControllerTest < ActionController::TestCase
           assert_response 422
         end
 
-        should "not accept duplicate_of as a parameter" do
+        should "not accept a different duplicate_of value as a parameter" do
           canonical_need = FactoryGirl.create(:need)
           put :update, @updates_with_author.merge(duplicate_of: canonical_need.need_id)
           body = JSON.parse(response.body)
           assert_response 422
           assert_equal(
-            "'Duplicate Of' ID cannot be set with an update",
+            "'Duplicate Of' ID cannot be changed with an update",
             body["errors"].first
           )
         end
