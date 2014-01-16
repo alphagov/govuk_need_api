@@ -164,6 +164,11 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "contact them about a local enquiry", body["benefit"]
         end
 
+        should "ignore `duplicate_of` if the value is nil" do
+          post :create, @need_with_author.merge(duplicate_of: nil)
+          assert_response :created
+        end
+
         should "attempt to index the new need" do
           indexable_need = stub("indexable need")
           Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
@@ -338,6 +343,11 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "council tax payer", updated_need.role
           assert_equal ["legislation"], updated_need.justifications
           assert_equal 726, updated_need.yearly_user_contacts
+        end
+
+        should "ignore `duplicate_of` if the value is nil" do
+          put :update, @updates_with_author.merge(duplicate_of: nil)
+          assert_response 204
         end
 
         should "leave existing values unchanged" do
