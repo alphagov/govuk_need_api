@@ -87,6 +87,6 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
 
     body = JSON.parse(last_response.body)
     assert_equal "invalid_attributes", body["_response_info"]["status"]
-    assert_equal "'Duplicate Of' ID cannot be set with an update", body["errors"].first
+    assert_equal "'Duplicate Of' ID cannot be changed with an update", body["errors"].first
   end
 end

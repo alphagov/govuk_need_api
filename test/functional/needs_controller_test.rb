@@ -164,6 +164,11 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "contact them about a local enquiry", body["benefit"]
         end
 
+        should "ignore `duplicate_of` if the value is nil" do
+          post :create, @need_with_author.merge(duplicate_of: nil)
+          assert_response :created
+        end
+
         should "attempt to index the new need" do
           indexable_need = stub("indexable need")
           Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
@@ -267,6 +272,20 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal 1, body["errors"].length
           assert_equal "Goal can't be blank", body["errors"].first
         end
+
+        context "`duplicate_of` set" do
+          setup do
+            @canonical_need = FactoryGirl.create(:need)
+          end
+
+          should "not accept `duplicate_of` with a value in the parameters" do
+            post :create, @need_with_author.merge(duplicate_of: @canonical_need.need_id)
+
+            body = JSON.parse(response.body)
+            assert_response 422
+            assert_equal "'Duplicate Of' ID cannot be set during create", body["errors"].first
+          end
+        end
       end
 
       context "without author details" do
@@ -324,6 +343,11 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "council tax payer", updated_need.role
           assert_equal ["legislation"], updated_need.justifications
           assert_equal 726, updated_need.yearly_user_contacts
+        end
+
+        should "ignore `duplicate_of` if the value is nil" do
+          put :update, @updates_with_author.merge(duplicate_of: nil)
+          assert_response 204
         end
 
         should "leave existing values unchanged" do
@@ -408,13 +432,13 @@ class NeedsControllerTest < ActionController::TestCase
           assert_response 422
         end
 
-        should "not accept duplicate_of as a parameter" do
+        should "not accept a different duplicate_of value as a parameter" do
           canonical_need = FactoryGirl.create(:need)
           put :update, @updates_with_author.merge(duplicate_of: canonical_need.need_id)
           body = JSON.parse(response.body)
           assert_response 422
           assert_equal(
-            "'Duplicate Of' ID cannot be set with an update",
+            "'Duplicate Of' ID cannot be changed with an update",
             body["errors"].first
           )
         end

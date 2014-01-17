@@ -37,6 +37,12 @@ class NeedsController < ApplicationController
       )
       return
     end
+
+    if filtered_params["duplicate_of"]
+      error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set during create"]
+      return
+    end
+
     @need = Need.new(filtered_params)
 
     if @need.save_as(author_params)
@@ -66,8 +72,8 @@ class NeedsController < ApplicationController
       return
     end
 
-    if params.has_key? "duplicate_of"
-      error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set with an update"]
+    if params["duplicate_of"] != @need.duplicate_of
+      error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be changed with an update"]
       return
     end
 
