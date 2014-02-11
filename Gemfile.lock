@@ -68,7 +68,7 @@ GEM
       null_logger
       plek
       rest-client (~> 1.6.3)
-    gds-sso (9.2.1)
+    gds-sso (9.2.2)
       omniauth-gds (>= 3.0.0)
       rack-accept (~> 0.4.4)
       rails (>= 3.0.0)
@@ -205,7 +205,7 @@ DEPENDENCIES
   exception_notification (= 2.6.1)
   factory_girl_rails (= 4.2.1)
   gds-api-adapters (= 7.19.0)
-  gds-sso (= 9.2.1)
+  gds-sso (= 9.2.2)
   kaminari (= 0.14.1)
   logstasher (= 0.4.1)
   mocha (= 0.14.0)
