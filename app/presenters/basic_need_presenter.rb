@@ -21,6 +21,7 @@ class BasicNeedPresenter
       organisations: organisations,
       applies_to_all_organisations: @need.applies_to_all_organisations,
       in_scope: @need.in_scope,
+      out_of_scope_reason: @need.out_of_scope_reason,
       duplicate_of: @need.duplicate_of
     }
   end
