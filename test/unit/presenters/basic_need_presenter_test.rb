@@ -15,6 +15,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
       ],
       applies_to_all_organisations: true,
       in_scope: false,
+      out_of_scope_reason: "foo",
       duplicate_of: 100001
     )
     @presenter = BasicNeedPresenter.new(@need)
@@ -38,6 +39,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal true, response[:applies_to_all_organisations]
     assert_equal false, response[:in_scope]
+    assert_equal "foo", response[:out_of_scope_reason]
 
     assert_equal 100001, response[:duplicate_of]
   end

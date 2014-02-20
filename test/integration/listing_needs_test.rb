@@ -34,7 +34,8 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
                          goal: "search for jobs",
                          benefit: "I can get into work",
                          organisation_ids: ["department-for-work-and-pensions", "hm-treasury"],
-                         in_scope: false)
+                         in_scope: false,
+                         out_of_scope_reason: "foo")
     end
 
     should "return basic information about all the needs" do

@@ -19,6 +19,7 @@ class Need
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
   field :in_scope, type: Boolean
+  field :out_of_scope_reason, type: String
   field :duplicate_of, type: Integer, default: nil
 
   before_validation :default_booleans_to_false
@@ -66,6 +67,7 @@ class Need
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
   validate :validate_duplicate
+  validate :validate_out_of_scope
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -162,6 +164,15 @@ class Need
       errors.add(
         :duplicate_of,
         "The need ID is already a duplicate of another need"
+      )
+    end
+  end
+
+  def validate_out_of_scope
+    if out_of_scope_reason.blank? && in_scope == false
+      errors.add(
+        :out_of_scope_reason,
+        "A reason is required to mark a need as out of scope"
       )
     end
   end

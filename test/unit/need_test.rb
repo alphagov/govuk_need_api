@@ -24,7 +24,8 @@ class NeedTest < ActiveSupport::TestCase
         other_evidence: "Other evidence",
         legislation: "link#1\nlink#2",
         applies_to_all_organisations: false,
-        in_scope: false
+        in_scope: false,
+        out_of_scope_reason: "foo"
       }
     end
 
@@ -51,6 +52,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "link#1\nlink#2", need.legislation
       assert_equal false, need.applies_to_all_organisations
       assert_equal false, need.in_scope
+      assert_equal "foo", need.out_of_scope_reason
     end
 
     context "assigning need ids" do
@@ -199,6 +201,13 @@ class NeedTest < ActiveSupport::TestCase
 
       refute need.valid?
       assert need.errors.has_key?(:in_scope)
+    end
+
+    should "be invalid if out_of_scope_reason is not set when in_scope is false" do
+      need = Need.new(@atts.merge(:out_of_scope_reason => ""))
+
+      refute need.valid?
+      assert need.errors.has_key?(:out_of_scope_reason)
     end
 
     context "with indexes set up" do
