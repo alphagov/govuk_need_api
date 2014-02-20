@@ -1,7 +1,8 @@
 class AddOutOfScopeReason < Mongoid::Migration
   def self.up
     Need.all.each do |need|
-      need.set(:out_of_scope_reason, nil)
+      value = need.in_scope == false ? "closed" : nil
+      need.set(:out_of_scope_reason, value)
     end
   end
 
