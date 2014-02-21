@@ -16,9 +16,20 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
       created_at: Time.parse("2013-01-01")
     )
 
+    note = OpenStruct.new(
+      text: "test",
+      author: {
+        name: "Sir John Anderson",
+        email: "jock@alphagov.co.uk",
+        uid: "j0hn"
+      },
+      created_at: Time.parse("2013-01-02")
+    )
+
     @changeset = OpenStruct.new(
       current: current,
-      changes: { role: [ "user", "home owner" ] }
+      changes: { role: [ "user", "home owner" ] },
+      notes: [note]
     )
   end
 
@@ -34,5 +45,12 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
     assert_equal Time.parse("2013-01-01"), response[:created_at]
 
     assert_equal ["user", "home owner"], response[:changes][:role]
+
+    note = response[:notes][0]
+    assert_equal "test", note[:text]
+    assert_equal "Sir John Anderson", note[:author][:name]
+    assert_equal "jock@alphagov.co.uk", note[:author][:email]
+    assert_equal "j0hn", note[:author][:uid]
+    assert_equal Time.parse("2013-01-02"), note[:created_at]
   end
 end

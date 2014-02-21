@@ -38,4 +38,13 @@ class NeedWithChangesetsTest < ActiveSupport::TestCase
       ]
     }
   end
+
+  should "fetch notes" do
+    @revisions.map { |revision|
+      { revision: revision.id }
+    }.each do |search_term|
+      Note.expects(:where).with(search_term)
+    end
+    @decorator.changesets
+  end
 end

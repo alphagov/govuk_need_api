@@ -17,9 +17,25 @@ class ChangesetTest < ActiveSupport::TestCase
   end
 
   should "delegate methods to the provided revision" do
-    change = Changeset.new(@revision, nil)
+    change = Changeset.new(@revision, nil, nil)
     assert_equal "Winston Smith-Churchill", change.current.author[:name]
     assert_equal Time.parse("2013-10-01 10:00:00"), change.current.created_at
+  end
+
+  should "attach notes to a revision" do
+    notes = [
+      {
+        text: "test",
+        author: {
+          name: "Winston Smith-Churchill"
+        },
+        created_at: Time.parse("2013-10-02 10:00:00")
+      }
+    ]
+    change = Changeset.new(@revision, nil, notes)
+    assert_equal "test", change.notes[0][:text]
+    assert_equal Time.parse("2013-10-02 10:00:00"), change.notes[0][:created_at]
+    assert_equal "Winston Smith-Churchill", change.notes[0][:author][:name]
   end
 
   context "calculating the changes with a previous revision" do
@@ -36,7 +52,7 @@ class ChangesetTest < ActiveSupport::TestCase
         benefit: [ "I can drive my car for a year", "I can drive my car" ]
       }
 
-      changes = Changeset.new(@revision, previous_revision).changes
+      changes = Changeset.new(@revision, previous_revision, nil).changes
 
       assert_equal expected_changes, changes
     end
@@ -51,7 +67,7 @@ class ChangesetTest < ActiveSupport::TestCase
       expected_changes = {
         benefit: [ nil, "I can drive my car" ]
       }
-      changes = Changeset.new(@revision, previous_revision).changes
+      changes = Changeset.new(@revision, previous_revision, nil).changes
 
       assert_equal expected_changes, changes
     end
@@ -68,7 +84,7 @@ class ChangesetTest < ActiveSupport::TestCase
       expected_changes = {
         justification: [[ "Only government does this" ], nil ]
       }
-      changes = Changeset.new(@revision, previous_revision).changes
+      changes = Changeset.new(@revision, previous_revision, nil).changes
 
       assert_equal expected_changes, changes
     end
@@ -79,7 +95,7 @@ class ChangesetTest < ActiveSupport::TestCase
         goal: [nil, "pay my car tax"],
         benefit: [nil, "I can drive my car"]
       }
-      changes = Changeset.new(@revision, nil).changes
+      changes = Changeset.new(@revision, nil, nil).changes
 
       assert_equal expected_changes, changes
     end
