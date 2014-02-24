@@ -45,6 +45,10 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
     assert_equal Time.parse("2013-01-01"), response[:created_at]
 
     assert_equal ["user", "home owner"], response[:changes][:role]
+  end
+
+  should "return notes as part of the changset" do
+    response = ChangesetPresenter.new(@changeset).present
 
     note = response[:notes][0]
     assert_equal "test", note[:text]
