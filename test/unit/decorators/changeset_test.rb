@@ -17,7 +17,7 @@ class ChangesetTest < ActiveSupport::TestCase
   end
 
   should "delegate methods to the provided revision" do
-    change = Changeset.new(@revision, nil, nil)
+    change = Changeset.new(@revision, nil)
     assert_equal "Winston Smith-Churchill", change.current.author[:name]
     assert_equal Time.parse("2013-10-01 10:00:00"), change.current.created_at
   end
@@ -52,7 +52,7 @@ class ChangesetTest < ActiveSupport::TestCase
         benefit: [ "I can drive my car for a year", "I can drive my car" ]
       }
 
-      changes = Changeset.new(@revision, previous_revision, nil).changes
+      changes = Changeset.new(@revision, previous_revision).changes
 
       assert_equal expected_changes, changes
     end
@@ -67,7 +67,7 @@ class ChangesetTest < ActiveSupport::TestCase
       expected_changes = {
         benefit: [ nil, "I can drive my car" ]
       }
-      changes = Changeset.new(@revision, previous_revision, nil).changes
+      changes = Changeset.new(@revision, previous_revision).changes
 
       assert_equal expected_changes, changes
     end
@@ -84,7 +84,7 @@ class ChangesetTest < ActiveSupport::TestCase
       expected_changes = {
         justification: [[ "Only government does this" ], nil ]
       }
-      changes = Changeset.new(@revision, previous_revision, nil).changes
+      changes = Changeset.new(@revision, previous_revision).changes
 
       assert_equal expected_changes, changes
     end
@@ -95,7 +95,7 @@ class ChangesetTest < ActiveSupport::TestCase
         goal: [nil, "pay my car tax"],
         benefit: [nil, "I can drive my car"]
       }
-      changes = Changeset.new(@revision, nil, nil).changes
+      changes = Changeset.new(@revision, nil).changes
 
       assert_equal expected_changes, changes
     end
