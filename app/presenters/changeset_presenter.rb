@@ -9,11 +9,11 @@ class ChangesetPresenter
       author: @changeset.current.author,
       changes: @changeset.changes,
       created_at: @changeset.current.created_at,
-      notes: @changeset.notes.map { |n|
+      notes: @changeset.notes.map { |note|
         {
-          text: n.text,
-          author: n.author,
-          created_at: n.created_at
+          text: note.text,
+          author: note.author,
+          created_at: note.created_at
         }
       }
     }
