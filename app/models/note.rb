@@ -7,7 +7,7 @@ class Note
   field :author, type: Hash
   field :revision, type: String
 
-  default_scope order_by([:_id, :desc])
+  default_scope order_by([:created_at, :desc])
 
   def save
     need = Need.find(need_id)
