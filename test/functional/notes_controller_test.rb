@@ -28,12 +28,12 @@ class NotesControllerTest < ActionController::TestCase
       assert_equal stub_user.email, note.author["email"]
     end
 
-    should "return a 422 if saving fails" do
-      Note.any_instance.expects(:save).returns(false)
+    should "show errors if a note is not valid" do
+      post :create, @note.except(:text)
 
-      post :create, @note
-
+      body = JSON.parse(response.body)
       assert_equal 422, response.status
+      assert_equal "invalid_attributes", body["_response_info"]["status"]
     end
   end
 end
