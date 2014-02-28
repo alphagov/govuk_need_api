@@ -2,10 +2,12 @@
 class Changeset
 
   attr_reader :current, :previous
+  attr_reader :notes
 
-  def initialize(current, previous)
+  def initialize(current, previous, notes=[])
     @current = current
     @previous = previous
+    @notes = notes
   end
 
   # This method returns the changes between the current revision and its

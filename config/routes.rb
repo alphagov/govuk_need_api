@@ -1,6 +1,8 @@
 GovukNeedApi::Application.routes.draw do
   resources :organisations, :only => :index
   resources :needs, :except => [:new, :edit]
+  resources :notes, :only => [:create]
+
   put '/needs/:id/closed', to: 'needs#closed'
   delete '/needs/:id/closed', to: 'needs#reopen'
 
