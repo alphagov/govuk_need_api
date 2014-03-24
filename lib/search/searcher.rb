@@ -19,7 +19,8 @@ module Search
               # is searched for on the numeric need_id field.
               "lenient" => true
             }
-          }
+          },
+          "size" => 50,
         }
       )
 

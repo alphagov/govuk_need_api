@@ -14,21 +14,69 @@ class SearcherTest < ActiveSupport::TestCase
     }
   end
 
-  should "do a search" do
-    expected_body = body_for_query("cheese")
-    client = mock("client") do
-      expects(:search).with(
-        index: "foo",
-        type: "bang",
-        body: expected_body
-      ).returns(
-        "hits" => {
-          "hits" => [
-            { "_source" => { "role" => "fishmonger" } }
-          ]
-        }
-      )
-    end
+  def single_result_response
+    {
+      "hits" => {
+        "hits" => [
+          { "_source" => { "role" => "fishmonger" } }
+        ]
+      }
+    }
+  end
+
+  should "send a multi_match query to the need API" do
+    client = mock("client")
+    client.expects(:search).with { |search_params|
+      search_params[:body]["query"].keys == ["multi_match"]
+    }.returns(single_result_response)
+
+    Search::Searcher.new(client, "foo", "bang").search("baz")
+  end
+
+  should "search on the _all field and the need_id field" do
+    client = mock("client")
+    client.expects(:search).with { |search_params|
+      query_params = search_params[:body]["query"].values.first
+      query_params["fields"].include? "_all"
+      query_params["fields"].include? "need_id"
+    }.returns(single_result_response)
+
+    Search::Searcher.new(client, "foo", "bang").search("baz")
+  end
+
+  should "do a lenient search" do
+    client = mock("client")
+    client.expects(:search).with { |search_params|
+      query_params = search_params[:body]["query"].values.first
+      query_params["lenient"] == true
+    }.returns(single_result_response)
+
+    Search::Searcher.new(client, "foo", "bang").search("baz")
+  end
+
+  should "pass the original query" do
+    client = mock("client")
+    client.expects(:search).with { |search_params|
+      query_params = search_params[:body]["query"].values.first
+      query_params["query"] == "baz"
+    }.returns(single_result_response)
+
+    Search::Searcher.new(client, "foo", "bang").search("baz")
+  end
+
+  should "ask for 50 results" do
+    client = mock("client")
+    client.expects(:search).with { |search_params|
+      query_params = search_params[:body]["query"].values.first
+      query_params["query"] == "baz"
+    }.returns(single_result_response)
+
+    Search::Searcher.new(client, "foo", "bang").search("baz")
+  end
+
+  should "parse out the search results" do
+    client = mock("client")
+    client.expects(:search).returns(single_result_response)
 
     results = Search::Searcher.new(client, "foo", "bang").search("cheese")
     assert_equal ["fishmonger"], results.map(&:role)
