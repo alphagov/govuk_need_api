@@ -1,3 +1,5 @@
+require "link_header"
+
 class NeedsController < ApplicationController
   before_filter :load_need
   before_filter :check_for_author_params, only: [:create, :update, :closed, :reopen]
@@ -14,8 +16,11 @@ class NeedsController < ApplicationController
     end
     @needs = scope.page(params[:page])
 
+    presenter = NeedResultSetPresenter.new(@needs, view_context)
+    response.headers["Link"] = LinkHeader.new(presenter.links).to_s
+
     set_expiry 0
-    render json: NeedResultSetPresenter.new(@needs, view_context).as_json
+    render json: presenter.as_json
   end
 
   def show

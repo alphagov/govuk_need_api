@@ -1,3 +1,5 @@
+require 'link_header'
+
 class NeedResultSetPresenter
   def initialize(needs, view_context)
     @needs = needs
@@ -8,7 +10,7 @@ class NeedResultSetPresenter
     {
       _response_info: {
         status: "ok",
-        links: links
+        links: links.map {|l| { "href" => l.href }.merge(l.attrs) }
       },
       total: @needs.count,
       current_page: @needs.current_page,
@@ -19,6 +21,10 @@ class NeedResultSetPresenter
     }
   end
 
+  def links
+    @links ||= build_links
+  end
+
   private
   def results
     @needs.map {|need|
@@ -26,27 +32,27 @@ class NeedResultSetPresenter
     }
   end
 
-  def links
+  def build_links
     [].tap {|links|
 
       unless @needs.first_page?
-        links << {
-          rel: "previous",
-          href: @view_context.needs_url(page: @needs.current_page-1)
-        }
+        links << LinkHeader::Link.new(
+          @view_context.needs_url(page: @needs.current_page-1),
+          [["rel", "previous"]]
+        )
       end
 
       unless @needs.last_page?
-        links << {
-          rel: "next",
-          href: @view_context.needs_url(page: @needs.current_page+1)
-        }
+        links << LinkHeader::Link.new(
+          @view_context.needs_url(page: @needs.current_page+1),
+          [["rel", "next"]]
+        )
       end
 
-      links << {
-        rel: "self",
-        href: @view_context.needs_url(page: @needs.current_page)
-      }
+      links << LinkHeader::Link.new(
+        @view_context.needs_url(page: @needs.current_page),
+        [["rel", "self"]]
+      )
     }
   end
 

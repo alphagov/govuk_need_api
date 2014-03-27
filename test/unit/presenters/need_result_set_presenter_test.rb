@@ -70,82 +70,149 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
     assert_equal "ministry-of-testing", response[:results][0][:organisations][0][:id]
   end
 
-  should "return links to the next and previous pages when paginated" do
-    @needs.current_page = 2
+  context "including pagination links in output" do
+    should "return links to the next and previous pages when paginated" do
+      @needs.current_page = 2
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 1))
-                    .returns("url to page 1")
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 1))
+                      .returns("url to page 1")
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 2))
-                    .returns("url to page 2")
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 2))
+                      .returns("url to page 2")
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 3))
-                    .returns("url to page 3")
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 3))
+                      .returns("url to page 3")
 
-    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
-    links = response[:_response_info][:links]
+      response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+      links = response[:_response_info][:links]
 
-    assert_equal 3, links.size
+      assert_equal 3, links.size
 
-    assert_equal "url to page 1", links[0][:href]
-    assert_equal "previous", links[0][:rel]
+      assert_equal "url to page 1", links[0]["href"]
+      assert_equal "previous", links[0]["rel"]
 
-    assert_equal "url to page 3", links[1][:href]
-    assert_equal "next", links[1][:rel]
+      assert_equal "url to page 3", links[1]["href"]
+      assert_equal "next", links[1]["rel"]
 
-    assert_equal "url to page 2", links[2][:href]
-    assert_equal "self", links[2][:rel]
+      assert_equal "url to page 2", links[2]["href"]
+      assert_equal "self", links[2]["rel"]
+    end
+
+    should "not return links to the previous page when on the first page" do
+      @needs.current_page = 1
+      @needs.expects(:first_page?).returns(true)
+
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 1))
+                      .returns("url to page 1")
+
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 2))
+                      .returns("url to page 2")
+
+      response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+      links = response[:_response_info][:links]
+
+      assert_equal 2, links.size
+
+      assert_equal "url to page 2", links[0]["href"]
+      assert_equal "next", links[0]["rel"]
+
+      assert_equal "url to page 1", links[1]["href"]
+      assert_equal "self", links[1]["rel"]
+    end
+
+    should "not return links to the next page when on the last page" do
+      @needs.current_page = 3
+      @needs.expects(:last_page?).returns(true)
+
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 2))
+                      .returns("url to page 2")
+
+      @view_context.expects(:needs_url)
+                      .with(has_entry(:page, 3))
+                      .returns("url to page 3")
+
+      response = NeedResultSetPresenter.new(@needs, @view_context).as_json
+      links = response[:_response_info][:links]
+
+      assert_equal 2, links.size
+
+      assert_equal "url to page 2", links[0]["href"]
+      assert_equal "previous", links[0]["rel"]
+
+      assert_equal "url to page 3", links[1]["href"]
+      assert_equal "self", links[1]["rel"]
+    end
   end
 
-  should "not return links to the previous page when on the first page" do
-    @needs.current_page = 1
-    @needs.expects(:first_page?).returns(true)
+  context "returning pagination link data" do
+    setup do
+      @view_context.stubs(:needs_url)
+                      .with(has_entry(:page, 1))
+                      .returns("url to page 1")
+      @view_context.stubs(:needs_url)
+                      .with(has_entry(:page, 2))
+                      .returns("url to page 2")
+      @view_context.stubs(:needs_url)
+                      .with(has_entry(:page, 3))
+                      .returns("url to page 3")
+    end
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 1))
-                    .returns("url to page 1")
+    should "return links to the next and previous pages when paginated" do
+      @needs.current_page = 2
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 2))
-                    .returns("url to page 2")
+      links = NeedResultSetPresenter.new(@needs, @view_context).links
 
-    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
-    links = response[:_response_info][:links]
+      assert_equal 3, links.size
+      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
 
-    assert_equal 2, links.size
+      assert_equal "url to page 1", links[0].href
+      assert_equal "previous", links[0].attrs["rel"]
 
-    assert_equal "url to page 2", links[0][:href]
-    assert_equal "next", links[0][:rel]
+      assert_equal "url to page 3", links[1].href
+      assert_equal "next", links[1].attrs["rel"]
 
-    assert_equal "url to page 1", links[1][:href]
-    assert_equal "self", links[1][:rel]
-  end
+      assert_equal "url to page 2", links[2].href
+      assert_equal "self", links[2].attrs["rel"]
+    end
 
-  should "not return links to the next page when on the last page" do
-    @needs.current_page = 3
-    @needs.expects(:last_page?).returns(true)
+    should "not return links to the previous page when on the first page" do
+      @needs.current_page = 1
+      @needs.stubs(:first_page?).returns(true)
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 2))
-                    .returns("url to page 2")
+      links = NeedResultSetPresenter.new(@needs, @view_context).links
 
-    @view_context.expects(:needs_url)
-                    .with(has_entry(:page, 3))
-                    .returns("url to page 3")
+      assert_equal 2, links.size
+      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
 
-    response = NeedResultSetPresenter.new(@needs, @view_context).as_json
-    links = response[:_response_info][:links]
+      assert_equal "url to page 2", links[0].href
+      assert_equal "next", links[0].attrs["rel"]
 
-    assert_equal 2, links.size
+      assert_equal "url to page 1", links[1].href
+      assert_equal "self", links[1].attrs["rel"]
+    end
 
-    assert_equal "url to page 2", links[0][:href]
-    assert_equal "previous", links[0][:rel]
+    should "not return links to the next page when on the last page" do
+      @needs.current_page = 3
+      @needs.stubs(:last_page?).returns(true)
 
-    assert_equal "url to page 3", links[1][:href]
-    assert_equal "self", links[1][:rel]
+      links = NeedResultSetPresenter.new(@needs, @view_context).links
+
+      assert_equal 2, links.size
+      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
+
+      assert_equal "url to page 2", links[0].href
+      assert_equal "previous", links[0].attrs["rel"]
+
+      assert_equal "url to page 3", links[1].href
+      assert_equal "self", links[1].attrs["rel"]
+    end
+
   end
 
   should "include the total number of needs" do
