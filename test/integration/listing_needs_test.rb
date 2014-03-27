@@ -158,6 +158,11 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
         assert_equal "http://example.org/needs?page=2", links[2]["href"]
         assert_equal "self", links[2]["rel"]
+
+        assert last_response.headers.has_key?("Link")
+        link_header = LinkHeader.parse(last_response.headers["Link"])
+        assert_equal "http://example.org/needs?page=1", link_header.find_link(["rel", "previous"]).href
+        assert_equal "http://example.org/needs?page=3", link_header.find_link(["rel", "next"]).href
       end
 
       should "not display the previous link on the first page" do
@@ -167,6 +172,10 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         links = body["_response_info"]["links"]
 
         assert_equal ["next", "self"], links.map {|l| l['rel']}
+
+        assert last_response.headers.has_key?("Link")
+        link_header = LinkHeader.parse(last_response.headers["Link"])
+        assert_nil link_header.find_link(["rel", "previous"])
       end
 
       should "not display the next link on the last page" do
@@ -176,6 +185,10 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         links = body["_response_info"]["links"]
 
         assert_equal ["previous", "self"], links.map {|l| l['rel']}
+
+        assert last_response.headers.has_key?("Link")
+        link_header = LinkHeader.parse(last_response.headers["Link"])
+        assert_nil link_header.find_link(["rel", "next"])
       end
     end
 

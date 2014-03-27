@@ -12,6 +12,7 @@ gem 'gds-api-adapters', '7.19.0'
 gem "mongoid_rails_migrations", "1.0.1"
 
 gem 'kaminari', '0.14.1'
+gem 'link_header', '0.0.8'
 
 gem 'elasticsearch', '0.4.1'
 
