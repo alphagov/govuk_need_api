@@ -43,6 +43,39 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "GET index with comma-seperated need ids" do
+    setup do
+      @needs = FactoryGirl.create_list(:need, 5)
+      @first_need = @needs[0]
+      @fourth_need = @needs[3]
+      @fifth_need = @needs[4]
+
+      get :index, ids: "#{@first_need.need_id},#{@fourth_need.need_id},#{@fifth_need.need_id}"
+    end
+
+    should "return a success status" do
+      assert_response :success
+
+      body = JSON.parse(response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+    end
+
+    should "return a response containing the needs matching the specified ids" do
+
+      body = JSON.parse(response.body)
+      body["results"].sort_by! {|r| r["id"] }
+
+      assert_equal 3, body["results"].size
+      assert_equal @first_need.need_id, body["results"][0]["id"]
+      assert_equal @fourth_need.need_id, body["results"][1]["id"]
+      assert_equal @fifth_need.need_id, body["results"][2]["id"]
+    end
+
+    should "set cache-control headers to zero" do
+      assert_equal "max-age=0, public", response.headers["Cache-Control"]
+    end
+  end
+
   context "GET index with search parameter" do
     setup do
       @results = [

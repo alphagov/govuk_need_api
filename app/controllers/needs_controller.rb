@@ -14,6 +14,11 @@ class NeedsController < ApplicationController
     if org = params["organisation_id"] and org.present?
       scope = scope.where(:organisation_ids => org)
     end
+
+    if need_ids
+      scope = scope.where(:need_id.in => need_ids)
+    end
+
     @needs = scope.page(params[:page])
 
     presenter = NeedResultSetPresenter.new(@needs, view_context)
@@ -162,5 +167,11 @@ class NeedsController < ApplicationController
   rescue Search::Indexer::IndexingFailed => e
     ExceptionNotifier::Notifier.background_exception_notification(e)
     false
+  end
+
+  def need_ids
+    if params[:ids].present?
+      params[:ids].split(',').map(&:strip).map(&:to_i)
+    end
   end
 end
