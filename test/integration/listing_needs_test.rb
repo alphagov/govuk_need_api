@@ -23,14 +23,17 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
 
       FactoryGirl.create(:need, role: "car owner",
+                         need_id: 100001,
                          goal: "renew my car tax",
                          benefit: "I can drive my car for another year",
                          organisation_ids: ["hm-treasury"])
       FactoryGirl.create(:need, role: "student",
+                         need_id: 100002,
                          goal: "apply for student finance",
                          benefit: "I can get the money I need to go to university",
                          organisation_ids: ["department-for-work-and-pensions"])
       FactoryGirl.create(:need, role: "jobseeker",
+                         need_id: 100003,
                          goal: "search for jobs",
                          benefit: "I can get into work",
                          organisation_ids: ["department-for-work-and-pensions", "hm-treasury"],
@@ -104,6 +107,55 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal 200, last_response.status
         assert_equal "ok", body["_response_info"]["status"]
         assert_equal 0, body["results"].size
+      end
+
+      should "paginate the filtered needs correctly" do
+        FactoryGirl.create_list(:need, 50, organisation_ids: ["hm-treasury"])
+
+        get "/needs?organisation_id=hm-treasury"
+        assert_equal 200, last_response.status
+        body = JSON.parse(last_response.body)
+        assert_equal 50, body["results"].size
+        assert_equal 52, body["total"]
+
+        assert last_response.headers.has_key?("Link")
+        link_header = LinkHeader.parse(last_response.headers["Link"])
+        assert_equal "http://example.org/needs?organisation_id=hm-treasury&page=2", link_header.find_link(["rel", "next"]).href
+
+        get "/needs?organisation_id=hm-treasury&page=2"
+        assert_equal 200, last_response.status
+        body = JSON.parse(last_response.body)
+        assert_equal 2, body["results"].size
+      end
+    end
+
+    context "selecting a subset of needs by ids" do
+      should "return the needs that match one of the given ids" do
+        get "/needs?ids=100001,100003"
+
+        assert_equal 200, last_response.status
+        body = JSON.parse(last_response.body)
+        assert_equal 2, body["results"].size
+        assert_equal ["renew my car tax", "search for jobs"], body["results"].map{|n| n["goal"] }.sort
+      end
+
+      should "paginate the results correctly" do
+        batch_of_needs = FactoryGirl.create_list(:need, 50)
+        query_param = "100001," + batch_of_needs.map {|n| n.need_id.to_s }.join(",")
+
+        get "/needs?ids=#{query_param}"
+        assert_equal 200, last_response.status
+        body = JSON.parse(last_response.body)
+        assert_equal 50, body["results"].size
+
+        assert last_response.headers.has_key?("Link")
+        link_header = LinkHeader.parse(last_response.headers["Link"])
+        assert_equal "http://example.org/needs?ids=#{query_param}&page=2", CGI.unescape(link_header.find_link(["rel", "next"]).href)
+
+        get "/needs?ids=#{query_param}&page=2"
+        assert_equal 200, last_response.status
+        body = JSON.parse(last_response.body)
+        assert_equal 1, body["results"].size
       end
     end
   end
