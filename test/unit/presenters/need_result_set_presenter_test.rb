@@ -181,6 +181,34 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       assert_equal "self", links[2].attrs["rel"]
     end
 
+    should "include given scope params in the links" do
+      @needs.current_page = 2
+
+      @view_context.expects(:needs_url)
+                      .with(:page => 1, :foo => "bar")
+                      .returns("scoped url to page 1")
+      @view_context.expects(:needs_url)
+                      .with(:page => 2, :foo => "bar")
+                      .returns("scoped url to page 2")
+      @view_context.expects(:needs_url)
+                      .with(:page => 3, :foo => "bar")
+                      .returns("scoped url to page 3")
+
+      links = NeedResultSetPresenter.new(@needs, @view_context, :scope_params => {:foo => "bar"}).links
+
+      assert_equal 3, links.size
+      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
+
+      assert_equal "scoped url to page 1", links[0].href
+      assert_equal "previous", links[0].attrs["rel"]
+
+      assert_equal "scoped url to page 3", links[1].href
+      assert_equal "next", links[1].attrs["rel"]
+
+      assert_equal "scoped url to page 2", links[2].href
+      assert_equal "self", links[2].attrs["rel"]
+    end
+
     should "not return links to the previous page when on the first page" do
       @needs.current_page = 1
       @needs.stubs(:first_page?).returns(true)

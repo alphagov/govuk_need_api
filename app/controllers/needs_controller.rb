@@ -21,7 +21,7 @@ class NeedsController < ApplicationController
 
     @needs = scope.page(params[:page])
 
-    presenter = NeedResultSetPresenter.new(@needs, view_context)
+    presenter = NeedResultSetPresenter.new(@needs, view_context, :scope_params => params.slice(:organisation_id, :ids))
     response.headers["Link"] = LinkHeader.new(presenter.links).to_s
 
     set_expiry 0

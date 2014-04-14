@@ -1,9 +1,10 @@
 require 'link_header'
 
 class NeedResultSetPresenter
-  def initialize(needs, view_context)
+  def initialize(needs, view_context, options = {})
     @needs = needs
     @view_context = view_context
+    @scope_params = options[:scope_params] || {}
   end
 
   def as_json
@@ -37,20 +38,20 @@ class NeedResultSetPresenter
 
       unless @needs.first_page?
         links << LinkHeader::Link.new(
-          @view_context.needs_url(page: @needs.current_page-1),
+          @view_context.needs_url(@scope_params.merge(page: @needs.current_page-1)),
           [["rel", "previous"]]
         )
       end
 
       unless @needs.last_page?
         links << LinkHeader::Link.new(
-          @view_context.needs_url(page: @needs.current_page+1),
+          @view_context.needs_url(@scope_params.merge(page: @needs.current_page+1)),
           [["rel", "next"]]
         )
       end
 
       links << LinkHeader::Link.new(
-        @view_context.needs_url(page: @needs.current_page),
+        @view_context.needs_url(@scope_params.merge(page: @needs.current_page)),
         [["rel", "self"]]
       )
     }
