@@ -170,7 +170,7 @@ class NeedsController < ApplicationController
   end
 
   def need_ids
-    if params[:ids].present?
+    if params[:ids]
       params[:ids].split(',').map(&:strip).map(&:to_i)
     end
   end
