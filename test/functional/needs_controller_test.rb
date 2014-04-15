@@ -76,6 +76,25 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "GET index with empty need ids" do
+    setup do
+      @needs = FactoryGirl.create_list(:need, 3)
+      get :index, ids: ''
+    end
+
+    should "return a success status" do
+      assert_response :success
+
+      body = JSON.parse(response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+    end
+
+    should "return a response containing an empty set" do
+      body = JSON.parse(response.body)
+      assert_equal 0, body["results"].size
+    end
+  end
+
   context "GET index with search parameter" do
     setup do
       @results = [
