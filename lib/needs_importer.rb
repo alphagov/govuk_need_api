@@ -63,7 +63,9 @@ class NeedsImporter
   end
 
   def met_when(row)
-    (1..35).map { |i| row["It's done when the user... (#{i})"] }.select(&:present?)
+    (1..35).map { |i| row["It's done when the user... (#{i})"] }
+           .select(&:present?)
+           .map { |criteria| 'User ' + criteria }
   end
 
   def justifications(row)
@@ -93,7 +95,7 @@ class NeedsImporter
       "Has consequences for the majority of your users" => "Has consequences for the majority of your users",
       "Has consequences for the majority of your users." => "Has consequences for the majority of your users",
       "Noticed by the average member of the public" => "Noticed by the average member of the public",
-      "Noticed only by an expert audience" => "Noticed by an expert audience",
+      "Noticed only by an expert audience" => "Noticed only by an expert audience",
       "No impact" => "No impact",
     }
 
