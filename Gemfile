@@ -21,7 +21,7 @@ gem 'logstasher', '0.4.8'
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
-  gem 'gds-sso', '9.2.2'
+  gem 'gds-sso', '9.3.0'
 end
 
 group :test do
