@@ -9,6 +9,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
       role: "business owner",
       goal: "find out the VAT rate",
       benefit: "I can charge my customers the correct amount",
+      met_when: [ "the user sees the current vat rate", "the api user can access the current vat rate" ],
       organisation_ids: [ "ministry-of-testing" ],
       organisations: [
         OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
@@ -30,6 +31,9 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
     assert_equal "business owner", response[:role]
     assert_equal "find out the VAT rate", response[:goal]
     assert_equal "I can charge my customers the correct amount", response[:benefit]
+
+    assert_equal [ "the user sees the current vat rate",
+      "the api user can access the current vat rate" ], response[:met_when]
 
     assert_equal ["ministry-of-testing"], response[:organisation_ids]
 

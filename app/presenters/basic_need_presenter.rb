@@ -17,6 +17,7 @@ class BasicNeedPresenter
       role: @need.role,
       goal: @need.goal,
       benefit: @need.benefit,
+      met_when: @need.met_when,
       organisation_ids: @need.organisation_ids,
       organisations: organisations,
       applies_to_all_organisations: @need.applies_to_all_organisations,
