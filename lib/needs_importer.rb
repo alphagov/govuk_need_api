@@ -45,7 +45,7 @@ class NeedsImporter
       "goal" => row['I need to...'],
       "benefit" => row['so that...'],
     }
-    add(need, "organisation_ids", [row['Organisation Id']])
+    add(need, "organisation_ids", [row['Organisation Id']].compact)
     add(need, "met_when", met_when(row))
     add(need, "justifications", justifications(row))
     add(need, "impact", impact(row))
