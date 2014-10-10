@@ -18,6 +18,8 @@ gem 'elasticsearch', '0.4.1'
 
 gem 'logstasher', '0.4.8'
 
+gem 'mlanett-redis-lock', '0.2.6'
+
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
