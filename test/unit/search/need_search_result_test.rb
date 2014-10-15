@@ -42,6 +42,6 @@ class NeedSearchResultTest < ActiveSupport::TestCase
   end
 
   should "be immutable" do
-    assert_raises(TypeError) { @need_result.need_id = 12 }
+    assert_raises(RuntimeError) { @need_result.need_id = 12 }
   end
 end
