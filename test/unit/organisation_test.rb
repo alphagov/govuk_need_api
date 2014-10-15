@@ -32,19 +32,7 @@ class OrganisationTest < ActiveSupport::TestCase
       assert_equal ["ministry-for-creationism","ministry-for-astrology"], organisation.child_ids
     end
 
-    should "not be valid without a name" do
-      organisation = Organisation.new(@atts.merge(name: ""))
-
-      refute organisation.valid?
-      assert organisation.errors.has_key?(:name)
-    end
-
-    should "not be valid without a slug" do
-      organisation = Organisation.new(@atts.merge(slug: ""))
-
-      refute organisation.valid?
-      assert organisation.errors.has_key?(:slug)
-    end
+    should validate_presence_of(:name)
+    should validate_presence_of(:slug)
   end
-
 end

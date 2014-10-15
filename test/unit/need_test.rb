@@ -118,62 +118,21 @@ class NeedTest < ActiveSupport::TestCase
       end
     end
 
-    should "be invalid without a goal" do
-      need = Need.new(@atts.merge(:goal => ""))
+    should validate_presence_of(:goal)
 
-      refute need.valid?
-      assert need.errors.has_key?(:goal)
-    end
+    should_not allow_value(["does-not-exist"]).for(:organisation_ids)
+    should_not allow_value(["cabinet-office","does-not-exist"]).for(:organisation_ids)
 
-    should "be invalid if the organisation does not exist" do
-      need = Need.new(@atts.merge(:organisation_ids => ["does-not-exist"]))
+    should_not allow_value(-10).for(:yearly_user_contacts)
 
-      refute need.valid?
-      assert need.errors.has_key?(:organisation_ids)
-    end
+    should_not allow_value(-10).for(:yearly_site_views)
 
-    should "be invalid if one of the organisations does not exist" do
-      need = Need.new(@atts.merge(:organisation_ids => ["cabinet-office","does-not-exist"]))
+    should_not allow_value(-10).for(:yearly_need_views)
 
-      refute need.valid?
-      assert need.errors.has_key?(:organisation_ids)
-    end
+    should_not allow_value(-10).for(:yearly_searches)
 
-    should "be invalid if yearly contacts is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_user_contacts => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_user_contacts)
-    end
-
-    should "be invalid if yearly site views is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_site_views => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_site_views)
-    end
-
-    should "be invalid if yearly need views is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_need_views => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_need_views)
-    end
-
-    should "be invalid if yearly searches for this need is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_searches => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_searches)
-    end
-
-    should "be valid with no organisations" do
-      need = Need.new(@atts.merge(:organisation_ids => nil))
-      assert need.valid?
-
-      need = Need.new(@atts.merge(:organisation_ids => []))
-      assert need.valid?
-    end
+    should allow_value(nil).for(:organisation_ids)
+    should allow_value([]).for(:organisation_ids)
 
     should "default applies_to_all_organisations to false" do
       need = Need.create!(@atts.merge(applies_to_all_organisations: nil))
@@ -207,12 +166,7 @@ class NeedTest < ActiveSupport::TestCase
       assert need.valid?
     end
 
-    should "be invalid if in_scope is set to true" do
-      need = Need.new(@atts.merge(:in_scope => true))
-
-      refute need.valid?
-      assert need.errors.has_key?(:in_scope)
-    end
+    should_not allow_value(true).for(:in_scope)
 
     should "be invalid if out_of_scope_reason is not set when in_scope is false" do
       need = Need.new(@atts.merge(:out_of_scope_reason => ""))
