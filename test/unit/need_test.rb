@@ -62,6 +62,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal false, need.applies_to_all_organisations
       assert_equal false, need.in_scope
       assert_equal "foo", need.out_of_scope_reason
+      assert_equal "proposed", need.status["description"]
     end
 
     context "assigning need ids" do

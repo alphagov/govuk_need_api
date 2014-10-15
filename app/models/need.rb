@@ -22,7 +22,11 @@ class Need
   field :out_of_scope_reason, type: String
   field :duplicate_of, type: Integer, default: nil
 
+  embeds_one :status, class_name: "NeedStatus", inverse_of: :need
+  validates_associated :status
+
   before_validation :default_booleans_to_false
+  before_create :set_proposed_status
   after_update :record_update_revision
   after_create :record_create_revision
 
@@ -137,6 +141,10 @@ class Need
         "cannot exist if applies_to_all_organisations is set"
       )
     end
+  end
+
+  def set_proposed_status
+    self.status = NeedStatus.new(description: "proposed")
   end
 
   def validate_duplicate
