@@ -8,7 +8,7 @@ class DistributedLockTest < ActiveSupport::TestCase
 
       DistributedLock.new('testing').lock do
         outer_block_executed = true
-        DistributedLock.new('testing').lock do
+        DistributedLock.new('testing', acquire: 0.5).lock do
           inner_block_executed = true
         end
       end

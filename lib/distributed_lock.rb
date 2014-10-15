@@ -2,14 +2,18 @@ require 'redis'
 require 'redis-lock'
 
 class DistributedLock
-  LIFETIME = (5 * 60) # seconds
+  DEFAULTS = {
+    life: (5 * 60), # lifetime (in seconds)
+    acquire: 10, # acquisition timeout (in seconds). This is how long a 2nd lock waits if there's a 1st one already
+  }
 
-  def initialize(lock_name)
+  def initialize(lock_name, options = {})
     @lock_name = lock_name
+    @options = DEFAULTS.merge(options)
   end
 
   def lock
-    redis.lock("need-api:#{Rails.env}:#{@lock_name}", life: LIFETIME) do
+    redis.lock("need-api:#{Rails.env}:#{@lock_name}", @options) do
       Rails.logger.debug('Successfully got a lock. Running...')
       yield
     end
