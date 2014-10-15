@@ -42,7 +42,8 @@ class NeedPresenterTest < ActiveSupport::TestCase
         { author: "Author 4" },
         { author: "Author 5" },
         { author: "Author 6" },
-      ]
+      ],
+      status: OpenStruct.new(attributes: { description: "proposed" }),
     )
     @presenter = NeedPresenter.new(@need)
 
@@ -84,5 +85,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal 100001, response[:duplicate_of]
 
     assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
+
+    assert_equal Hash[description: "proposed"], response[:status]
   end
 end

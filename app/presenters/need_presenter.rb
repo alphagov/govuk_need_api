@@ -24,7 +24,8 @@ class NeedPresenter
       revisions: revisions,
       in_scope: @need.in_scope,
       out_of_scope_reason: @need.out_of_scope_reason,
-      duplicate_of: @need.duplicate_of
+      duplicate_of: @need.duplicate_of,
+      status: NeedStatusPresenter.new(@need.status).as_json,
     }
   end
 
