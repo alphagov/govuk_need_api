@@ -1,6 +1,17 @@
 require_relative '../test_helper'
 
 class NeedTest < ActiveSupport::TestCase
+  def set_duplicate(need, canonical_id)
+    need.close(canonical_id,
+               name: "Winston Smith-Churchill",
+               email: "winston@alphagov.co.uk")
+  end
+
+  def reopen(need)
+    need.reopen(name: "Winston Smith-Churchill",
+                email: "winston@alphagov.co.uk")
+    need.reload
+  end
 
   setup do
     FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
@@ -346,12 +357,6 @@ class NeedTest < ActiveSupport::TestCase
   end
 
   context "duplicated needs" do
-    def set_duplicate(need, canonical_id)
-      need.close(canonical_id,
-                 name: "Winston Smith-Churchill",
-                 email: "winston@alphagov.co.uk")
-    end
-
     setup do
       @canonical_need = FactoryGirl.create(:need, goal: "pay my car tax")
       @duplicate_need = FactoryGirl.create(:need, goal: "tax my car")
@@ -431,12 +436,6 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     context "reopening needs" do
-      def reopen(need)
-        need.reopen(name: "Winston Smith-Churchill",
-                    email: "winston@alphagov.co.uk")
-        need.reload
-      end
-
       setup do
         set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload
