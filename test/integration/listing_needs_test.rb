@@ -8,13 +8,13 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
   context "listing needs without pagination" do
     setup do
-      FactoryGirl.create(:organisation, name: "Department for Work and Pensions",
+      create(:organisation, name: "Department for Work and Pensions",
                          slug: "department-for-work-and-pensions",
                          abbreviation: "DWP",
                          govuk_status: "live",
                          parent_ids: ["pension-protection-fund"],
                          child_ids: [])
-      FactoryGirl.create(:organisation, name: "HM Treasury",
+      create(:organisation, name: "HM Treasury",
                          slug: "hm-treasury",
                          abbreviation: "HMT",
                          govuk_status: "live",
@@ -22,17 +22,17 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
                          child_ids: ["treasury-valuation-commitee"])
 
 
-      FactoryGirl.create(:need, role: "car owner",
+      create(:need, role: "car owner",
                          need_id: 100001,
                          goal: "renew my car tax",
                          benefit: "I can drive my car for another year",
                          organisation_ids: ["hm-treasury"])
-      FactoryGirl.create(:need, role: "student",
+      create(:need, role: "student",
                          need_id: 100002,
                          goal: "apply for student finance",
                          benefit: "I can get the money I need to go to university",
                          organisation_ids: ["department-for-work-and-pensions"])
-      FactoryGirl.create(:need, role: "jobseeker",
+      create(:need, role: "jobseeker",
                          need_id: 100003,
                          goal: "search for jobs",
                          benefit: "I can get into work",
@@ -110,7 +110,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       end
 
       should "paginate the filtered needs correctly" do
-        FactoryGirl.create_list(:need, 50, organisation_ids: ["hm-treasury"])
+        create_list(:need, 50, organisation_ids: ["hm-treasury"])
 
         get "/needs?organisation_id=hm-treasury"
         assert_equal 200, last_response.status
@@ -140,7 +140,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       end
 
       should "paginate the results correctly" do
-        batch_of_needs = FactoryGirl.create_list(:need, 50)
+        batch_of_needs = create_list(:need, 50)
         query_param = "100001," + batch_of_needs.map {|n| n.need_id.to_s }.join(",")
 
         get "/needs?ids=#{query_param}"
@@ -162,7 +162,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
   context "paginating needs" do
     should "return a maximum of fifty needs per page" do
-      FactoryGirl.create_list(:need, 75)
+      create_list(:need, 75)
 
       get "/needs"
 
@@ -175,7 +175,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
     end
 
     should "return the next page of needs" do
-      FactoryGirl.create_list(:need, 75)
+      create_list(:need, 75)
 
       get "/needs?page=2"
 
@@ -189,7 +189,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
     context "next and previous links" do
       setup do
-        FactoryGirl.create_list(:need, 101)
+        create_list(:need, 101)
       end
 
       should "include information about the next and previous pages" do
@@ -245,7 +245,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
     end
 
     should "return information about the result set" do
-      FactoryGirl.create_list(:need, 75)
+      create_list(:need, 75)
 
       get "/needs?page=2"
       body = JSON.parse(last_response.body)

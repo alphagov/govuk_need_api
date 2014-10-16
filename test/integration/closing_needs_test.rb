@@ -6,10 +6,10 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
     login_as_stub_user
     use_test_index
     Timecop.freeze(-2) do # Avoid race condition on creation timestamps
-      @main_need = FactoryGirl.create(:need, role: "parent",
+      @main_need = create(:need, role: "parent",
                                              goal: "find out school holiday dates for my local school",
                                              benefit: "I can plan around my child's education")
-      @duplicate = FactoryGirl.create(:need, role: "grand-parent",
+      @duplicate = create(:need, role: "grand-parent",
                                              goal: "find out school holiday dates for my local school",
                                              benefit: "I can plan around my grandchild's education")
       @author = {

@@ -8,14 +8,14 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
 
   context "retrieving a single need" do
     setup do
-      FactoryGirl.create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
-      FactoryGirl.create(:organisation, name: "Department for Dinosaur Care", slug: "department-for-dinosaur-care")
+      create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
+      create(:organisation, name: "Department for Dinosaur Care", slug: "department-for-dinosaur-care")
 
-      FactoryGirl.create(:need, role: "grandparent",
+      create(:need, role: "grandparent",
                                 goal: "find school holidays",
                                 benefit: "plan around school holidays",
                                 need_id: 100000)
-      @need = FactoryGirl.create(:need, role: "parent",
+      @need = create(:need, role: "parent",
                                         goal: "find out school holiday dates for my local school",
                                         benefit: "I can plan around the school holidays",
                                         organisation_ids: ["department-for-work-and-pensions"],
@@ -107,9 +107,9 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
 
     should "return the five most recent revisions for the need" do
       5.times do |i|
-        FactoryGirl.create(:need_revision, :need => @need, author: { name: "Author #{i}" }, created_at: Date.parse("2013-04-01"))
+        create(:need_revision, :need => @need, author: { name: "Author #{i}" }, created_at: Date.parse("2013-04-01"))
       end
-      FactoryGirl.create(:need_revision, :need => @need, author: { name: "Old Author" }, created_at: Date.parse("2013-04-01"))
+      create(:need_revision, :need => @need, author: { name: "Old Author" }, created_at: Date.parse("2013-04-01"))
 
       get "/needs/100001"
       body = JSON.parse(last_response.body)

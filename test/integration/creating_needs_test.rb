@@ -12,8 +12,8 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
   end
 
   should "create a need given valid attributes" do
-    FactoryGirl.create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
-    FactoryGirl.create(:organisation, name: "HM Treasury", slug: "hm-treasury")
+    create(:organisation, name: "Department for Work and Pensions", slug: "department-for-work-and-pensions")
+    create(:organisation, name: "HM Treasury", slug: "hm-treasury")
 
     request_body = {
       "role" => "user",

@@ -1,14 +1,23 @@
 require_relative '../test_helper'
 
 class NeedTest < ActiveSupport::TestCase
+  def set_duplicate(need, canonical_id)
+    need.close(canonical_id,
+               name: "Winston Smith-Churchill",
+               email: "winston@alphagov.co.uk")
+  end
 
-  setup do
-    FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
-    FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+  def reopen(need)
+    need.reopen(name: "Winston Smith-Churchill",
+                email: "winston@alphagov.co.uk")
+    need.reload
   end
 
   context "creating a need" do
     setup do
+      create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+      create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+
       @atts = {
         role: "user",
         goal: "pay my car tax",
@@ -57,24 +66,23 @@ class NeedTest < ActiveSupport::TestCase
 
     context "assigning need ids" do
       should "assign an incremented identifier to a new need, starting at 100001" do
-        need_one = Need.create!(@atts)
-        need_two = Need.create!(@atts.merge(role: "Need two"))
+        need_one = create(:need)
+        need_two = create(:need, role: "Need two")
 
         assert_equal 100001, need_one.need_id
         assert_equal 100002, need_two.need_id
 
-        need_three = Need.new(@atts.merge(role: "Need three"))
+        need_three = create(:need, role: "Need three")
         need_three.need_id = 100005
         need_three.save!
-        need_four = Need.create!(@atts.merge(role: "Need four"))
+        need_four = create(:need, role: "Need four")
 
         assert_equal 100005, need_three.need_id
         assert_equal 100006, need_four.need_id
       end
 
       should "not permit two needs to have the same id" do
-        need_one = Need.new(@atts.merge(role: "Need one"))
-        need_two = Need.new(@atts.merge(role: "Need two"))
+        need_one, need_two = build_list(:need, 2)
 
         need_one.need_id = 123456
         need_two.need_id = 123456
@@ -91,15 +99,14 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "set the record ID to be the need ID" do
-        need_one = Need.create!(@atts)
-        need_one.reload
+        need_one = create(:need)
 
         assert_equal 100001, need_one.need_id
         assert_equal "100001", need_one.id
       end
 
       should "not assign a need ID until creation" do
-        need = Need.new(@atts.merge(:organisation_ids => []))
+        need = build(:need, :organisation_ids => [])
         assert need.valid?
         assert_nil need.need_id
         need.save!
@@ -107,104 +114,37 @@ class NeedTest < ActiveSupport::TestCase
       end
     end
 
-    should "be invalid without a goal" do
-      need = Need.new(@atts.merge(:goal => ""))
-
-      refute need.valid?
-      assert need.errors.has_key?(:goal)
-    end
-
-    should "be invalid if the organisation does not exist" do
-      need = Need.new(@atts.merge(:organisation_ids => ["does-not-exist"]))
-
-      refute need.valid?
-      assert need.errors.has_key?(:organisation_ids)
-    end
-
-    should "be invalid if one of the organisations does not exist" do
-      need = Need.new(@atts.merge(:organisation_ids => ["cabinet-office","does-not-exist"]))
-
-      refute need.valid?
-      assert need.errors.has_key?(:organisation_ids)
-    end
-
-    should "be invalid if yearly contacts is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_user_contacts => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_user_contacts)
-    end
-
-    should "be invalid if yearly site views is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_site_views => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_site_views)
-    end
-
-    should "be invalid if yearly need views is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_need_views => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_need_views)
-    end
-
-    should "be invalid if yearly searches for this need is not a positive integer" do
-      need = Need.new(@atts.merge(:yearly_searches => -10))
-
-      refute need.valid?
-      assert need.errors.has_key?(:yearly_searches)
-    end
-
-    should "be valid with no organisations" do
-      need = Need.new(@atts.merge(:organisation_ids => nil))
-      assert need.valid?
-
-      need = Need.new(@atts.merge(:organisation_ids => []))
-      assert need.valid?
-    end
-
     should "default applies_to_all_organisations to false" do
-      need = Need.create!(@atts.merge(applies_to_all_organisations: nil))
-      need.reload
+      need = create(:need, applies_to_all_organisations: nil)
 
       assert_equal false, need.applies_to_all_organisations
     end
 
     should "disallow applies_to_all_organisations with explicit organisations" do
-      need_atts = @atts.merge(
+      need = build(:need,
         applies_to_all_organisations: true,
         organisation_ids: ["cabinet-office"]
       )
-      need = Need.new(need_atts)
       refute need.valid?
     end
 
     should "allow applies_to_all_organisations with no organisations" do
-      need_atts = @atts.merge(
+      need = build(:need,
         applies_to_all_organisations: true,
         organisation_ids: []
       )
-      need = Need.new(need_atts)
       assert need.valid?
     end
 
     should "allow applies_to_all_organisations with organisation IDs not set" do
-      need_atts = @atts.merge(applies_to_all_organisations: true)
-        .except(:organisation_ids)
-      need = Need.new(need_atts)
+      need = build(:need, applies_to_all_organisations: true, organisation_ids: nil)
       assert need.valid?
     end
 
-    should "be invalid if in_scope is set to true" do
-      need = Need.new(@atts.merge(:in_scope => true))
-
-      refute need.valid?
-      assert need.errors.has_key?(:in_scope)
-    end
+    should_not allow_value(true).for(:in_scope)
 
     should "be invalid if out_of_scope_reason is not set when in_scope is false" do
-      need = Need.new(@atts.merge(:out_of_scope_reason => ""))
+      need = build(:need, in_scope: false, out_of_scope_reason: "")
 
       refute need.valid?
       assert need.errors.has_key?(:out_of_scope_reason)
@@ -228,9 +168,7 @@ class NeedTest < ActiveSupport::TestCase
 
     context "creating revisions" do
       should "create an initial revision when given valid attributes" do
-        need = Need.new(@atts.merge(goal: "get a premises licence"))
-        need.save
-        need.reload
+        need = create(:need, goal: "get a premises licence")
 
         assert_equal 1, need.revisions.count
 
@@ -241,7 +179,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "store user information in the revision if provided" do
-        need = Need.new(@atts.merge(goal: "get a premises licence"))
+        need = build(:need, goal: "get a premises licence")
         need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
         need.reload
 
@@ -255,7 +193,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "not create a revision if not saved" do
-        need = Need.new(@atts.merge(role: ""))
+        need = build(:need, role: "")
 
         refute need.save
         refute need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
@@ -265,9 +203,38 @@ class NeedTest < ActiveSupport::TestCase
     end
   end
 
+  context "validations" do
+    should validate_presence_of(:goal)
+
+    context "associating needs with non-existent organisations" do
+      setup do
+        create(:organisation, name: "Home Office", slug: "home-office")
+      end
+
+      should_not allow_value(["does-not-exist"]).for(:organisation_ids)
+      should_not allow_value(["home-office","does-not-exist"]).for(:organisation_ids)
+    end
+
+    should_not allow_value(-10).for(:yearly_user_contacts)
+
+    should_not allow_value(-10).for(:yearly_site_views)
+
+    should_not allow_value(-10).for(:yearly_need_views)
+
+    should_not allow_value(-10).for(:yearly_searches)
+
+    should allow_value(nil).for(:organisation_ids)
+    should allow_value([]).for(:organisation_ids)
+  end
+
   context "an existing need" do
+    setup do
+      create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+      create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+    end
+
     should "return organisations" do
-      need = FactoryGirl.create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
+      need = create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
 
       assert_equal 2, need.organisations.count
       assert_equal ["Cabinet Office", "Ministry of Justice"], need.organisations.map(&:name)
@@ -275,7 +242,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "return no organisations when no ids are present" do
-      need = FactoryGirl.create(:need, :organisation_ids => nil)
+      need = create(:need, :organisation_ids => nil)
 
       assert_equal 0, need.organisations.count
       assert_equal [], need.organisations.map(&:name)
@@ -285,7 +252,7 @@ class NeedTest < ActiveSupport::TestCase
 
   context "updating a need" do
     setup do
-      @need = FactoryGirl.create(:need, goal: "pay my car tax") # creates an initial revision
+      @need = create(:need, goal: "pay my car tax") # creates an initial revision
 
       # set the timestamp to be explicitly different so that the return order can be
       # assured for the subsequent tests
@@ -346,16 +313,10 @@ class NeedTest < ActiveSupport::TestCase
   end
 
   context "duplicated needs" do
-    def set_duplicate(need, canonical_id)
-      need.close(canonical_id,
-                 name: "Winston Smith-Churchill",
-                 email: "winston@alphagov.co.uk")
-    end
-
     setup do
-      @canonical_need = FactoryGirl.create(:need, goal: "pay my car tax")
-      @duplicate_need = FactoryGirl.create(:need, goal: "tax my car")
-      @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
+      @canonical_need = create(:need, goal: "pay my car tax")
+      @duplicate_need = create(:need, goal: "tax my car")
+      @triplicate_need = create(:need, goal: "Tax me motah")
     end
 
     should "have no duplicates by default" do
@@ -431,12 +392,6 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     context "reopening needs" do
-      def reopen(need)
-        need.reopen(name: "Winston Smith-Churchill",
-                    email: "winston@alphagov.co.uk")
-        need.reload
-      end
-
       setup do
         set_duplicate(@duplicate_need, @canonical_need.need_id)
         @duplicate_need.reload

@@ -29,19 +29,9 @@ class NeedRevisionTest < ActiveSupport::TestCase
       end
     end
 
-    should "be invalid if the action type is not recognised" do
-      revision = NeedRevision.new(@atts.merge(action_type: "replace"))
+    should_not allow_value("replace").for(:action_type)
 
-      refute revision.valid?
-      assert revision.errors.has_key?(:action_type)
-    end
-
-    should "be invalid if the snapshot is nil" do
-      revision = NeedRevision.new(@atts.merge(snapshot: nil))
-
-      refute revision.valid?
-      assert revision.errors.has_key?(:snapshot)
-    end
+    should_not allow_value(nil).for(:snapshot)
 
     should "clean up the snapshot data" do
       snapshot = {

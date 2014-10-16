@@ -30,7 +30,7 @@ group :test do
   gem 'database_cleaner', '1.1.1', require: false
   gem 'factory_girl_rails', '4.2.1'
   gem 'mocha', '0.14.0', require: false
-  gem 'shoulda-context', '1.1.5'
+  gem 'shoulda', '3.5.0'
   gem 'simplecov', '0.7.1'
   gem 'simplecov-rcov'
   gem 'timecop', '0.6.3'

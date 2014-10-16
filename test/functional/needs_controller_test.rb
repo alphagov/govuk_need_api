@@ -5,13 +5,13 @@ class NeedsControllerTest < ActionController::TestCase
   setup do
     login_as_stub_user
 
-    FactoryGirl.create(:organisation, slug: "cabinet-office", name: "Cabinet Office")
-    FactoryGirl.create(:organisation, slug: "department-for-transport")
+    create(:organisation, slug: "cabinet-office", name: "Cabinet Office")
+    create(:organisation, slug: "department-for-transport")
   end
 
   context "GET index" do
     setup do
-      @needs = FactoryGirl.create_list(:need, 5)
+      @needs = create_list(:need, 5)
     end
 
     should "return a success status" do
@@ -45,7 +45,7 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "GET index with comma-seperated need ids" do
     setup do
-      @needs = FactoryGirl.create_list(:need, 5)
+      @needs = create_list(:need, 5)
       @first_need = @needs[0]
       @fourth_need = @needs[3]
       @fifth_need = @needs[4]
@@ -78,7 +78,7 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "GET index with empty need ids" do
     setup do
-      @needs = FactoryGirl.create_list(:need, 3)
+      @needs = create_list(:need, 3)
       get :index, ids: ''
     end
 
@@ -327,7 +327,7 @@ class NeedsControllerTest < ActionController::TestCase
 
         context "`duplicate_of` set" do
           setup do
-            @canonical_need = FactoryGirl.create(:need)
+            @canonical_need = create(:need)
           end
 
           should "not accept `duplicate_of` with a value in the parameters" do
@@ -361,7 +361,7 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "PUT update" do
     setup do
-      @need_instance = FactoryGirl.create(:need)
+      @need_instance = create(:need)
     end
 
     context "given a valid update" do
@@ -485,7 +485,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "not accept a different duplicate_of value as a parameter" do
-          canonical_need = FactoryGirl.create(:need)
+          canonical_need = create(:need)
           put :update, @updates_with_author.merge(duplicate_of: canonical_need.need_id)
           body = JSON.parse(response.body)
           assert_response 422
@@ -565,8 +565,8 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "PUT closed" do
     setup do
-      @canonical_need = FactoryGirl.create(:need)
-      @duplicate = FactoryGirl.create(:need)
+      @canonical_need = create(:need)
+      @duplicate = create(:need)
     end
 
     context "given a valid close" do
@@ -715,8 +715,8 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "DELETE reopen" do
     setup do
-      @canonical = FactoryGirl.create(:need)
-      @duplicate = FactoryGirl.create(:need)
+      @canonical = create(:need)
+      @duplicate = create(:need)
       @closed = {
         id: @duplicate.need_id,
         duplicate_of: @canonical.need_id

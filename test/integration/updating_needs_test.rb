@@ -4,7 +4,7 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
 
   setup do
     login_as_stub_user
-    @need = FactoryGirl.create(:need, role: "parent",
+    @need = create(:need, role: "parent",
                                       goal: "find out school holiday dates for my local school",
                                       benefit: "I can plan around my child's education")
     @author = {
@@ -81,7 +81,7 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
   end
 
   should "refuse to update the need if duplicate_of is present" do
-    canonical_need = FactoryGirl.create(:need)
+    canonical_need = create(:need)
     put "/needs/#{@need.need_id}", @author.merge(duplicate_of: canonical_need.need_id, benefit: "Stuff")
     assert_equal 422, last_response.status
 
