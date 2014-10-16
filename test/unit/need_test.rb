@@ -66,24 +66,23 @@ class NeedTest < ActiveSupport::TestCase
 
     context "assigning need ids" do
       should "assign an incremented identifier to a new need, starting at 100001" do
-        need_one = Need.create!(@atts)
-        need_two = Need.create!(@atts.merge(role: "Need two"))
+        need_one = create(:need)
+        need_two = create(:need, role: "Need two")
 
         assert_equal 100001, need_one.need_id
         assert_equal 100002, need_two.need_id
 
-        need_three = Need.new(@atts.merge(role: "Need three"))
+        need_three = create(:need, role: "Need three")
         need_three.need_id = 100005
         need_three.save!
-        need_four = Need.create!(@atts.merge(role: "Need four"))
+        need_four = create(:need, role: "Need four")
 
         assert_equal 100005, need_three.need_id
         assert_equal 100006, need_four.need_id
       end
 
       should "not permit two needs to have the same id" do
-        need_one = Need.new(@atts.merge(role: "Need one"))
-        need_two = Need.new(@atts.merge(role: "Need two"))
+        need_one, need_two = build_list(:need, 2)
 
         need_one.need_id = 123456
         need_two.need_id = 123456
@@ -100,15 +99,14 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "set the record ID to be the need ID" do
-        need_one = Need.create!(@atts)
-        need_one.reload
+        need_one = create(:need)
 
         assert_equal 100001, need_one.need_id
         assert_equal "100001", need_one.id
       end
 
       should "not assign a need ID until creation" do
-        need = Need.new(@atts.merge(:organisation_ids => []))
+        need = build(:need, :organisation_ids => [])
         assert need.valid?
         assert_nil need.need_id
         need.save!
@@ -117,41 +115,36 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "default applies_to_all_organisations to false" do
-      need = Need.create!(@atts.merge(applies_to_all_organisations: nil))
-      need.reload
+      need = create(:need, applies_to_all_organisations: nil)
 
       assert_equal false, need.applies_to_all_organisations
     end
 
     should "disallow applies_to_all_organisations with explicit organisations" do
-      need_atts = @atts.merge(
+      need = build(:need,
         applies_to_all_organisations: true,
         organisation_ids: ["cabinet-office"]
       )
-      need = Need.new(need_atts)
       refute need.valid?
     end
 
     should "allow applies_to_all_organisations with no organisations" do
-      need_atts = @atts.merge(
+      need = build(:need,
         applies_to_all_organisations: true,
         organisation_ids: []
       )
-      need = Need.new(need_atts)
       assert need.valid?
     end
 
     should "allow applies_to_all_organisations with organisation IDs not set" do
-      need_atts = @atts.merge(applies_to_all_organisations: true)
-        .except(:organisation_ids)
-      need = Need.new(need_atts)
+      need = build(:need, applies_to_all_organisations: true, organisation_ids: nil)
       assert need.valid?
     end
 
     should_not allow_value(true).for(:in_scope)
 
     should "be invalid if out_of_scope_reason is not set when in_scope is false" do
-      need = Need.new(@atts.merge(:out_of_scope_reason => ""))
+      need = build(:need, in_scope: false, out_of_scope_reason: "")
 
       refute need.valid?
       assert need.errors.has_key?(:out_of_scope_reason)
@@ -175,9 +168,7 @@ class NeedTest < ActiveSupport::TestCase
 
     context "creating revisions" do
       should "create an initial revision when given valid attributes" do
-        need = Need.new(@atts.merge(goal: "get a premises licence"))
-        need.save
-        need.reload
+        need = create(:need, goal: "get a premises licence")
 
         assert_equal 1, need.revisions.count
 
@@ -188,7 +179,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "store user information in the revision if provided" do
-        need = Need.new(@atts.merge(goal: "get a premises licence"))
+        need = build(:need, goal: "get a premises licence")
         need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
         need.reload
 
@@ -202,7 +193,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "not create a revision if not saved" do
-        need = Need.new(@atts.merge(role: ""))
+        need = build(:need, role: "")
 
         refute need.save
         refute need.save_as(name: "Winston Smith-Churchill", email: "winston@alphagov.co.uk")
