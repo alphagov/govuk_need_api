@@ -39,7 +39,11 @@ class NeedRevisionTest < ActiveSupport::TestCase
         "need_id" => "100001",
         "role" => "user",
         "goal" => "find out when the clocks change",
-        "benefit" => "i know when to change my clocks"
+        "benefit" => "i know when to change my clocks",
+        "status" => {
+          "_id" => OpenStruct.new(id: '12345'),
+          "description"=>"proposed",
+        },
       }
 
       revision = NeedRevision.new(@atts.merge(snapshot: snapshot))
@@ -47,7 +51,8 @@ class NeedRevisionTest < ActiveSupport::TestCase
 
       revision.reload
 
-      assert_equal ["role", "goal", "benefit"], revision.snapshot.keys
+      assert_equal ["role", "goal", "benefit", "status"], revision.snapshot.keys
+      assert_equal Hash["description" => "proposed"], revision.snapshot["status"]
     end
   end
 
