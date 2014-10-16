@@ -13,13 +13,11 @@ class NeedTest < ActiveSupport::TestCase
     need.reload
   end
 
-  setup do
-    FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
-    FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
-  end
-
   context "creating a need" do
     setup do
+      FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+      FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+
       @atts = {
         role: "user",
         goal: "pay my car tax",
@@ -118,22 +116,6 @@ class NeedTest < ActiveSupport::TestCase
       end
     end
 
-    should validate_presence_of(:goal)
-
-    should_not allow_value(["does-not-exist"]).for(:organisation_ids)
-    should_not allow_value(["cabinet-office","does-not-exist"]).for(:organisation_ids)
-
-    should_not allow_value(-10).for(:yearly_user_contacts)
-
-    should_not allow_value(-10).for(:yearly_site_views)
-
-    should_not allow_value(-10).for(:yearly_need_views)
-
-    should_not allow_value(-10).for(:yearly_searches)
-
-    should allow_value(nil).for(:organisation_ids)
-    should allow_value([]).for(:organisation_ids)
-
     should "default applies_to_all_organisations to false" do
       need = Need.create!(@atts.merge(applies_to_all_organisations: nil))
       need.reload
@@ -230,7 +212,36 @@ class NeedTest < ActiveSupport::TestCase
     end
   end
 
+  context "validations" do
+    should validate_presence_of(:goal)
+
+    context "associating needs with non-existent organisations" do
+      setup do
+        FactoryGirl.create(:organisation, name: "Home Office", slug: "home-office")
+      end
+
+      should_not allow_value(["does-not-exist"]).for(:organisation_ids)
+      should_not allow_value(["home-office","does-not-exist"]).for(:organisation_ids)
+    end
+
+    should_not allow_value(-10).for(:yearly_user_contacts)
+
+    should_not allow_value(-10).for(:yearly_site_views)
+
+    should_not allow_value(-10).for(:yearly_need_views)
+
+    should_not allow_value(-10).for(:yearly_searches)
+
+    should allow_value(nil).for(:organisation_ids)
+    should allow_value([]).for(:organisation_ids)
+  end
+
   context "an existing need" do
+    setup do
+      FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+      FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+    end
+
     should "return organisations" do
       need = FactoryGirl.create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
 
