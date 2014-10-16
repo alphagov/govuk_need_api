@@ -4,7 +4,7 @@ class NotesControllerTest < ActionController::TestCase
 
   setup do
     login_as_stub_user
-    @need = FactoryGirl.create(:need)
+    @need = create(:need)
     @note = {
       text: "test",
       need_id: @need.need_id,

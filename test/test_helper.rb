@@ -18,12 +18,14 @@ DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean
 
 class ActiveSupport::TestCase
+  include FactoryGirl::Syntax::Methods
+
   teardown do
     DatabaseCleaner.clean
   end
 
   def stub_user
-    @stub_user ||= FactoryGirl.create(:user, :name => 'Stub User')
+    @stub_user ||= create(:user, :name => 'Stub User')
   end
 
   def login_as_stub_user

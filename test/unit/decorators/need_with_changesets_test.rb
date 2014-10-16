@@ -3,16 +3,16 @@ require_relative '../../test_helper'
 class NeedWithChangesetsTest < ActiveSupport::TestCase
 
   setup do
-    @need = FactoryGirl.create(:need)
+    @need = create(:need)
 
     @need.revisions.first.destroy # get rid of the first revision as its author is nil
     @need.reload
 
     @revisions = [
-      FactoryGirl.create(:need_revision, need: @need, author: { name: "John" }, created_at: 1.hour.ago),
-      FactoryGirl.create(:need_revision, need: @need, author: { name: "Paul" }, created_at: 2.hours.ago),
-      FactoryGirl.create(:need_revision, need: @need, author: { name: "Ringo" }, created_at: 3.hours.ago),
-      FactoryGirl.create(:need_revision, need: @need, author: { name: "George" }, created_at: 4.hours.ago, action_type: "create")
+      create(:need_revision, need: @need, author: { name: "John" }, created_at: 1.hour.ago),
+      create(:need_revision, need: @need, author: { name: "Paul" }, created_at: 2.hours.ago),
+      create(:need_revision, need: @need, author: { name: "Ringo" }, created_at: 3.hours.ago),
+      create(:need_revision, need: @need, author: { name: "George" }, created_at: 4.hours.ago, action_type: "create")
     ]
 
     @decorator = NeedWithChangesets.new(@need)

@@ -2,7 +2,7 @@ require_relative '../test_helper'
 
 class NoteTest < ActiveSupport::TestCase
   setup do
-    @need = FactoryGirl.create(:need)
+    @need = create(:need)
     @atts = {
       text: "test",
       need_id: @need.need_id,

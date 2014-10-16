@@ -15,8 +15,8 @@ class NeedTest < ActiveSupport::TestCase
 
   context "creating a need" do
     setup do
-      FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
-      FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+      create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+      create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
 
       @atts = {
         role: "user",
@@ -217,7 +217,7 @@ class NeedTest < ActiveSupport::TestCase
 
     context "associating needs with non-existent organisations" do
       setup do
-        FactoryGirl.create(:organisation, name: "Home Office", slug: "home-office")
+        create(:organisation, name: "Home Office", slug: "home-office")
       end
 
       should_not allow_value(["does-not-exist"]).for(:organisation_ids)
@@ -238,12 +238,12 @@ class NeedTest < ActiveSupport::TestCase
 
   context "an existing need" do
     setup do
-      FactoryGirl.create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
-      FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+      create(:organisation, name: "Cabinet Office", slug: "cabinet-office")
+      create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
     end
 
     should "return organisations" do
-      need = FactoryGirl.create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
+      need = create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
 
       assert_equal 2, need.organisations.count
       assert_equal ["Cabinet Office", "Ministry of Justice"], need.organisations.map(&:name)
@@ -251,7 +251,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "return no organisations when no ids are present" do
-      need = FactoryGirl.create(:need, :organisation_ids => nil)
+      need = create(:need, :organisation_ids => nil)
 
       assert_equal 0, need.organisations.count
       assert_equal [], need.organisations.map(&:name)
@@ -261,7 +261,7 @@ class NeedTest < ActiveSupport::TestCase
 
   context "updating a need" do
     setup do
-      @need = FactoryGirl.create(:need, goal: "pay my car tax") # creates an initial revision
+      @need = create(:need, goal: "pay my car tax") # creates an initial revision
 
       # set the timestamp to be explicitly different so that the return order can be
       # assured for the subsequent tests
@@ -323,9 +323,9 @@ class NeedTest < ActiveSupport::TestCase
 
   context "duplicated needs" do
     setup do
-      @canonical_need = FactoryGirl.create(:need, goal: "pay my car tax")
-      @duplicate_need = FactoryGirl.create(:need, goal: "tax my car")
-      @triplicate_need = FactoryGirl.create(:need, goal: "Tax me motah")
+      @canonical_need = create(:need, goal: "pay my car tax")
+      @duplicate_need = create(:need, goal: "tax my car")
+      @triplicate_need = create(:need, goal: "Tax me motah")
     end
 
     should "have no duplicates by default" do

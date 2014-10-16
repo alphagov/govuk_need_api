@@ -4,7 +4,7 @@ class DeletingNeedsTest < ActionDispatch::IntegrationTest
 
   setup do
     login_as_stub_user
-    @need = FactoryGirl.create(:need, need_id: 100001)
+    @need = create(:need, need_id: 100001)
   end
 
   should "not allow deletion" do

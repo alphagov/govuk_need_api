@@ -9,9 +9,9 @@ class OrganisationsControllerTest < ActionController::TestCase
   context "GET index" do
     setup do
       @organisations = [
-        FactoryGirl.create(:organisation, name: "Department for Transport", slug: "department-for-transport"),
-        FactoryGirl.create(:organisation, name: "Home Office", slug: "home-office"),
-        FactoryGirl.create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
+        create(:organisation, name: "Department for Transport", slug: "department-for-transport"),
+        create(:organisation, name: "Home Office", slug: "home-office"),
+        create(:organisation, name: "Ministry of Justice", slug: "ministry-of-justice")
       ]
     end
 
