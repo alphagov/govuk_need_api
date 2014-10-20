@@ -23,7 +23,7 @@ class NeedSearchResultSetPresenter
   private
   def results
     @needs.map {|need|
-      BasicNeedPresenter.new(need).present
+      BasicNeedPresenter.new(need).as_json
     }
   end
 
