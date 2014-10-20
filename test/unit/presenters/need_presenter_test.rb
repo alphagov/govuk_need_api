@@ -3,7 +3,7 @@ require_relative '../../test_helper'
 class NeedPresenterTest < ActiveSupport::TestCase
 
   def stub_presenter(presenter, attributes, presenter_output)
-    presenter_stub = stub(:present => presenter_output)
+    presenter_stub = stub(:as_json => presenter_output)
 
     attributes = [attributes] unless attributes.is_a?(Array)
     matchers = attributes.map {|a| has_entries(a) }
@@ -59,7 +59,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
   end
 
   should "return an need as json" do
-    response = @presenter.present
+    response = @presenter.as_json
 
     assert_equal 123456, response[:id]
 

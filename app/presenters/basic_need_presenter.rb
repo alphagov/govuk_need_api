@@ -3,7 +3,7 @@ class BasicNeedPresenter
     @need = need
   end
 
-  def present
+  def as_json
     {
       id: @need.need_id,
       role: @need.role,
@@ -22,7 +22,7 @@ class BasicNeedPresenter
   private
   def organisations
     @need.organisations.map {|o|
-      OrganisationPresenter.new(o).present
+      OrganisationPresenter.new(o).as_json
     }
   end
 end

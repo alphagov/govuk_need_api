@@ -23,7 +23,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
   end
 
   should "return a need as json" do
-    response = @presenter.present
+    response = @presenter.as_json
 
     assert_equal 123456, response[:id]
 

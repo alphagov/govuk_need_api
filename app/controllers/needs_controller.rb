@@ -30,7 +30,7 @@ class NeedsController < ApplicationController
 
   def show
     decorated_need = NeedWithChangesets.new(@need)
-    render json: response_info("ok").merge(NeedPresenter.new(decorated_need).present),
+    render json: response_info("ok").merge(NeedPresenter.new(decorated_need).as_json),
            status: :ok
   end
 
@@ -58,7 +58,7 @@ class NeedsController < ApplicationController
     if @need.save_as(author_params)
       try_index_need(@need)
       decorated_need = NeedWithChangesets.new(@need)
-      render json: response_info("created").merge(NeedPresenter.new(decorated_need).present),
+      render json: response_info("created").merge(NeedPresenter.new(decorated_need).as_json),
              status: :created
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages

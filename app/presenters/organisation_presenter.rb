@@ -3,7 +3,7 @@ class OrganisationPresenter
     @organisation = organisation
   end
 
-  def present
+  def as_json
     {
       id: @organisation.slug,
       name: @organisation.name,

@@ -16,7 +16,7 @@ class OrganisationPresenterTest < ActiveSupport::TestCase
   end
 
   should "return the basic attributes" do
-    response = @presenter.present
+    response = @presenter.as_json
 
     assert_equal "ministry-of-joy", response[:id]
     assert_equal "Ministry of Joy", response[:name]

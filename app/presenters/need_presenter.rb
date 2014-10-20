@@ -3,7 +3,7 @@ class NeedPresenter
     @need = need
   end
 
-  def present
+  def as_json
     {
       id: @need.need_id,
       role: @need.role,
@@ -31,13 +31,13 @@ class NeedPresenter
   private
   def organisations
     @need.organisations.map {|o|
-      OrganisationPresenter.new(o).present
+      OrganisationPresenter.new(o).as_json
     }
   end
 
   def revisions
     @need.changesets.take(5).map { |changeset|
-      ChangesetPresenter.new(changeset).present
+      ChangesetPresenter.new(changeset).as_json
     }
   end
 end
