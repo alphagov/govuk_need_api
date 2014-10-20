@@ -5,14 +5,6 @@ class BasicNeedPresenter
 
   def as_json
     {
-      _response_info: {
-        status: "ok"
-      }
-    }.merge(present)
-  end
-
-  def present
-    {
       id: @need.need_id,
       role: @need.role,
       goal: @need.goal,
