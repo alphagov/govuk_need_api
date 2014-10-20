@@ -59,9 +59,8 @@ class NeedPresenterTest < ActiveSupport::TestCase
   end
 
   should "return an need as json" do
-    response = @presenter.as_json
+    response = @presenter.present
 
-    assert_equal "ok", response[:_response_info][:status]
     assert_equal 123456, response[:id]
 
     assert_equal "business owner", response[:role]
@@ -89,11 +88,5 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal 100001, response[:duplicate_of]
 
     assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
-  end
-
-  should "return a custom status" do
-    response = @presenter.as_json(status: "created")
-
-    assert_equal "created", response[:_response_info][:status]
   end
 end

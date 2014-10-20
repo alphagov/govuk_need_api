@@ -3,14 +3,6 @@ class NeedPresenter
     @need = need
   end
 
-  def as_json(options = {})
-    {
-      _response_info: {
-        status: options[:status] || "ok"
-      }
-    }.merge(present)
-  end
-
   def present
     {
       id: @need.need_id,
