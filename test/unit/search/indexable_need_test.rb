@@ -3,7 +3,7 @@ require_relative '../../test_helper'
 module Search
   class IndexableNeedTest < ActiveSupport::TestCase
     setup do
-      need = OpenStruct.new(
+      need = build(:need,
         need_id: 123456,
         role: "Role",
         goal: "Goal",
@@ -11,15 +11,14 @@ module Search
         organisation_ids: ["org-1"],
         applies_to_all_organisations: true,
         met_when: ["Criteria 1", "Criteria 2"],
-        legislation: ["Legislation 1", "Legislation 2"],
-        other_evidence: ["Evidence 1", "Evidence 2"],
+        legislation: "Legislation 1, Legislation 2",
+        other_evidence: "Evidence 1, Evidence 2",
         justifications: ["Justification 1"],
         impact: "impact",
         yearly_user_contacts: 1000,
         yearly_site_views: 1000,
         yearly_need_views: 1000,
         yearly_searches: 1000,
-        currently_met: false,
         in_scope: false,
         duplicate_of: 654321
       )
@@ -42,8 +41,8 @@ module Search
       assert_equal false, presented_need[:in_scope]
       assert_equal 654321, presented_need[:duplicate_of]
       assert_equal ["Criteria 1", "Criteria 2"], presented_need[:met_when]
-      assert_equal ["Legislation 1", "Legislation 2"], presented_need[:legislation]
-      assert_equal ["Evidence 1", "Evidence 2"], presented_need[:other_evidence]
+      assert_equal "Legislation 1, Legislation 2", presented_need[:legislation]
+      assert_equal "Evidence 1, Evidence 2", presented_need[:other_evidence]
     end
 
     should "only index free-text fields" do
