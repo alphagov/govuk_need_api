@@ -25,15 +25,11 @@ class OrganisationsControllerTest < ActionController::TestCase
     end
 
     should "present the organisations" do
-      stub_presenter = stub
-      OrganisationResultSetPresenter.expects(:new)
-        .with(@organisations)
-        .returns(stub_presenter)
-      stub_presenter.expects(:as_json).returns("foo")
-
       get :index
 
-      assert response.body.include?("foo")
+      body = JSON.parse(response.body)
+      org_names = body["organisations"].map {|org| org["name"] }
+      assert_equal ["Department for Transport", "Home Office", "Ministry of Justice"], org_names
     end
   end
 

@@ -34,7 +34,7 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
   end
 
   should "return the basic attributes" do
-    response = ChangesetPresenter.new(@changeset).present
+    response = ChangesetPresenter.new(@changeset).as_json
 
     assert_equal "update", response[:action_type]
 
@@ -48,7 +48,7 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
   end
 
   should "return notes as part of the changset" do
-    response = ChangesetPresenter.new(@changeset).present
+    response = ChangesetPresenter.new(@changeset).as_json
 
     note = response[:notes][0]
     assert_equal "test", note[:text]

@@ -46,7 +46,7 @@ module Search
     end
 
     should "only index free-text fields" do
-      presented_need = @indexable_need.present
+      presented_need = @indexable_need.as_json
 
       assert_nil presented_need[:organisations]
       assert_nil presented_need[:justifications]

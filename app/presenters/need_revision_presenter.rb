@@ -4,7 +4,7 @@ class NeedRevisionPresenter
     @previous_revision = previous_revision
   end
 
-  def present
+  def as_json
     {
       action_type: @revision.action_type,
       author: @revision.author,

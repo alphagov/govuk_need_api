@@ -3,7 +3,7 @@ class ChangesetPresenter
     @changeset = changeset
   end
 
-  def present
+  def as_json
     {
       action_type: @changeset.current.action_type,
       author: @changeset.current.author,

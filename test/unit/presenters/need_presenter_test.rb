@@ -3,7 +3,7 @@ require_relative '../../test_helper'
 class NeedPresenterTest < ActiveSupport::TestCase
 
   def stub_presenter(presenter, attributes, presenter_output)
-    presenter_stub = stub(:present => presenter_output)
+    presenter_stub = stub(:as_json => presenter_output)
 
     attributes = [attributes] unless attributes.is_a?(Array)
     matchers = attributes.map {|a| has_entries(a) }
@@ -61,7 +61,6 @@ class NeedPresenterTest < ActiveSupport::TestCase
   should "return an need as json" do
     response = @presenter.as_json
 
-    assert_equal "ok", response[:_response_info][:status]
     assert_equal 123456, response[:id]
 
     assert_equal "business owner", response[:role]
@@ -89,11 +88,5 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal 100001, response[:duplicate_of]
 
     assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
-  end
-
-  should "return a custom status" do
-    response = @presenter.as_json(status: "created")
-
-    assert_equal "created", response[:_response_info][:status]
   end
 end

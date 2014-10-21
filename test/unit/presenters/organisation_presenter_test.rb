@@ -15,21 +15,8 @@ class OrganisationPresenterTest < ActiveSupport::TestCase
     @presenter = OrganisationPresenter.new(@organisation)
   end
 
-  should "return the basic attributes and status" do
-    response = @presenter.as_json
-
-    assert_equal "ok", response[:_response_info][:status]
-
-    assert_equal "ministry-of-joy", response[:id]
-    assert_equal "Ministry of Joy", response[:name]
-    assert_equal "live", response[:govuk_status]
-    assert_equal "MOJ", response[:abbreviation]
-    assert_equal ["ministry-of-amusement"], response[:parent_ids]
-    assert_equal ["ministry-of-elation","ministry-of-revelry"], response[:child_ids]
-  end
-
   should "return the basic attributes" do
-    response = @presenter.present
+    response = @presenter.as_json
 
     assert_equal "ministry-of-joy", response[:id]
     assert_equal "Ministry of Joy", response[:name]
