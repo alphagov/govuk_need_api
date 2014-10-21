@@ -34,5 +34,18 @@ class OrganisationTest < ActiveSupport::TestCase
 
     should validate_presence_of(:name)
     should validate_presence_of(:slug)
+
+    should "have a JSON representation" do
+      expected_json = {
+        "name" => "Ministry of Magic",
+        "id" => "ministry-of-magic",
+        "abbreviation" => "MOM",
+        "govuk_status" => "live",
+        "parent_ids" => ["ministry-of-sleight-of-hand"],
+        "child_ids" => ["ministry-for-creationism", "ministry-for-astrology"],
+      }
+
+      assert_equal expected_json, Organisation.new(@atts).as_json
+    end
   end
 end

@@ -21,9 +21,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
       goal: "find out the VAT rate",
       benefit: "I can charge my customers the correct amount",
       organisation_ids: [ "ministry-of-testing" ],
-      organisations: [
-        { id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing" }
-      ],
+      organisations: [ build(:organisation, name: "Ministry of Testing") ],
       justifications: [ "legislation", "other" ],
       impact: "Noticed by an expert audience",
       met_when: [ "the user sees the current vat rate" ],
@@ -48,8 +46,6 @@ class NeedPresenterTest < ActiveSupport::TestCase
     )
     @presenter = NeedPresenter.new(@need)
 
-    stub_presenter("OrganisationPresenter", @need.organisations.first, "presented organisation")
-
     # Stub out the individual changeset presenter instances
     stub_presenter("ChangesetPresenter", @need.changesets[0], "Changeset 1")
     stub_presenter("ChangesetPresenter", @need.changesets[1], "Changeset 2")
@@ -68,7 +64,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal "I can charge my customers the correct amount", response[:benefit]
 
     assert_equal ["ministry-of-testing"], response[:organisation_ids]
-    assert_equal [ "presented organisation" ], response[:organisations]
+    assert_equal "Ministry of Testing", response[:organisations][0]["name"]
     assert_equal true, response[:applies_to_all_organisations]
 
     assert_equal ["legislation", "other"], response[:justifications]

@@ -12,7 +12,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
       met_when: [ "the user sees the current vat rate", "the api user can access the current vat rate" ],
       organisation_ids: [ "ministry-of-testing" ],
       organisations: [
-        OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
+        build(:organisation, name: "Ministry of Testing", slug: "ministry-of-testing")
       ],
       applies_to_all_organisations: true,
       in_scope: false,
@@ -37,8 +37,8 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
     assert_equal ["ministry-of-testing"], response[:organisation_ids]
 
     assert_equal 1, response[:organisations].size
-    assert_equal "Ministry of Testing", response[:organisations][0][:name]
-    assert_equal "ministry-of-testing", response[:organisations][0][:id]
+    assert_equal "Ministry of Testing", response[:organisations][0]["name"]
+    assert_equal "ministry-of-testing", response[:organisations][0]["id"]
 
     assert_equal true, response[:applies_to_all_organisations]
     assert_equal false, response[:in_scope]
