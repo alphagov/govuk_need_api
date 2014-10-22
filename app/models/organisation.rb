@@ -16,4 +16,10 @@ class Organisation
   validates :slug, uniqueness: { case_sensitive: false }
 
   scope :in_name_order, order_by(:name => :asc)
+
+  def as_json
+    attributes.
+      slice("name", "govuk_status", "abbreviation", "parent_ids", "child_ids").
+      tap { |json| json["id"] = self.slug }
+  end
 end

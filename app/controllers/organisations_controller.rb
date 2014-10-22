@@ -6,7 +6,7 @@ class OrganisationsController < ApplicationController
       _response_info: {
         status: "ok"
       },
-      organisations: organisations.map {|org| OrganisationPresenter.new(org).as_json }
+      organisations: organisations.map(&:as_json)
     }
   end
 end

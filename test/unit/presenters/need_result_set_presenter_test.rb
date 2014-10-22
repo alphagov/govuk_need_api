@@ -23,7 +23,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         benefit: "I can charge my customers the correct amount",
         organisation_ids: [ "ministry-of-testing" ],
         organisations: [
-          OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
+          build(:organisation, name: "Ministry of Testing", slug: "ministry-of-testing")
         ]
       ),
       OpenStruct.new(
@@ -34,7 +34,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         benefit: "I can drive my car for another year",
         organisation_ids: [ "ministry-of-testing" ],
         organisations: [
-          OpenStruct.new(id: "ministry-of-testing", name: "Ministry of Testing", slug: "ministry-of-testing")
+          build(:organisation, name: "Ministry of Testing", slug: "ministry-of-testing")
         ]
       )
     ]
@@ -66,8 +66,8 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
     assert_equal ["ministry-of-testing"], response[:results][0][:organisation_ids]
 
     assert_equal 1, response[:results][0][:organisations].size
-    assert_equal "Ministry of Testing", response[:results][0][:organisations][0][:name]
-    assert_equal "ministry-of-testing", response[:results][0][:organisations][0][:id]
+    assert_equal "Ministry of Testing", response[:results][0][:organisations][0]["name"]
+    assert_equal "ministry-of-testing", response[:results][0][:organisations][0]["id"]
   end
 
   context "including pagination links in output" do

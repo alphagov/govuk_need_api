@@ -30,9 +30,7 @@ class NeedPresenter
 
   private
   def organisations
-    @need.organisations.map {|o|
-      OrganisationPresenter.new(o).as_json
-    }
+    @need.organisations.map(&:as_json)
   end
 
   def revisions
