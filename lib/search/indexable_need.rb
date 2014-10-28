@@ -25,6 +25,7 @@ module Search
         Field.new(:other_evidence, "string", true, true),
         Field.new(:in_scope, "boolean", false, false),
         Field.new(:duplicate_of, "string", false, false),
+        Field.new(:status, "object", false, false),
       ]
     end
 
@@ -38,9 +39,16 @@ module Search
 
     def present
       # Populate each field from its corresponding method on the need
-      self.class.fields.each_with_object({}) do |field, presented|
+      representation = self.class.fields.each_with_object({}) do |field, presented|
         presented[field.name] = @need.send(field.name)
       end
+      # special JSON presentation of the "status" field
+      representation.tap {|attributes| attributes[:status] = present_status(attributes[:status]) }
+    end
+
+  private
+    def present_status(status)
+      status.present? ? { description: status.description } : nil
     end
   end
 end
