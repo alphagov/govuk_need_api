@@ -17,7 +17,8 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
       applies_to_all_organisations: true,
       in_scope: false,
       out_of_scope_reason: "foo",
-      duplicate_of: 100001
+      duplicate_of: 100001,
+      status: NeedStatus.new(description: "proposed"),
     )
     @presenter = BasicNeedPresenter.new(@need)
   end
@@ -45,6 +46,17 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
     assert_equal "foo", response[:out_of_scope_reason]
 
     assert_equal 100001, response[:duplicate_of]
+
+    assert_equal Hash["description" => "proposed"], response[:status]
   end
 
+  context "for a need fetched from elastic search" do
+    should "return a JSON representation for the status" do
+      need = build(:need, status: { "description" => "proposed" })
+
+      json = BasicNeedPresenter.new(need).as_json
+
+      assert_equal Hash["description" => "proposed"], json[:status]
+    end
+  end
 end

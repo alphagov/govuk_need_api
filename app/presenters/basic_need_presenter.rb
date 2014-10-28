@@ -15,12 +15,21 @@ class BasicNeedPresenter
       applies_to_all_organisations: @need.applies_to_all_organisations,
       in_scope: @need.in_scope,
       out_of_scope_reason: @need.out_of_scope_reason,
-      duplicate_of: @need.duplicate_of
+      duplicate_of: @need.duplicate_of,
+      status: status,
     }
   end
 
   private
   def organisations
     @need.organisations.map(&:as_json)
+  end
+
+  def status
+    if @need.status.present?
+      @need.status.is_a?(Hash) ? @need.status : NeedStatusPresenter.new(@need.status).as_json
+    else
+      nil
+    end
   end
 end
