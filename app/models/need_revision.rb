@@ -18,12 +18,12 @@ class NeedRevision
 
   private
   def filter_snapshot_data
-    self.snapshot = filter(snapshot.stringify_keys)
+    self.snapshot = filter_internal_attributes(snapshot.stringify_keys)
   end
 
-  def filter(hash)
+  def filter_internal_attributes(hash)
     hash.stringify_keys.except("_id", "need_id").tap do |hash|
-      hash.each { |key, value| hash[key] = filter(value) if value.is_a?(Hash) }
+      hash.each { |key, value| hash[key] = filter_internal_attributes(value) if value.is_a?(Hash) }
     end
   end
 end
