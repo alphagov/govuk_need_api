@@ -20,7 +20,8 @@ module Search
         yearly_need_views: 1000,
         yearly_searches: 1000,
         in_scope: false,
-        duplicate_of: 654321
+        duplicate_of: 654321,
+        status: NeedStatus.new(description: "proposed"),
       )
       @indexable_need = IndexableNeed.new(need)
     end
@@ -43,6 +44,7 @@ module Search
       assert_equal ["Criteria 1", "Criteria 2"], presented_need[:met_when]
       assert_equal "Legislation 1, Legislation 2", presented_need[:legislation]
       assert_equal "Evidence 1, Evidence 2", presented_need[:other_evidence]
+      assert_equal Hash[description: "proposed"], presented_need[:status]
     end
 
     should "only index free-text fields" do

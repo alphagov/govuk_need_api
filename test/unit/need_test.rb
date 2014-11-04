@@ -62,6 +62,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal false, need.applies_to_all_organisations
       assert_equal false, need.in_scope
       assert_equal "foo", need.out_of_scope_reason
+      assert_equal "proposed", need.status["description"]
     end
 
     context "assigning need ids" do
@@ -309,6 +310,15 @@ class NeedTest < ActiveSupport::TestCase
 
       assert_equal "pay my car tax", @need.goal
       assert_equal 1, @need.revisions.count
+    end
+
+    should "update the status if a need is marked out of scope" do
+      @need.update_attribute(:status, { description: "out of scope", reason: "not in proposition" })
+
+      @need.reload
+
+      assert_equal "out of scope", @need.status.description
+      assert_equal "not in proposition", @need.status.reason
     end
   end
 

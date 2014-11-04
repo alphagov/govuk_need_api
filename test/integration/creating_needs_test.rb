@@ -71,6 +71,8 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "link#1\nlink#2", body["legislation"]
 
     assert_equal false, body["in_scope"]
+
+    assert_equal Hash["description" => "proposed"], body["status"]
   end
 
   should "return errors given invalid attributes" do

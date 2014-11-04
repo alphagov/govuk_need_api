@@ -60,6 +60,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map{|n| n["benefit"] }.sort
       assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }.sort
       assert_equal [nil, nil, false], results.map{|n| n["in_scope"] }
+      assert_equal ["proposed"], results.map {|n| n["status"]["description"] }.uniq
 
       organisation = results[0]["organisations"][0]
       assert_equal "hm-treasury", organisation["id"]

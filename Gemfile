@@ -31,6 +31,7 @@ group :test do
   gem 'factory_girl_rails', '4.2.1'
   gem 'mocha', '0.14.0', require: false
   gem 'shoulda', '3.5.0'
+  gem 'shoulda-matchers', '2.7.0'
   gem 'simplecov', '0.7.1'
   gem 'simplecov-rcov'
   gem 'timecop', '0.6.3'
