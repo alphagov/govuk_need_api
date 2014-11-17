@@ -23,10 +23,11 @@ class Need
   field :duplicate_of, type: Integer, default: nil
 
   embeds_one :status, class_name: "NeedStatus", inverse_of: :need
+  validates :status, presence: true
   validates_associated :status
 
   before_validation :default_booleans_to_false
-  before_create :set_proposed_status
+  before_validation :default_status_to_proposed
   after_update :record_update_revision
   after_create :record_create_revision
 
@@ -143,8 +144,8 @@ class Need
     end
   end
 
-  def set_proposed_status
-    self.status = NeedStatus.new(description: "proposed")
+  def default_status_to_proposed
+    self.status ||= NeedStatus.new(description: "proposed")
   end
 
   def validate_duplicate
