@@ -299,13 +299,13 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal 1, @need.revisions.count
     end
 
-    should "update the status if a need is marked out of scope" do
-      @need.update_attribute(:status, { description: "out of scope", reason: "not in proposition" })
+    should "update the status if a need is marked as invalid" do
+      @need.update_attribute(:status, { description: "not valid", reasons: ["not in proposition"] })
 
       @need.reload
 
-      assert_equal "out of scope", @need.status.description
-      assert_equal "not in proposition", @need.status.reason
+      assert_equal "not valid", @need.status.description
+      assert_equal ["not in proposition"], @need.status.reasons
     end
   end
 
