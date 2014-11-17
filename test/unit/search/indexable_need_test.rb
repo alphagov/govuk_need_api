@@ -19,7 +19,6 @@ module Search
         yearly_site_views: 1000,
         yearly_need_views: 1000,
         yearly_searches: 1000,
-        in_scope: false,
         duplicate_of: 654321,
         status: NeedStatus.new(description: "proposed"),
       )
@@ -39,7 +38,6 @@ module Search
       assert_equal "Benefit", presented_need[:benefit]
       assert_equal ["org-1"], presented_need[:organisation_ids]
       assert_equal true, presented_need[:applies_to_all_organisations]
-      assert_equal false, presented_need[:in_scope]
       assert_equal 654321, presented_need[:duplicate_of]
       assert_equal ["Criteria 1", "Criteria 2"], presented_need[:met_when]
       assert_equal "Legislation 1, Legislation 2", presented_need[:legislation]

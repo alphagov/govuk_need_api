@@ -24,7 +24,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
        benefit: "I can get the money I need to go to university",
        author: { name: "Bob", email: "bob@example.com" },
        applies_to_all_organisations: true,
-       in_scope: false,
        out_of_scope_reason: "foo"
     }.to_json
 
@@ -37,7 +36,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal 1, body["results"].count
     assert_equal "apply for student finance", body["results"].first["goal"]
     assert_equal true, body["results"].first["applies_to_all_organisations"]
-    assert_equal false, body["results"].first["in_scope"]
     assert_equal "proposed", body["results"].first["status"]["description"]
   end
 
