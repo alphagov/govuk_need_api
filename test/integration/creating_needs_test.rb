@@ -33,7 +33,6 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "other_evidence" => "Other evidence",
       "legislation" => "link#1\nlink#2",
       "applies_to_all_organisations" => false,
-      "out_of_scope_reason" => "foo",
       "author" => {
         "name" => "Winston Smith-Churchill",
         "email" => "winston@alphagov.co.uk"

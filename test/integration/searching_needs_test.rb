@@ -24,7 +24,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
        benefit: "I can get the money I need to go to university",
        author: { name: "Bob", email: "bob@example.com" },
        applies_to_all_organisations: true,
-       out_of_scope_reason: "foo"
     }.to_json
 
     assert_equal 201, last_response.status

@@ -15,7 +15,6 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
         build(:organisation, name: "Ministry of Testing", slug: "ministry-of-testing")
       ],
       applies_to_all_organisations: true,
-      out_of_scope_reason: "foo",
       duplicate_of: 100001,
       status: NeedStatus.new(description: "proposed"),
     )
@@ -41,7 +40,6 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
     assert_equal "ministry-of-testing", response[:organisations][0]["id"]
 
     assert_equal true, response[:applies_to_all_organisations]
-    assert_equal "foo", response[:out_of_scope_reason]
 
     assert_equal 100001, response[:duplicate_of]
 

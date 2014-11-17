@@ -33,7 +33,6 @@ class NeedTest < ActiveSupport::TestCase
         other_evidence: "Other evidence",
         legislation: "link#1\nlink#2",
         applies_to_all_organisations: false,
-        out_of_scope_reason: "foo"
       }
     end
 
@@ -59,7 +58,6 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "Other evidence", need.other_evidence
       assert_equal "link#1\nlink#2", need.legislation
       assert_equal false, need.applies_to_all_organisations
-      assert_equal "foo", need.out_of_scope_reason
       assert_equal "proposed", need.status["description"]
     end
 

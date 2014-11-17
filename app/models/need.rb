@@ -18,7 +18,6 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
-  field :out_of_scope_reason, type: String
   field :duplicate_of, type: Integer, default: nil
 
   embeds_one :status, class_name: "NeedStatus", inverse_of: :need
