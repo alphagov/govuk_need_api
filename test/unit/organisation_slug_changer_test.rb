@@ -22,10 +22,38 @@ class OrganisationSlugChangerTest < ActiveSupport::TestCase
     assert_equal false, slug_changer.call
   end
 
-  test 'it changes the organisation slug' do
+  test 'it creates a new organisation with new slug and _id' do
     @slug_changer.call
 
-    assert_equal @new_slug, @organisation.reload.slug
+    new_org = Organisation.where(slug: @new_slug).first
+
+    assert_equal @new_slug, new_org.slug
+    assert_equal @new_slug, new_org._id
+  end
+
+  test 'it copies over other attributes to the new organisation' do
+    @slug_changer.call
+
+    new_org = Organisation.where(slug: @new_slug).first
+
+    attributes = [
+      :name,
+      :govuk_status,
+      :abbreviation,
+      :parent_ids,
+      :child_ids
+    ]
+
+    attributes.each do |attribute|
+      assert_equal new_org.send(attribute), @organisation.send(attribute)
+    end
+  end
+
+  test 'it removes the old organisation' do
+    @slug_changer.call
+
+    assert_equal 0, Organisation.where(slug: @old_slug).count
+    assert_equal 0, Organisation.where(_id: @old_slug).count
   end
 
   test 'it changes the organisation_slug of associated users' do

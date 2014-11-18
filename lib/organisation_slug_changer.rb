@@ -17,8 +17,9 @@ class OrganisationSlugChanger
   end
 
   def change_organisation_slug
-    update_organisation_slug
+    create_new_organisation
     update_associated_users
+    destroy_original_organisation
   end
 
 private
@@ -44,8 +45,20 @@ private
     end
   end
 
-  def update_organisation_slug
-    organisation.update_attributes!(slug: new_slug)
-    logger.info "Changed organisation slug '#{old_slug}' => '#{new_slug}'"
+  def create_new_organisation
+    new_attributes = organisation.attributes.slice(
+      "name",
+      "abbreviation",
+      "govuk_status",
+      "parent_ids",
+      "child_ids"
+    )
+    new_organisation = Organisation.create(new_attributes.merge(slug: new_slug))
+    logger.info "Created clone organisation with new slug '#{new_slug}'"
+  end
+
+  def destroy_original_organisation
+    organisation.destroy
+    logger.info "Destroyed original organisation with slug '#{old_slug}'"
   end
 end
