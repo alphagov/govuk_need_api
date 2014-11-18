@@ -3,7 +3,7 @@ require_relative '../../test_helper'
 module Search
   class IndexableNeedTest < ActiveSupport::TestCase
     setup do
-      need = build(:need,
+      @need = build(:need,
         need_id: 123456,
         role: "Role",
         goal: "Goal",
@@ -23,7 +23,7 @@ module Search
         duplicate_of: 654321,
         status: NeedStatus.new(description: "proposed"),
       )
-      @indexable_need = IndexableNeed.new(need)
+      @indexable_need = IndexableNeed.new(@need)
     end
 
     should "return the need's ID" do
@@ -68,6 +68,10 @@ module Search
         assert field.respond_to?(:analyzed?)
         assert field.respond_to?(:include_in_all?)
       end
+    end
+
+    should "define value equality" do
+      assert_equal IndexableNeed.new(@need), IndexableNeed.new(@need)
     end
   end
 end
