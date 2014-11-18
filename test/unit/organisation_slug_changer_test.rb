@@ -11,6 +11,8 @@ class OrganisationSlugChangerTest < ActiveSupport::TestCase
       @organisation.slug,
       @new_slug
     )
+
+    GovukNeedApi.stubs(:indexer).returns(stub_everything("indexer"))
   end
 
   test 'it returns true on success' do
@@ -62,5 +64,25 @@ class OrganisationSlugChangerTest < ActiveSupport::TestCase
     @slug_changer.call
 
     assert_equal @new_slug, user.reload.organisation_slug
+  end
+
+  test 'it updates any needs' do
+    need = create(:need, organisation_ids: [@organisation._id])
+
+    @slug_changer.call
+
+    assert_equal [@new_slug], need.reload.organisation_ids
+  end
+
+  test 'it indexes updated needs in search' do
+    need = create(:need, organisation_ids: [@organisation._id])
+    new_need = Need.new(need.attributes.except("_id"))
+    new_need.organisation_ids = [@new_slug]
+
+    indexer = mock("indexer")
+    indexer.expects(:index).with(Search::IndexableNeed.new(new_need))
+    GovukNeedApi.stubs(:indexer).returns(indexer)
+
+    @slug_changer.call
   end
 end

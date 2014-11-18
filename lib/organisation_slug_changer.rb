@@ -18,6 +18,7 @@ class OrganisationSlugChanger
 
   def change_organisation_slug
     create_new_organisation
+    update_associated_needs
     update_associated_users
     destroy_original_organisation
   end
@@ -55,6 +56,30 @@ private
     )
     new_organisation = Organisation.create(new_attributes.merge(slug: new_slug))
     logger.info "Created clone organisation with new slug '#{new_slug}'"
+  end
+
+  def associated_needs
+    Need.where(organisation_ids: old_slug)
+  end
+
+  def update_associated_needs
+    associated_needs.each do |need|
+      update_organisation_id_of_need(need)
+      reindex_need_in_search(need)
+    end
+  end
+
+  def update_organisation_id_of_need(need)
+    need.organisation_ids = need.organisation_ids - [old_slug] + [new_slug]
+    need.save!
+    logger.info "   -> Changed organisation_id of need '#{need._id}'"
+  end
+
+  def reindex_need_in_search(need)
+    GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
+    logger.info "   -> Reindexed need '#{need._id}'"
+  rescue Search::Indexer::IndexingFailed => e
+    logger.error "   -> Reindexing need '#{need._id}' failed due to #{e}"
   end
 
   def destroy_original_organisation
