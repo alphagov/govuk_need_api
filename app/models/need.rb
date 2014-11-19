@@ -18,8 +18,6 @@ class Need
   field :other_evidence, type: String
   field :legislation, type: String
   field :applies_to_all_organisations, type: Boolean, default: false
-  field :in_scope, type: Boolean
-  field :out_of_scope_reason, type: String
   field :duplicate_of, type: Integer, default: nil
 
   embeds_one :status, class_name: "NeedStatus", inverse_of: :need
@@ -66,13 +64,9 @@ class Need
               greater_than_or_equal_to: 0, allow_nil: true, only_integer: true
             }
 
-  # at current, we only allow a need to be marked as out of scope and not in scope
-  validates :in_scope, inclusion: { in: [ nil,  false ] }
-
   validate :organisation_ids_must_exist
   validate :no_organisations_if_applies_to_all
   validate :validate_duplicate
-  validate :validate_out_of_scope
 
   has_and_belongs_to_many :organisations
   has_many :revisions, class_name: "NeedRevision"
@@ -173,15 +167,6 @@ class Need
       errors.add(
         :duplicate_of,
         "The need ID is already a duplicate of another need"
-      )
-    end
-  end
-
-  def validate_out_of_scope
-    if out_of_scope_reason.blank? && in_scope == false
-      errors.add(
-        :out_of_scope_reason,
-        "A reason is required to mark a need as out of scope"
       )
     end
   end
