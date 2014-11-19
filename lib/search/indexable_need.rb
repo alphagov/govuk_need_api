@@ -45,6 +45,10 @@ module Search
       representation.tap {|attributes| attributes[:status] = present_status(attributes[:status]) }
     end
 
+    def ==(other)
+      self.present == other.present
+    end
+
   private
     def present_status(status)
       status.present? ? { description: status.description } : nil
