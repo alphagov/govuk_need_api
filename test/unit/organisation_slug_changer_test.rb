@@ -74,6 +74,20 @@ class OrganisationSlugChangerTest < ActiveSupport::TestCase
     assert_equal [@new_slug], need.reload.organisation_ids
   end
 
+  test 'it records the need revision using an appropriate user' do
+    need = create(:need, organisation_ids: [@organisation._id])
+
+    @slug_changer.call
+
+    expected_author = {
+      "name" => "Data Migration",
+      "email" => "govuk-maslow@digital.cabinet-office.gov.uk",
+      "uid" => nil
+    }
+
+    assert_equal expected_author, need.reload.revisions.map(&:author).last
+  end
+
   test 'it indexes updated needs in search' do
     need = create(:need, organisation_ids: [@organisation._id])
     new_need = Need.new(need.attributes.except("_id"))

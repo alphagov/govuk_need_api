@@ -71,7 +71,11 @@ private
 
   def update_organisation_id_of_need(need)
     need.organisation_ids = need.organisation_ids - [old_slug] + [new_slug]
-    need.save!
+    need.save_as(
+      "name" => "Data Migration",
+      "email" => "govuk-maslow@digital.cabinet-office.gov.uk",
+      "uid" => nil
+    )
     logger.info "   -> Changed organisation_id of need '#{need._id}'"
   end
 
