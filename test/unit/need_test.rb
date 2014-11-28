@@ -307,6 +307,18 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "not valid", @need.status.description
       assert_equal ["not in proposition"], @need.status.reasons
     end
+
+    should "remove inconsistent fields from the need status when the status is updated" do
+      @need.assign_attributes(status: { description: "not valid", reasons: ["not in proposition"] })
+      @need.save
+
+      @need.assign_attributes(status: { description: "proposed" })
+      @need.save
+
+      @need.reload
+
+      assert_nil @need.status["reasons"]
+    end
   end
 
   context "duplicated needs" do
