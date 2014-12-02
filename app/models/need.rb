@@ -20,7 +20,7 @@ class Need
   field :applies_to_all_organisations, type: Boolean, default: false
   field :duplicate_of, type: Integer, default: nil
 
-  embeds_one :status, class_name: "NeedStatus", inverse_of: :need
+  embeds_one :status, class_name: "NeedStatus", inverse_of: :need, cascade_callbacks: true
   validates :status, presence: true
   validates_associated :status
 
