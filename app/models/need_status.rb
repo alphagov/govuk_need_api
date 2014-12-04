@@ -14,7 +14,7 @@ class NeedStatus
   field :additional_comments, type: String
   field :validation_conditions, type: String
 
-  validates :description, presence: true, inclusion: { in: [PROPOSED, "out of scope", NOT_VALID, VALID, VALID_WITH_CONDITIONS] }
+  validates :description, presence: true, inclusion: { in: [PROPOSED, NOT_VALID, VALID, VALID_WITH_CONDITIONS] }
 
   validates :reasons, presence: true, if: Proc.new { |s| s.description == NOT_VALID }
   validates :validation_conditions, presence: true, if: Proc.new { |s| s.description == VALID_WITH_CONDITIONS }
