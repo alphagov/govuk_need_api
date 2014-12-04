@@ -9,7 +9,6 @@ class NeedStatus
   embedded_in :need
 
   field :description, type: String
-  field :reason, type: String # this field is deprecated and will be removed soon
   field :reasons, type: Array
   field :additional_comments, type: String
   field :validation_conditions, type: String
