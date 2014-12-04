@@ -317,6 +317,15 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "really good need", @need.status.additional_comments
     end
 
+    should "update the status if a need is marked as valid with conditions" do
+      @need.update_attribute(:status, { description: "valid with conditions", validation_conditions: "must improve a and b" })
+
+      @need.reload
+
+      assert_equal "valid with conditions", @need.status.description
+      assert_equal "must improve a and b", @need.status.validation_conditions
+    end
+
     should "remove inconsistent fields from the need status when the status is updated" do
       @need.assign_attributes(status: { description: "not valid", reasons: ["not in proposition"] })
       @need.save
