@@ -16,7 +16,7 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
       ],
       applies_to_all_organisations: true,
       duplicate_of: 100001,
-      status: NeedStatus.new(description: "proposed"),
+      status: NeedStatus.new(description: NeedStatus::PROPOSED),
     )
     @presenter = BasicNeedPresenter.new(@need)
   end
@@ -43,16 +43,16 @@ class BasicNeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal 100001, response[:duplicate_of]
 
-    assert_equal Hash["description" => "proposed"], response[:status]
+    assert_equal Hash["description" => NeedStatus::PROPOSED], response[:status]
   end
 
   context "for a need fetched from elastic search" do
     should "return a JSON representation for the status" do
-      need = build(:need, status: { "description" => "proposed" })
+      need = build(:need, status: { "description" => NeedStatus::PROPOSED })
 
       json = BasicNeedPresenter.new(need).as_json
 
-      assert_equal Hash["description" => "proposed"], json[:status]
+      assert_equal Hash["description" => NeedStatus::PROPOSED], json[:status]
     end
   end
 end

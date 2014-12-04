@@ -58,7 +58,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "Other evidence", need.other_evidence
       assert_equal "link#1\nlink#2", need.legislation
       assert_equal false, need.applies_to_all_organisations
-      assert_equal "proposed", need.status["description"]
+      assert_equal NeedStatus::PROPOSED, need.status["description"]
     end
 
     context "assigning need ids" do
@@ -300,19 +300,37 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "update the status if a need is marked as invalid" do
-      @need.update_attribute(:status, { description: "not valid", reasons: ["not in proposition"] })
+      @need.update_attribute(:status, { description: NeedStatus::NOT_VALID, reasons: ["not in proposition"] })
 
       @need.reload
 
-      assert_equal "not valid", @need.status.description
+      assert_equal NeedStatus::NOT_VALID, @need.status.description
       assert_equal ["not in proposition"], @need.status.reasons
     end
 
+    should "update the status if a need is marked as valid" do
+      @need.update_attribute(:status, { description: NeedStatus::VALID, additional_comments: "really good need" })
+
+      @need.reload
+
+      assert_equal NeedStatus::VALID, @need.status.description
+      assert_equal "really good need", @need.status.additional_comments
+    end
+
+    should "update the status if a need is marked as valid with conditions" do
+      @need.update_attribute(:status, { description: NeedStatus::VALID_WITH_CONDITIONS, validation_conditions: "must improve a and b" })
+
+      @need.reload
+
+      assert_equal NeedStatus::VALID_WITH_CONDITIONS, @need.status.description
+      assert_equal "must improve a and b", @need.status.validation_conditions
+    end
+
     should "remove inconsistent fields from the need status when the status is updated" do
-      @need.assign_attributes(status: { description: "not valid", reasons: ["not in proposition"] })
+      @need.assign_attributes(status: { description: NeedStatus::NOT_VALID, reasons: ["not in proposition"] })
       @need.save
 
-      @need.assign_attributes(status: { description: "proposed" })
+      @need.assign_attributes(status: { description: NeedStatus::PROPOSED })
       @need.save
 
       @need.reload

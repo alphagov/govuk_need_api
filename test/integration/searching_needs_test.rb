@@ -35,7 +35,7 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal 1, body["results"].count
     assert_equal "apply for student finance", body["results"].first["goal"]
     assert_equal true, body["results"].first["applies_to_all_organisations"]
-    assert_equal "proposed", body["results"].first["status"]["description"]
+    assert_equal NeedStatus::PROPOSED, body["results"].first["status"]["description"]
   end
 
   should "match a result with a similar word" do

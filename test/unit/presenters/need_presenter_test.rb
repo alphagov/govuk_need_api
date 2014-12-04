@@ -41,7 +41,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
         { author: "Author 5" },
         { author: "Author 6" },
       ],
-      status: OpenStruct.new(attributes: { description: "proposed" }),
+      status: OpenStruct.new(attributes: { description: NeedStatus::PROPOSED }),
     )
     @presenter = NeedPresenter.new(@need)
 
@@ -81,6 +81,6 @@ class NeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
 
-    assert_equal Hash[description: "proposed"], response[:status]
+    assert_equal Hash[description: NeedStatus::PROPOSED], response[:status]
   end
 end

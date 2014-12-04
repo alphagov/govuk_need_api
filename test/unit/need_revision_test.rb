@@ -42,7 +42,7 @@ class NeedRevisionTest < ActiveSupport::TestCase
         "benefit" => "i know when to change my clocks",
         "status" => {
           "_id" => OpenStruct.new(id: '12345'),
-          "description"=>"proposed",
+          "description"=>NeedStatus::PROPOSED,
         },
       }
 
@@ -52,7 +52,7 @@ class NeedRevisionTest < ActiveSupport::TestCase
       revision.reload
 
       assert_equal ["role", "goal", "benefit", "status"], revision.snapshot.keys
-      assert_equal Hash["description" => "proposed"], revision.snapshot["status"]
+      assert_equal Hash["description" => NeedStatus::PROPOSED], revision.snapshot["status"]
     end
   end
 
