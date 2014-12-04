@@ -14,7 +14,7 @@ class NeedStatus
   validates :reasons, presence: true, if: Proc.new { |s| s.description == "not valid" }
   validates :validation_conditions, presence: true, if: Proc.new { |s| s.description == "valid with conditions" }
 
-  before_save :clear_inconsistent_fields
+  before_validation :clear_inconsistent_fields
 
 private
   def clear_inconsistent_fields
