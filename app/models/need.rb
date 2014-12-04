@@ -139,7 +139,7 @@ class Need
   end
 
   def default_status_to_proposed
-    self.status ||= NeedStatus.new(description: "proposed")
+    self.status ||= NeedStatus.new(description: NeedStatus::PROPOSED)
   end
 
   def validate_duplicate

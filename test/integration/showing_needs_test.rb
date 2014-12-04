@@ -47,7 +47,7 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
 
       assert_equal 100000, body["duplicate_of"]
 
-      assert_equal Hash["description" => "proposed"], body["status"]
+      assert_equal Hash["description" => NeedStatus::PROPOSED], body["status"]
     end
 
     should "include the need revisions" do

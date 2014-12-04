@@ -68,7 +68,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
     assert_equal "Other evidence", body["other_evidence"]
     assert_equal "link#1\nlink#2", body["legislation"]
 
-    assert_equal Hash["description" => "proposed"], body["status"]
+    assert_equal Hash["description" => NeedStatus::PROPOSED], body["status"]
   end
 
   should "return errors given invalid attributes" do

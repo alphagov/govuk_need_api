@@ -1,4 +1,9 @@
 class NeedStatus
+  PROPOSED = "proposed"
+  NOT_VALID = "not valid"
+  VALID = "valid"
+  VALID_WITH_CONDITIONS = "valid with conditions"
+
   include Mongoid::Document
 
   embedded_in :need
@@ -9,24 +14,24 @@ class NeedStatus
   field :additional_comments, type: String
   field :validation_conditions, type: String
 
-  validates :description, presence: true, inclusion: { in: ["proposed", "out of scope", "not valid", "valid", "valid with conditions"] }
+  validates :description, presence: true, inclusion: { in: [PROPOSED, "out of scope", NOT_VALID, VALID, VALID_WITH_CONDITIONS] }
 
-  validates :reasons, presence: true, if: Proc.new { |s| s.description == "not valid" }
-  validates :validation_conditions, presence: true, if: Proc.new { |s| s.description == "valid with conditions" }
+  validates :reasons, presence: true, if: Proc.new { |s| s.description == NOT_VALID }
+  validates :validation_conditions, presence: true, if: Proc.new { |s| s.description == VALID_WITH_CONDITIONS }
 
   before_validation :clear_inconsistent_fields
 
 private
   def clear_inconsistent_fields
-    if description != "not valid" && reasons != nil
+    if description != NOT_VALID && reasons != nil
       self.reasons = nil
     end
 
-    if description != "valid" && additional_comments != nil
+    if description != VALID && additional_comments != nil
       self.additional_comments = nil
     end
 
-    if description != "valid with conditions" && validation_conditions != nil
+    if description != VALID_WITH_CONDITIONS && validation_conditions != nil
       self.validation_conditions = nil
     end
   end

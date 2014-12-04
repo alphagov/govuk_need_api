@@ -3,7 +3,7 @@ class AddStatusToNeeds < Mongoid::Migration
     Need.all.each do |n|
       unless n.status.present?
         if n.in_scope.nil?
-          n.status = NeedStatus.new(description: "proposed")
+          n.status = NeedStatus.new(description: NeedStatus::PROPOSED)
         elsif n.in_scope == false
           n.status = NeedStatus.new(description: "out of scope", reason: n.out_of_scope_reason)
         else
