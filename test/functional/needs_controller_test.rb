@@ -140,6 +140,40 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "GET index with organisation_id parameter" do
+    setup do
+      @needs = [
+        @co_need  = create(:need, organisation_ids: ["cabinet-office"]),
+        @dft_need = create(:need, organisation_ids: ["department-for-transport"])
+      ]
+    end
+
+    should "return a success status" do
+      get :index
+
+      assert_response :success
+
+      body = JSON.parse(response.body)
+      assert_equal "ok", body["_response_info"]["status"]
+    end
+
+    should "return only the needs related to that organisation" do
+      get :index, organisation_id: 'cabinet-office'
+
+      body = JSON.parse(response.body)
+      body["results"].sort_by! {|r| r["id"] }
+
+      assert_equal 1, body["results"].size
+      assert_equal @co_need.need_id, body["results"][0]["id"]
+    end
+
+    should "set cache-control headers to zero" do
+      get :index
+
+      assert_equal "max-age=0, public", response.headers["Cache-Control"]
+    end
+  end
+
   context "POST create" do
     context "given a valid need" do
       setup do
