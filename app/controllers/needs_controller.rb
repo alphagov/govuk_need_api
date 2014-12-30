@@ -8,7 +8,7 @@ class NeedsController < ApplicationController
     scope = Need
 
     if params["q"].present?
-      search(params["q"]) and return
+      search(params["q"], params["organisation_id"]) and return
     end
 
     if org = params["organisation_id"] and org.present?
@@ -142,10 +142,10 @@ class NeedsController < ApplicationController
     end
   end
 
-  def search(query)
+  def search(query, organisation_id)
     # TODO: reject page parameter
 
-    results = GovukNeedApi.searcher.search(query)
+    results = GovukNeedApi.searcher.search(query, organisation_id)
     set_expiry 0
 
     presenter = NeedSearchResultSetPresenter.new(results, query, view_context)
