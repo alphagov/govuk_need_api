@@ -13,7 +13,7 @@ class NeedResultSetPresenter
         status: "ok",
         links: links.map {|l| { "href" => l.href }.merge(l.attrs) }
       },
-      total: @needs.count,
+      total: @needs.total_count,
       current_page: @needs.current_page,
       pages: @needs.total_pages,
       start_index: start_index,

@@ -31,7 +31,8 @@ class Need
 
   default_scope order_by([:_id, :desc])
 
-  paginates_per 50
+  PAGE_SIZE = 50
+  paginates_per PAGE_SIZE
 
   # This callback needs to be assigned before the `key` class method below, as
   # otherwise Mongoid will generate a new document's key before it assigns a

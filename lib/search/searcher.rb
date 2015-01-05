@@ -5,17 +5,26 @@ module Search
       @index_name, @type = index_name, type
     end
 
-    def search(querystring, organisation_id=nil)
-      results = @client.search(
+    def search(querystring, options={})
+      organisation_id = options[:organisation_id]
+      raw_page = options[:page].to_i
+      if raw_page < 1
+        page = 1
+      else
+        page = raw_page
+      end
+      response = @client.search(
         index: @index_name,
         type: @type,
         body: {
           "query" => build_query(querystring, organisation_id),
-          "size" => 50,
+          "size" => Need::PAGE_SIZE,
+          "from" => (page - 1) * Need::PAGE_SIZE
         }
       )
 
-      results["hits"]["hits"].map { |r| Search::NeedSearchResult.new(r["_source"]) }
+      results = response["hits"]["hits"].map { |r| ::Search::NeedSearchResult.new(r["_source"]) }
+      ::Search::NeedSearchResultSet.new(results, response["hits"]["total"])
     end
 
     def build_query(querystring, organisation_id)

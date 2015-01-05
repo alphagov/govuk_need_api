@@ -244,7 +244,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
   end
 
   should "include the total number of needs" do
-    @needs.expects(:count).returns(50)
+    @needs.expects(:total_count).returns(50)
 
     response = NeedResultSetPresenter.new(@needs, @view_context).as_json
 
