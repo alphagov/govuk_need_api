@@ -107,7 +107,8 @@ class NeedsControllerTest < ActionController::TestCase
         )
       ]
       mock_searcher = mock("searcher")
-      mock_searcher.expects(:search).with("fish", nil).returns(@results)
+      mock_searcher.expects(:search).with("fish", {})
+                   .returns(Search::NeedSearchResultSet.new(@results, 1))
       GovukNeedApi.stubs(:searcher).returns(mock_searcher)
     end
 
@@ -192,7 +193,8 @@ class NeedsControllerTest < ActionController::TestCase
         )
       ]
       mock_searcher = mock("searcher")
-      mock_searcher.expects(:search).with("cheese", "cabinet-office").returns(@results)
+      mock_searcher.expects(:search).with("cheese", 'organisation_id' => "cabinet-office")
+                   .returns(::Search::NeedSearchResultSet.new(@results, 1))
       GovukNeedApi.stubs(:searcher).returns(mock_searcher)
 
       get :index, organisation_id: 'cabinet-office', q: 'cheese'

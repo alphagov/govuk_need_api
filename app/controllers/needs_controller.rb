@@ -5,23 +5,26 @@ class NeedsController < ApplicationController
   before_filter :check_for_author_params, only: [:create, :update, :closed, :reopen]
 
   def index
-    scope = Need
-
     if params["q"].present?
-      search(params["q"], params["organisation_id"]) and return
+      result_set = GovukNeedApi.searcher.search(params["q"], params.slice(:organisation_id, :page))
+      @needs = Kaminari.paginate_array(result_set.results, total_count: result_set.total_count)
+                       .page(params[:page])
+                       .per(Need::PAGE_SIZE)
+    else
+      scope = Need
+
+      if org = params["organisation_id"] and org.present?
+        scope = scope.where(:organisation_ids => org)
+      end
+
+      if need_ids
+        scope = scope.where(:need_id.in => need_ids)
+      end
+
+      @needs = scope.page(params[:page])
     end
 
-    if org = params["organisation_id"] and org.present?
-      scope = scope.where(:organisation_ids => org)
-    end
-
-    if need_ids
-      scope = scope.where(:need_id.in => need_ids)
-    end
-
-    @needs = scope.page(params[:page])
-
-    presenter = NeedResultSetPresenter.new(@needs, view_context, :scope_params => params.slice(:organisation_id, :ids))
+    presenter = NeedResultSetPresenter.new(@needs, view_context, :scope_params => params.slice(:q, :organisation_id, :ids))
     response.headers["Link"] = LinkHeader.new(presenter.links).to_s
 
     set_expiry 0
@@ -140,16 +143,6 @@ class NeedsController < ApplicationController
     unless author_params.any?
       error 422, message: :author_not_provided, errors: ["Author details must be provided"]
     end
-  end
-
-  def search(query, organisation_id)
-    # TODO: reject page parameter
-
-    results = GovukNeedApi.searcher.search(query, organisation_id)
-    set_expiry 0
-
-    presenter = NeedSearchResultSetPresenter.new(results, query, view_context)
-    render json: presenter.as_json
   end
 
   def filtered_params

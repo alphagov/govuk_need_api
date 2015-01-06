@@ -64,21 +64,31 @@ class SearcherTest < ActiveSupport::TestCase
     Search::Searcher.new(client, "foo", "bang").search("baz")
   end
 
-  should "ask for 50 results" do
+  should "ask for the first 50 results" do
     client = mock("client")
     client.expects(:search).with { |search_params|
-      query_params = search_params[:body]["query"].values.first
-      query_params["query"] == "baz"
+      50 == search_params[:body]["size"] &&
+      0 == search_params[:body]["from"]
     }.returns(single_result_response)
 
     Search::Searcher.new(client, "foo", "bang").search("baz")
+  end
+
+  should "ask for the next 50 results" do
+    client = mock("client")
+    client.expects(:search).with { |search_params|
+      50 == search_params[:body]["size"] &&
+      50 == search_params[:body]["from"]
+    }.returns(single_result_response)
+
+    Search::Searcher.new(client, "foo", "bang").search("baz", page: 2)
   end
 
   should "parse out the search results" do
     client = mock("client")
     client.expects(:search).returns(single_result_response)
 
-    results = Search::Searcher.new(client, "foo", "bang").search("cheese")
-    assert_equal ["fishmonger"], results.map(&:role)
+    result_set = Search::Searcher.new(client, "foo", "bang").search("cheese")
+    assert_equal ["fishmonger"], result_set.results.map(&:role)
   end
 end
