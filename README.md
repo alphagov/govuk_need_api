@@ -8,6 +8,7 @@ The Need API is a JSON read and write API for information about user needs on GO
 - Bundler
 - MongoDB
 - Elasticsearch (running on port 9200)
+- Redis (running on port 6379)
 
 The Need API is not dependent on any other GOV.UK appliations in order to run.
 
