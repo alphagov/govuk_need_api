@@ -5,7 +5,7 @@ gem 'rails', '3.2.17'
 gem 'mongoid', '2.8.1'
 gem 'bson_ext', '1.9.2'
 
-gem 'plek', '1.4.0'
+gem 'plek', '~> 1.10'
 gem 'aws-ses', :require => 'aws/ses'
 gem 'gds-api-adapters', '7.19.0'
 
@@ -26,6 +26,8 @@ else
   gem 'gds-sso', '9.3.0'
 end
 
+gem 'airbrake', '~> 4.1.0'
+
 group :test do
   gem 'database_cleaner', '1.1.1', require: false
   gem 'factory_girl_rails', '4.2.1'
@@ -39,5 +41,4 @@ group :test do
 end
 
 gem 'unicorn'
-gem 'exception_notification', '2.6.1'
 gem 'whenever', '0.8.4', :require => false

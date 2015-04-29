@@ -158,7 +158,7 @@ class NeedsController < ApplicationController
     GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
     true
   rescue Search::Indexer::IndexingFailed => e
-    ExceptionNotifier::Notifier.background_exception_notification(e)
+    Airbrake.notify_or_ignore(e)
     false
   end
 
