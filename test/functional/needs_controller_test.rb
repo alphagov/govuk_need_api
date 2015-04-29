@@ -320,8 +320,8 @@ class NeedsControllerTest < ActionController::TestCase
           end
 
           should "send out an exception report" do
-            ExceptionNotifier::Notifier
-              .expects(:background_exception_notification)
+            Airbrake
+              .expects(:notify_or_ignore)
               .with(@exception)
             post :create, @need_with_author
           end
@@ -510,8 +510,8 @@ class NeedsControllerTest < ActionController::TestCase
           end
 
           should "send out an exception report" do
-            ExceptionNotifier::Notifier
-              .expects(:background_exception_notification)
+            Airbrake
+              .expects(:notify_or_ignore)
               .with(@exception)
             put :update, @updates_with_author
           end
