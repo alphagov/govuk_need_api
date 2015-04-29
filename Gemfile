@@ -6,7 +6,6 @@ gem 'mongoid', '2.8.1'
 gem 'bson_ext', '1.9.2'
 
 gem 'plek', '~> 1.10'
-gem 'aws-ses', :require => 'aws/ses'
 gem 'gds-api-adapters', '7.19.0'
 
 gem "mongoid_rails_migrations", "1.0.1"
