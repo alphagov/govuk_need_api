@@ -7,6 +7,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
       OpenStruct.new(
         title: o[:name],
         details: OpenStruct.new(slug: o[:slug],
+                                content_id: o[:content_id],
                                 govuk_status: o[:govuk_status],
                                 abbreviation: o[:abbreviation]),
         child_organisations: o[:child_ids],
@@ -20,6 +21,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
 
   should "not update an organisation if no attributes have changed" do
     organisation_atts = {
+      content_id: SecureRandom.uuid,
       name: "HM Treasury",
       slug: "hm-treasury",
       child_ids: [],
@@ -34,28 +36,33 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
 
     assert_equal("HM Treasury", org.name)
     assert_equal("hm-treasury", org.slug)
+    assert_equal(organisation_atts[:content_id], org.content_id)
     assert_equal([], org.child_ids)
     assert_equal([], org.parent_ids)
   end
 
   should "update an organisation if an attribute has changed" do
     organisation_atts = {
+      content_id: SecureRandom.uuid,
       name: "HM Treasury",
       slug: "hm-treasury",
       abbreviation: "HMT",
       child_ids: [],
       parent_ids: []
     }
-    Organisation.create!(organisation_atts)
+    Organisation.create!(organisation_atts.except(:content_id))
     stub_api_with_organisations(organisation_atts.merge(abbreviation: "HT"))
 
     OrganisationImporter.new.run
 
-    assert_equal("HT", Organisation.where(slug: "hm-treasury").first.abbreviation)
+    org = Organisation.where(slug: 'hm-treasury').first
+    assert_equal "HT", org.abbreviation
+    assert_equal organisation_atts[:content_id], org.content_id
   end
 
   should "update/add several organisations that have changed" do
     dwp_atts = {
+      content_id: SecureRandom.uuid,
       slug: "department-for-work-and-pensions",
       name: "Department for Work & Pensions",
       child_ids: [OpenStruct.new(id:"equality-2025")],
@@ -64,6 +71,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
     Organisation.create!(dwp_atts.merge(child_ids: ["equality-2025"]))
 
     hoc_atts = {
+      content_id: SecureRandom.uuid,
       slug: "the-office-of-the-leader-of-the-house-of-commons",
       name: "Office of the Leader of the House of Commons",
       child_ids: [],
@@ -72,6 +80,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
     Organisation.create!(hoc_atts.merge(parent_ids: ["cabinet-office"]))
 
     mod_atts = {
+      content_id: SecureRandom.uuid,
       slug: "ministry-of-defence",
       name: "Ministry of Defence",
       abbreviation: "mod",

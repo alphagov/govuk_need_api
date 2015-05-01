@@ -20,6 +20,7 @@ class OrganisationImporter
     parent_ids = related_organisation_slugs(organisation_from_api.parent_organisations)
 
     organisation_atts = {
+      :content_id => organisation_from_api.details.content_id,
       :name => organisation_from_api.title,
       :slug => organisation_from_api.details.slug,
       :abbreviation => organisation_from_api.details.abbreviation,

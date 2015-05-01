@@ -3,6 +3,7 @@ class Organisation
 
   field :name, type: String
   field :slug, type: String
+  field :content_id, type: String
   field :govuk_status, type: String, default: ""
   field :abbreviation, type: String, default: ""
   field :parent_ids, type: Array, default: []
