@@ -37,6 +37,7 @@ group :test do
   gem 'simplecov-rcov'
   gem 'timecop', '0.6.3'
   gem 'webmock', '1.14.0'
+  gem 'test-unit', '~> 3.0'
 end
 
 gem 'unicorn'
