@@ -1,10 +1,27 @@
 development:
-  host: localhost
-  database: govuk_needs_development
-  allow_dynamic_fields: false
-  persist_in_safe_mode: true
+  sessions:
+    default:
+      uri: mongodb://localhost/govuk_needs_development
+      options:
+        write:
+          w: 1
+        read: primary
 test:
-  host: localhost
-  database: govuk_needs_test
-  allow_dynamic_fields: false
-  persist_in_safe_mode: true
+  sessions:
+    default:
+      uri: mongodb://localhost/govuk_needs_test
+      options:
+        write:
+          w: 1
+        read: primary
+        max_retries: 1
+        retry_interval: 0
+production:
+  sessions:
+    default:
+      uri: <%= ENV['MONGODB_URI'] %>
+      options:
+        write:
+          w: 1
+        read: primary
+        retry_interval: 120
