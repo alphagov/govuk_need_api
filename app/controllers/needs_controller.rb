@@ -13,8 +13,8 @@ class NeedsController < ApplicationController
     else
       scope = Need
 
-      if org = params["organisation_id"] and org.present?
-        scope = scope.where(organisation_ids: org)
+      if params["organisation_id"].present?
+        scope = scope.where(organisation_ids: params["organisation_id"])
       end
 
       scope = scope.where(:need_id.in => need_ids) if need_ids

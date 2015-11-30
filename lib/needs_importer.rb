@@ -28,7 +28,7 @@ class NeedsImporter
     else
       record_failed_row(row)
     end
-  rescue Exception => ex
+  rescue StandardError
     record_failed_row(row)
   end
 
