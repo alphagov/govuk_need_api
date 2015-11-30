@@ -26,6 +26,10 @@ end
 
 gem 'airbrake', '~> 4.1.0'
 
+group :development, :test do
+  gem 'govuk-lint', '~> 0.4'
+end
+
 group :test do
   gem 'database_cleaner', '1.1.1', require: false
   gem 'factory_girl_rails', '4.2.1'
