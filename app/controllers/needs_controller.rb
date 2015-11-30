@@ -8,23 +8,21 @@ class NeedsController < ApplicationController
     if params["q"].present?
       result_set = GovukNeedApi.searcher.search(params["q"], params.slice(:organisation_id, :page))
       @needs = Kaminari.paginate_array(result_set.results, total_count: result_set.total_count)
-                       .page(params[:page])
-                       .per(Need::PAGE_SIZE)
+        .page(params[:page])
+        .per(Need::PAGE_SIZE)
     else
       scope = Need
 
       if org = params["organisation_id"] and org.present?
-        scope = scope.where(:organisation_ids => org)
+        scope = scope.where(organisation_ids: org)
       end
 
-      if need_ids
-        scope = scope.where(:need_id.in => need_ids)
-      end
+      scope = scope.where(:need_id.in => need_ids) if need_ids
 
       @needs = scope.page(params[:page])
     end
 
-    presenter = NeedResultSetPresenter.new(@needs, view_context, :scope_params => params.slice(:q, :organisation_id, :ids))
+    presenter = NeedResultSetPresenter.new(@needs, view_context, scope_params: params.slice(:q, :organisation_id, :ids))
     response.headers["Link"] = LinkHeader.new(presenter.links).to_s
 
     set_expiry 0
@@ -91,7 +89,7 @@ class NeedsController < ApplicationController
     end
 
     @need.assign_attributes(filtered_params)
-    if @need.valid? and @need.save_as(author_params)
+    if @need.valid? && @need.save_as(author_params)
       try_index_need(@need)
       render nothing: true, status: 204
     else
@@ -179,9 +177,7 @@ class NeedsController < ApplicationController
   end
 
   def need_ids
-    if params[:ids]
-      params[:ids].split(',').map(&:strip).map(&:to_i)
-    end
+    params[:ids].split(',').map(&:strip).map(&:to_i) if params[:ids]
   end
 
   def response_info(status)

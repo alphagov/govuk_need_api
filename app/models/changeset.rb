@@ -1,10 +1,9 @@
 # Changset wraps the current and the previous Revisions
 class Changeset
-
   attr_reader :current, :previous
   attr_reader :notes
 
-  def initialize(current, previous, notes=[])
+  def initialize(current, previous, notes = [])
     @current = current
     @previous = previous
     @notes = notes
@@ -21,7 +20,7 @@ class Changeset
   #   }
   #
   def changes
-    snapshots = [ previous_snapshot, current.snapshot ]
+    snapshots = [previous_snapshot, current.snapshot]
 
     changed_keys.inject({}) { |changes, key|
       changes.merge(key => snapshots.map {|snapshot| snapshot[key] })

@@ -22,8 +22,6 @@ class Note
 
   def validate_need_id
     need = Need.where(need_id: need_id).first
-    if need.nil?
-      errors.add(:need_id, "A note must have a valid need_id")
-    end
+    errors.add(:need_id, "A note must have a valid need_id") if need.nil?
   end
 end

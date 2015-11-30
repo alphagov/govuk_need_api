@@ -26,8 +26,6 @@ class BasicNeedPresenter
   def status
     if @need.status.present?
       @need.status.is_a?(Hash) ? @need.status : NeedStatusPresenter.new(@need.status).as_json
-    else
-      nil
     end
   end
 end
