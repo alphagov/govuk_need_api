@@ -69,9 +69,7 @@ class NeedTest < ActiveSupport::TestCase
         assert_equal 100001, need_one.need_id
         assert_equal 100002, need_two.need_id
 
-        need_three = create(:need, role: "Need three")
-        need_three.need_id = 100005
-        need_three.save!
+        need_three = create(:need, _id: 100005, need_id: 100005, role: "Need three")
         need_four = create(:need, role: "Need four")
 
         assert_equal 100005, need_three.need_id
@@ -141,7 +139,7 @@ class NeedTest < ActiveSupport::TestCase
     context "with indexes set up" do
       setup do
         # Make sure the indexes are set up to the current version
-        Need.collection.drop_indexes
+        Need.collection.drop
         Need.create_indexes
       end
 
@@ -300,7 +298,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "update the status if a need is marked as invalid" do
-      @need.update_attribute(:status, { description: NeedStatus::NOT_VALID, reasons: ["not in proposition"] })
+      @need.update!(status: { description: NeedStatus::NOT_VALID, reasons: ["not in proposition"] })
 
       @need.reload
 
@@ -309,7 +307,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "update the status if a need is marked as valid" do
-      @need.update_attribute(:status, { description: NeedStatus::VALID, additional_comments: "really good need" })
+      @need.update!(status: { description: NeedStatus::VALID, additional_comments: "really good need" })
 
       @need.reload
 
@@ -318,7 +316,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "update the status if a need is marked as valid with conditions" do
-      @need.update_attribute(:status, { description: NeedStatus::VALID_WITH_CONDITIONS, validation_conditions: "must improve a and b" })
+      @need.update!(status: { description: NeedStatus::VALID_WITH_CONDITIONS, validation_conditions: "must improve a and b" })
 
       @need.reload
 

@@ -1,6 +1,8 @@
 class Organisation
   include Mongoid::Document
 
+  field :_id, type: String, default: -> { slug }
+
   field :name, type: String
   field :slug, type: String
   field :content_id, type: String
@@ -9,14 +11,12 @@ class Organisation
   field :parent_ids, type: Array, default: []
   field :child_ids, type: Array, default: []
 
-  key :slug
-
-  index :name
+  index name: 1
 
   validates :name, :slug, presence: true
   validates :slug, uniqueness: { case_sensitive: false }
 
-  scope :in_name_order, order_by(:name => :asc)
+  scope :in_name_order, -> { order_by(:name.asc) }
 
   def as_json
     attributes.

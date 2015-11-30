@@ -43,7 +43,7 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
   end
 
   should "refuse invalid attributes" do
-    put "/needs/#{@need.id}", @author.merge(role: "")
+    put "/needs/#{@need.need_id}", @author.merge(role: "")
     assert_equal 422, last_response.status
     @need.reload
     assert_equal "parent", @need.role

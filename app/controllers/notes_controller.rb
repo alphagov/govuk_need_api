@@ -11,6 +11,13 @@ class NotesController < ApplicationController
   private
 
   def filtered_params
-    params.except(:action, :controller)
+    params.permit(
+      :text,
+      :need_id,
+      author: [
+        :name,
+        :email,
+      ],
+    )
   end
 end

@@ -91,7 +91,7 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal "update", update_revision["action_type"]
       assert_equal "John Hammond", update_revision["author"]["name"]
       assert_equal expected_changes, update_revision["changes"]
-      assert_equal "2013-05-01T00:00:00+00:00", update_revision["created_at"]
+      assert_equal "2013-05-01T00:00:00.000Z", update_revision["created_at"]
 
       create_revision = body["revisions"][1]
       expected_changes = {
@@ -104,7 +104,7 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       assert_equal "create", create_revision["action_type"]
       assert_equal "Jack Torrance", create_revision["author"]["name"]
       assert_equal expected_changes, create_revision["changes"]
-      assert_equal "2013-04-01T00:00:00+00:00", create_revision["created_at"]
+      assert_equal "2013-04-01T00:00:00.000Z", create_revision["created_at"]
     end
 
     should "return the five most recent revisions for the need" do
@@ -117,7 +117,7 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       body = JSON.parse(last_response.body)
 
       assert_equal 5, body["revisions"].size
-      assert_equal [ "2013-04-01T00:00:00+00:00" ], body["revisions"].map {|r| r['created_at'] }.uniq
+      assert_equal [ "2013-04-01T00:00:00.000Z" ], body["revisions"].map {|r| r['created_at'] }.uniq
     end
 
     should "return a not found response" do

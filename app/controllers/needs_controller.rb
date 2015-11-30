@@ -42,7 +42,7 @@ class NeedsController < ApplicationController
     # This is a controller-level concern, rather than a model-level one, as we
     # may want to be able to specify need IDs when, for example, importing old
     # needs.
-    if filtered_params["need_id"]
+    if params["need_id"]
       error(
         422,
         message: :invalid_attributes,
@@ -51,7 +51,7 @@ class NeedsController < ApplicationController
       return
     end
 
-    if filtered_params["duplicate_of"]
+    if params["duplicate_of"]
       error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set during create"]
       return
     end
@@ -146,7 +146,23 @@ class NeedsController < ApplicationController
   end
 
   def filtered_params
-    params.except(:action, :controller, :author)
+    params.permit(
+      :role,
+      :goal,
+      :benefit,
+      :impact,
+      :yearly_user_contacts,
+      :yearly_site_views,
+      :yearly_need_views,
+      :yearly_searches,
+      :other_evidence,
+      :legislation,
+      :applies_to_all_organisations,
+      :author,
+      met_when: [],
+      organisation_ids: [],
+      justifications: [],
+    )
   end
 
   def author_params
