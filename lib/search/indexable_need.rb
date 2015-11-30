@@ -1,9 +1,7 @@
 module Search
-
   # A wrapper around a need that presents the information necessary to index
   # it, including knowledge of which fields we should index and how.
   class IndexableNeed
-
     class Field < Struct.new(:name, :type, :analyzed, :include_in_all)
       # Structs don't appear to work with question marks in symbols
       alias_method :analyzed?, :analyzed

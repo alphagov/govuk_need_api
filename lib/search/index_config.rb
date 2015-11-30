@@ -2,7 +2,8 @@ module Search
   class IndexConfig
     def initialize(index_client, index_name, type, indexable_class)
       @client = index_client
-      @index_name, @type = index_name, type
+      @index_name = index_name
+      @type = type
       @indexable_class = indexable_class
     end
 
@@ -20,9 +21,9 @@ module Search
 
     def put_mappings
       @client.put_mapping(
-        :index => @index_name,
-        :type => @type,
-        :body => {
+        index: @index_name,
+        type: @type,
+        body: {
           @type => {
             "properties" => mapping_properties
           }

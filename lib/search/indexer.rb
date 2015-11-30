@@ -19,7 +19,8 @@ module Search
 
     def initialize(search_client, index_name, type)
       @client = search_client
-      @index_name, @type = index_name, type
+      @index_name = index_name
+      @type = type
     end
 
     def index(document)

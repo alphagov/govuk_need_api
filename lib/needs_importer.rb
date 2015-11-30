@@ -11,7 +11,7 @@ class NeedsImporter
   end
 
   def run
-    CSV.foreach(file, :headers => true, :encoding => "utf-8") do |row|
+    CSV.foreach(file, headers: true, encoding: "utf-8") do |row|
       save_row(row)
       print "."
     end
@@ -64,20 +64,20 @@ class NeedsImporter
 
   def met_when(row)
     (1..35).map { |i| row["It's done when the user... (#{i})"] }
-           .select(&:present?)
-           .map { |criteria| 'User ' + criteria }
+      .select(&:present?)
+      .map { |criteria| 'User ' + criteria }
   end
 
   def justifications(row)
     [].tap do |j|
       j << "It's something only government does" if row["it's something that only the government does"] ||
-                                                    row["it’s something that only the government does"]
+          row["it’s something that only the government does"]
 
       j << "The government is legally obliged to provide it" if row["there is clear demand for it from users or the government is legally obliged to provide it"]
 
       j << "It's inherent to a person's or an organisation's rights and obligations" if row["it's inherent to a person's or an organisation's rights and obligations"]
       j << "It's something that people can do or it's something people need to know before they can do something that's regulated by/related to government" if row["it's something that people can do or it's something people need to know before they can do something that's regulated by/related to government"] ||
-                                             row["it's something that people can do or it's something people need to know before they can do something that's regulated by / related to the government"]
+          row["it's something that people can do or it's something people need to know before they can do something that's regulated by / related to the government"]
 
       j << "There is clear demand for it from users" if row["there is clear demand for it from users or the government is legally obliged to provide it"]
 
@@ -88,7 +88,7 @@ class NeedsImporter
 
   def impact(row)
     impacts = {
-      "Endangers the health of individuals"=>"Endangers people",
+      "Endangers the health of individuals" => "Endangers people",
       "Endangers People" => "Endangers people",
       "Has serious consequences for your users and/or their customers" => "Has serious consequences for your users and/or their customers",
       "Has serious consequences for the day-to-day lives of your users" => "Has serious consequences for your users and/or their customers",
@@ -100,7 +100,7 @@ class NeedsImporter
     }
 
     impact_cell = "What would be the impact on users if GOV.UK failed to meet this need?"
-    impacts[ row[impact_cell] ]
+    impacts[row[impact_cell]]
   end
 
   def yearly_user_contacts(row)

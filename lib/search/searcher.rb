@@ -2,10 +2,11 @@ module Search
   class Searcher
     def initialize(search_client, index_name, type)
       @client = search_client
-      @index_name, @type = index_name, type
+      @index_name = index_name
+      @type = type
     end
 
-    def search(querystring, options={})
+    def search(querystring, options = {})
       organisation_id = options[:organisation_id]
       raw_page = options[:page].to_i
       if raw_page < 1
@@ -47,7 +48,7 @@ module Search
     def querystring_query(querystring)
       {
         "multi_match" => {
-          "fields" => [ "_all", "need_id" ],
+          "fields" => %w(_all need_id),
           "query" => querystring,
 
           # The 'lenient' flag prevents an exception being raised when a string
