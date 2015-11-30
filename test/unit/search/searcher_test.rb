@@ -1,12 +1,11 @@
 require "test_helper"
 
 class SearcherTest < ActiveSupport::TestCase
-
   def body_for_query(query)
     {
       "query" => {
         "multi_match" => {
-          "fields" => ["_all", "need_id"],
+          "fields" => %w(_all need_id),
           "query" => query,
           "lenient" => true
         }
@@ -68,7 +67,7 @@ class SearcherTest < ActiveSupport::TestCase
     client = mock("client")
     client.expects(:search).with { |search_params|
       50 == search_params[:body]["size"] &&
-      0 == search_params[:body]["from"]
+        0 == search_params[:body]["from"]
     }.returns(single_result_response)
 
     Search::Searcher.new(client, "foo", "bang").search("baz")
@@ -78,7 +77,7 @@ class SearcherTest < ActiveSupport::TestCase
     client = mock("client")
     client.expects(:search).with { |search_params|
       50 == search_params[:body]["size"] &&
-      50 == search_params[:body]["from"]
+        50 == search_params[:body]["from"]
     }.returns(single_result_response)
 
     Search::Searcher.new(client, "foo", "bang").search("baz", page: 2)

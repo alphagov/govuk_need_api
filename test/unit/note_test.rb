@@ -27,30 +27,30 @@ class NoteTest < ActiveSupport::TestCase
   end
 
   should "not save a note without a need_id" do
-   note = Note.new(@atts.except(:need_id))
+    note = Note.new(@atts.except(:need_id))
 
-   refute note.save
-   assert note.errors.has_key?(:need_id)
+    refute note.save
+    assert note.errors.has_key?(:need_id)
   end
 
   should "not save a note without a valid need_id" do
-   note = Note.new(@atts.merge(need_id: :foo))
+    note = Note.new(@atts.merge(need_id: :foo))
 
-   refute note.save
-   assert note.errors.has_key?(:need_id)
+    refute note.save
+    assert note.errors.has_key?(:need_id)
   end
 
   should "not save a note without text" do
-   note = Note.new(@atts.except(:text))
+    note = Note.new(@atts.except(:text))
 
-   refute note.save
-   assert note.errors.has_key?(:text)
+    refute note.save
+    assert note.errors.has_key?(:text)
   end
 
   should "not save a note without an author" do
-   note = Note.new(@atts.except(:author))
+    note = Note.new(@atts.except(:author))
 
-   refute note.save
-   assert note.errors.has_key?(:author)
+    refute note.save
+    assert note.errors.has_key?(:author)
   end
 end

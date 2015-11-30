@@ -66,8 +66,8 @@ class SearchRakeTest < ActiveSupport::TestCase
     end
 
     should "abort on failure" do
-      Need.expects(:all).at_least_once.returns([stub(), stub()])
-      Search::IndexableNeed.expects(:new).once.returns(stub())
+      Need.expects(:all).at_least_once.returns([stub, stub])
+      Search::IndexableNeed.expects(:new).once.returns(stub)
       GovukNeedApi.indexer.expects(:index).raises(
         Search::Indexer::IndexingFailed.new(123456)
       )

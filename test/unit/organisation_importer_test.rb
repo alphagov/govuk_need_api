@@ -65,7 +65,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
       content_id: SecureRandom.uuid,
       slug: "department-for-work-and-pensions",
       name: "Department for Work & Pensions",
-      child_ids: [OpenStruct.new(id:"equality-2025")],
+      child_ids: [OpenStruct.new(id: "equality-2025")],
       parent_ids: []
     }
     Organisation.create!(dwp_atts.merge(child_ids: ["equality-2025"]))
@@ -75,7 +75,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
       slug: "the-office-of-the-leader-of-the-house-of-commons",
       name: "Office of the Leader of the House of Commons",
       child_ids: [],
-      parent_ids: [OpenStruct.new(id:"cabinet-office")]
+      parent_ids: [OpenStruct.new(id: "cabinet-office")]
     }
     Organisation.create!(hoc_atts.merge(parent_ids: ["cabinet-office"]))
 
@@ -85,7 +85,7 @@ class OrganisationImporterTest < ActionDispatch::IntegrationTest
       name: "Ministry of Defence",
       abbreviation: "mod",
       govuk_status: "live",
-      child_ids: [OpenStruct.new(id:"advisory-committee")],
+      child_ids: [OpenStruct.new(id: "advisory-committee")],
       parent_ids: []
     }
 

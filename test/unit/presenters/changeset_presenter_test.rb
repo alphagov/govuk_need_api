@@ -1,7 +1,6 @@
 require_relative '../../test_helper'
 
 class ChangesetPresenterTest < ActiveSupport::TestCase
-
   setup do
     current = OpenStruct.new(
       action_type: "update",
@@ -28,7 +27,7 @@ class ChangesetPresenterTest < ActiveSupport::TestCase
 
     @changeset = OpenStruct.new(
       current: current,
-      changes: { role: [ "user", "home owner" ] },
+      changes: { role: ["user", "home owner"] },
       notes: [note]
     )
   end

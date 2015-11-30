@@ -1,7 +1,6 @@
 require_relative '../../test_helper'
 
 class ChangesetTest < ActiveSupport::TestCase
-
   setup do
     @revision = OpenStruct.new(
       snapshot: {
@@ -48,8 +47,8 @@ class ChangesetTest < ActiveSupport::TestCase
         }
       )
       expected_changes = {
-        goal: [ "get a tax disc", "pay my car tax" ],
-        benefit: [ "I can drive my car for a year", "I can drive my car" ]
+        goal: ["get a tax disc", "pay my car tax"],
+        benefit: ["I can drive my car for a year", "I can drive my car"]
       }
 
       changes = Changeset.new(@revision, previous_revision).changes
@@ -65,7 +64,7 @@ class ChangesetTest < ActiveSupport::TestCase
         }
       )
       expected_changes = {
-        benefit: [ nil, "I can drive my car" ]
+        benefit: [nil, "I can drive my car"]
       }
       changes = Changeset.new(@revision, previous_revision).changes
 
@@ -82,7 +81,7 @@ class ChangesetTest < ActiveSupport::TestCase
         }
       )
       expected_changes = {
-        justification: [[ "Only government does this" ], nil ]
+        justification: [["Only government does this"], nil]
       }
       changes = Changeset.new(@revision, previous_revision).changes
 

@@ -12,8 +12,8 @@ class IndexConfigTest < ActiveSupport::TestCase
     mock_client = mock("index client")
     mock_client.expects(:create).with do |params|
       params[:body] &&
-      params[:body]["settings"] &&
-      params[:body]["settings"]["analysis"]
+        params[:body]["settings"] &&
+        params[:body]["settings"]["analysis"]
     end
 
     Search::IndexConfig.new(mock_client, "maslow-test", nil, nil).create_index

@@ -1,7 +1,6 @@
 require_relative '../test_helper'
 
 class OrganisationsControllerTest < ActionController::TestCase
-
   setup do
     login_as_stub_user
   end
@@ -32,5 +31,4 @@ class OrganisationsControllerTest < ActionController::TestCase
       assert_equal ["Department for Transport", "Home Office", "Ministry of Justice"], org_names
     end
   end
-
 end

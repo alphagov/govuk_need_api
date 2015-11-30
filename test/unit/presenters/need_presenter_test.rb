@@ -1,16 +1,15 @@
 require_relative '../../test_helper'
 
 class NeedPresenterTest < ActiveSupport::TestCase
-
   def stub_presenter(presenter, attributes, presenter_output)
-    presenter_stub = stub(:as_json => presenter_output)
+    presenter_stub = stub(as_json: presenter_output)
 
     attributes = [attributes] unless attributes.is_a?(Array)
     matchers = attributes.map {|a| has_entries(a) }
 
     presenter.constantize.expects(:new)
-                            .with(*matchers)
-                            .returns(presenter_stub)
+      .with(*matchers)
+      .returns(presenter_stub)
   end
 
   setup do
@@ -20,11 +19,11 @@ class NeedPresenterTest < ActiveSupport::TestCase
       role: "business owner",
       goal: "find out the VAT rate",
       benefit: "I can charge my customers the correct amount",
-      organisation_ids: [ "ministry-of-testing" ],
-      organisations: [ build(:organisation, name: "Ministry of Testing") ],
-      justifications: [ "legislation", "other" ],
+      organisation_ids: ["ministry-of-testing"],
+      organisations: [build(:organisation, name: "Ministry of Testing")],
+      justifications: %w(legislation other),
       impact: "Noticed by an expert audience",
-      met_when: [ "the user sees the current vat rate" ],
+      met_when: ["the user sees the current vat rate"],
       yearly_user_contacts: 1000,
       yearly_site_views: 10000,
       yearly_need_views: 1000,
@@ -66,7 +65,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     assert_equal "Ministry of Testing", response[:organisations][0]["name"]
     assert_equal true, response[:applies_to_all_organisations]
 
-    assert_equal ["legislation", "other"], response[:justifications]
+    assert_equal %w(legislation other), response[:justifications]
     assert_equal "Noticed by an expert audience", response[:impact]
     assert_equal ["the user sees the current vat rate"], response[:met_when]
 
@@ -79,7 +78,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
 
     assert_equal 100001, response[:duplicate_of]
 
-    assert_equal [ "Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5" ], response[:revisions]
+    assert_equal ["Changeset 1", "Changeset 2", "Changeset 3", "Changeset 4", "Changeset 5"], response[:revisions]
 
     assert_equal Hash[description: NeedStatus::PROPOSED], response[:status]
   end

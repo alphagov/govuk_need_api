@@ -1,7 +1,6 @@
 require_relative '../test_helper'
 
 class NeedsControllerTest < ActionController::TestCase
-
   setup do
     login_as_stub_user
 
@@ -61,7 +60,6 @@ class NeedsControllerTest < ActionController::TestCase
     end
 
     should "return a response containing the needs matching the specified ids" do
-
       body = JSON.parse(response.body)
       body["results"].sort_by! {|r| r["id"] }
 
@@ -108,7 +106,7 @@ class NeedsControllerTest < ActionController::TestCase
       ]
       mock_searcher = mock("searcher")
       mock_searcher.expects(:search).with("fish", {})
-                   .returns(Search::NeedSearchResultSet.new(@results, 1))
+        .returns(Search::NeedSearchResultSet.new(@results, 1))
       GovukNeedApi.stubs(:searcher).returns(mock_searcher)
     end
 
@@ -194,7 +192,7 @@ class NeedsControllerTest < ActionController::TestCase
       ]
       mock_searcher = mock("searcher")
       mock_searcher.expects(:search).with("cheese", 'organisation_id' => "cabinet-office")
-                   .returns(::Search::NeedSearchResultSet.new(@results, 1))
+        .returns(::Search::NeedSearchResultSet.new(@results, 1))
       GovukNeedApi.stubs(:searcher).returns(mock_searcher)
 
       get :index, organisation_id: 'cabinet-office', q: 'cheese'
@@ -226,10 +224,10 @@ class NeedsControllerTest < ActionController::TestCase
           role: "user",
           goal: "find my local council",
           benefit: "contact them about a local enquiry",
-          organisation_ids: ["cabinet-office","department-for-transport"],
-          justifications: ["legislation","other"],
+          organisation_ids: ["cabinet-office", "department-for-transport"],
+          justifications: %w(legislation other),
           impact: "Noticed by an expert audience",
-          met_when: ["criteria #1","criteria #2"],
+          met_when: ["criteria #1", "criteria #2"],
           yearly_user_contacts: 1000,
           yearly_site_views: 10000,
           yearly_need_views: 1000,
@@ -259,7 +257,7 @@ class NeedsControllerTest < ActionController::TestCase
           assert_equal "find my local council", need.goal
           assert_equal "contact them about a local enquiry", need.benefit
           assert_equal ["cabinet-office", "department-for-transport"], need.organisation_ids
-          assert_equal ["legislation", "other"], need.justifications
+          assert_equal %w(legislation other), need.justifications
           assert_equal "Noticed by an expert audience", need.impact
           assert_equal ["criteria #1", "criteria #2"], need.met_when
           assert_equal 1000, need.yearly_user_contacts

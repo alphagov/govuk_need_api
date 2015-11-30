@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class ReopeningNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
     use_test_index

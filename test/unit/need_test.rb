@@ -23,7 +23,7 @@ class NeedTest < ActiveSupport::TestCase
         goal: "pay my car tax",
         benefit: "avoid paying a fine",
         organisation_ids: ["cabinet-office", "ministry-of-justice"],
-        justifications: ["legislation","other"],
+        justifications: %w(legislation other),
         impact: "Noticed by an expert audience",
         met_when: ["criteria #1", "criteria #2"],
         yearly_user_contacts: 1000,
@@ -48,7 +48,7 @@ class NeedTest < ActiveSupport::TestCase
       assert_equal "pay my car tax", need.goal
       assert_equal "avoid paying a fine", need.benefit
       assert_equal ["cabinet-office", "ministry-of-justice"], need.organisation_ids
-      assert_equal ["legislation", "other"], need.justifications
+      assert_equal %w(legislation other), need.justifications
       assert_equal "Noticed by an expert audience", need.impact
       assert_equal ["criteria #1", "criteria #2"], need.met_when
       assert_equal 1000, need.yearly_user_contacts
@@ -101,7 +101,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should "not assign a need ID until creation" do
-        need = build(:need, :organisation_ids => [])
+        need = build(:need, organisation_ids: [])
         assert need.valid?
         assert_nil need.need_id
         need.save!
@@ -119,7 +119,7 @@ class NeedTest < ActiveSupport::TestCase
       need = build(:need,
         applies_to_all_organisations: true,
         organisation_ids: ["cabinet-office"]
-      )
+                  )
       refute need.valid?
     end
 
@@ -127,7 +127,7 @@ class NeedTest < ActiveSupport::TestCase
       need = build(:need,
         applies_to_all_organisations: true,
         organisation_ids: []
-      )
+                  )
       assert need.valid?
     end
 
@@ -198,7 +198,7 @@ class NeedTest < ActiveSupport::TestCase
       end
 
       should_not allow_value(["does-not-exist"]).for(:organisation_ids)
-      should_not allow_value(["home-office","does-not-exist"]).for(:organisation_ids)
+      should_not allow_value(["home-office", "does-not-exist"]).for(:organisation_ids)
     end
 
     should_not allow_value(-10).for(:yearly_user_contacts)
@@ -220,7 +220,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "return organisations" do
-      need = create(:need, :organisation_ids => ["cabinet-office", "ministry-of-justice"])
+      need = create(:need, organisation_ids: ["cabinet-office", "ministry-of-justice"])
 
       assert_equal 2, need.organisations.count
       assert_equal ["Cabinet Office", "Ministry of Justice"], need.organisations.map(&:name)
@@ -228,7 +228,7 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "return no organisations when no ids are present" do
-      need = create(:need, :organisation_ids => nil)
+      need = create(:need, organisation_ids: nil)
 
       assert_equal 0, need.organisations.count
       assert_equal [], need.organisations.map(&:name)

@@ -1,7 +1,6 @@
 require_relative '../test_helper'
 
 class NotesControllerTest < ActionController::TestCase
-
   setup do
     login_as_stub_user
     @need = create(:need)

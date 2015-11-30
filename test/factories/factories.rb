@@ -19,7 +19,7 @@ FactoryGirl.define do
     goal "pay my council tax"
     benefit "I don't receive a fine"
 
-    justifications [ "legislation", "other" ]
+    justifications %w(legislation other)
     impact "Has serious consequences for the day-to-day lives of your users"
     met_when ["user can pay their council tax"]
 

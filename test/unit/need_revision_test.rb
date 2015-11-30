@@ -1,7 +1,6 @@
 require_relative '../test_helper'
 
 class NeedRevisionTest < ActiveSupport::TestCase
-
   context "creating a revision" do
     setup do
       @atts = { action_type: "create", snapshot: { goal: "find my local park" }, author: { name: "Testy McTest", email: "test@alphagov.co.uk" } }
@@ -42,7 +41,7 @@ class NeedRevisionTest < ActiveSupport::TestCase
         "benefit" => "i know when to change my clocks",
         "status" => {
           "_id" => OpenStruct.new(id: '12345'),
-          "description"=>NeedStatus::PROPOSED,
+          "description" => NeedStatus::PROPOSED,
         },
       }
 
@@ -51,9 +50,8 @@ class NeedRevisionTest < ActiveSupport::TestCase
 
       revision.reload
 
-      assert_equal ["role", "goal", "benefit", "status"], revision.snapshot.keys
+      assert_equal %w(role goal benefit status), revision.snapshot.keys
       assert_equal Hash["description" => NeedStatus::PROPOSED], revision.snapshot["status"]
     end
   end
-
 end

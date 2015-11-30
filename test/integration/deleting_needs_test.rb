@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class DeletingNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
     @need = create(:need, need_id: 100001)
