@@ -4,8 +4,8 @@ gem 'rails', '4.2.5'
 
 gem 'mongoid', '4.0.2'
 
-gem 'plek', '~> 1.10'
-gem 'gds-api-adapters', '20.1.1'
+gem 'plek', '~> 1.11'
+gem 'gds-api-adapters', '26.2.0'
 
 gem 'mongoid_rails_migrations', '1.0.1'
 
@@ -21,7 +21,7 @@ gem 'mlanett-redis-lock', '0.2.6'
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
-  gem 'gds-sso', '9.3.0'
+  gem 'gds-sso', '11.1.0'
 end
 
 gem 'airbrake', '~> 4.1.0'
