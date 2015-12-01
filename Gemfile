@@ -38,7 +38,6 @@ group :test do
   gem 'shoulda-matchers', '2.8.0'
   gem 'simplecov', '0.11.0'
   gem 'simplecov-rcov'
-  gem 'timecop', '0.6.3'
   gem 'webmock', '1.22.3'
   gem 'test-unit', '~> 3.0'
 end

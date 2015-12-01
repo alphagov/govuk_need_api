@@ -21,7 +21,7 @@ class NeedRevisionTest < ActiveSupport::TestCase
     end
 
     should "store the timestamp of the action" do
-      Timecop.freeze do
+      travel_to Time.zone.now do
         revision = NeedRevision.create(@atts)
 
         assert_equal Time.zone.now.to_s, revision.created_at.to_s
