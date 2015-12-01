@@ -7,7 +7,7 @@ gem 'mongoid', '4.0.2'
 gem 'plek', '~> 1.10'
 gem 'gds-api-adapters', '20.1.1'
 
-gem "mongoid_rails_migrations", "1.0.1"
+gem 'mongoid_rails_migrations', '1.0.1'
 
 gem 'kaminari', '0.14.1'
 gem 'link_header', '0.0.8'
@@ -44,4 +44,4 @@ group :test do
 end
 
 gem 'unicorn'
-gem 'whenever', '0.8.4', :require => false
+gem 'whenever', '0.8.4', require: false
