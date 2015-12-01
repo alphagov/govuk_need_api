@@ -31,15 +31,15 @@ group :development, :test do
 end
 
 group :test do
-  gem 'database_cleaner', '1.1.1', require: false
-  gem 'factory_girl_rails', '4.2.1'
-  gem 'mocha', '0.14.0', require: false
+  gem 'database_cleaner', '1.5.1', require: false
+  gem 'factory_girl_rails', '4.5.0'
+  gem 'mocha', '1.1.0', require: false
   gem 'shoulda', '3.5.0'
-  gem 'shoulda-matchers', '2.7.0'
-  gem 'simplecov', '0.7.1'
+  gem 'shoulda-matchers', '2.8.0'
+  gem 'simplecov', '0.11.0'
   gem 'simplecov-rcov'
   gem 'timecop', '0.6.3'
-  gem 'webmock', '1.14.0'
+  gem 'webmock', '1.22.3'
   gem 'test-unit', '~> 3.0'
 end
 
