@@ -7,16 +7,16 @@ gem 'mongoid', '4.0.2'
 gem 'plek', '~> 1.11'
 gem 'gds-api-adapters', '26.2.0'
 
-gem 'mongoid_rails_migrations', '1.0.1'
+gem 'mongoid_rails_migrations', '1.1.0'
 
-gem 'kaminari', '0.14.1'
+gem 'kaminari', '0.16.3'
 gem 'link_header', '0.0.8'
 
-gem 'elasticsearch', '0.4.1'
+gem 'elasticsearch', '1.0.14'
 
 gem 'logstasher', '0.4.8'
 
-gem 'mlanett-redis-lock', '0.2.6'
+gem 'mlanett-redis-lock', '0.2.7'
 
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
@@ -24,7 +24,7 @@ else
   gem 'gds-sso', '11.1.0'
 end
 
-gem 'airbrake', '~> 4.1.0'
+gem 'airbrake', '~> 4.3.4'
 
 group :development, :test do
   gem 'govuk-lint', '~> 0.4'
@@ -43,4 +43,4 @@ group :test do
 end
 
 gem 'unicorn'
-gem 'whenever', '0.8.4', require: false
+gem 'whenever', '0.9.4', require: false
