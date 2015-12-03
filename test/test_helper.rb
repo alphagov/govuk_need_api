@@ -5,14 +5,8 @@ require 'rails/test_help'
 require 'database_cleaner'
 require 'mocha/setup'
 
-require 'simplecov'
-require 'simplecov-rcov'
-
 require 'webmock/test_unit'
 WebMock.disable_net_connect!(allow: %r{http://localhost:9200/maslow_test(/|$)})
-
-SimpleCov.start 'rails'
-SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 
 DatabaseCleaner.strategy = :truncation
 DatabaseCleaner.clean
