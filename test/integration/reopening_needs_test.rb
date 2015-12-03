@@ -4,7 +4,8 @@ class ReopeningNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
     use_test_index
-    Timecop.freeze(-2) do # Avoid race condition on creation timestamps
+
+    travel_to 2.seconds.ago do # Avoid race condition on creation timestamps
       @canonical_need = create(:need, role: "parent",
                                                   goal: "find out school holiday dates for my local school",
                                                   benefit: "I can plan around my child's education")
@@ -18,7 +19,8 @@ class ReopeningNeedsTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    Timecop.freeze(-1) do
+
+    travel_to 1.second.ago do
       put("/needs/#{@duplicate.need_id}/closed",
           @author.merge(duplicate_of: @canonical_need.need_id))
     end

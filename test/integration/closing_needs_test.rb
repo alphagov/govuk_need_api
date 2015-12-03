@@ -4,7 +4,8 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
     use_test_index
-    Timecop.freeze(-2) do # Avoid race condition on creation timestamps
+
+    travel_to 2.seconds.ago do # Avoid race condition on creation timestamps
       @main_need = create(:need, role: "parent",
                                              goal: "find out school holiday dates for my local school",
                                              benefit: "I can plan around my child's education")
