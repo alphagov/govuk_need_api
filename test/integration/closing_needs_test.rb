@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class ClosingNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
     use_test_index
@@ -18,7 +17,6 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
           email: "winston@alphagov.co.uk"
         }
       }
-
     end
   end
 

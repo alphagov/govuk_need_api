@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class ListingNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
   end
@@ -49,14 +48,14 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       # quick fix to sort results by the Need ID
       # remove once we have explicit sorting on needs
       #
-      results = body["results"].sort_by{|r| r["id"] }
+      results = body["results"].sort_by {|r| r["id"] }
 
       assert_equal 3, results.size
 
-      assert_equal ["car owner", "jobseeker", "student"], results.map{|n| n["role"] }.sort
-      assert_equal ["apply for student finance", "renew my car tax", "search for jobs"], results.map{|n| n["goal"] }.sort
-      assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map{|n| n["benefit"] }.sort
-      assert_equal [1, 1, 2], results.map{|n| n["organisations"].size }.sort
+      assert_equal ["car owner", "jobseeker", "student"], results.map {|n| n["role"] }.sort
+      assert_equal ["apply for student finance", "renew my car tax", "search for jobs"], results.map {|n| n["goal"] }.sort
+      assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map {|n| n["benefit"] }.sort
+      assert_equal [1, 1, 2], results.map {|n| n["organisations"].size }.sort
       assert_equal [NeedStatus::PROPOSED], results.map {|n| n["status"]["description"] }.uniq
 
       organisation = results[0]["organisations"][0]
@@ -84,9 +83,9 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal 200, last_response.status
         assert_equal "ok", body["_response_info"]["status"]
         assert_equal 2, body["results"].size
-        assert_equal ["car owner", "jobseeker"], body["results"].map{|n| n["role"] }.sort
-        assert_equal ["renew my car tax", "search for jobs"], body["results"].map{|n| n["goal"] }.sort
-        assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map{|n| n["benefit"] }.sort
+        assert_equal ["car owner", "jobseeker"], body["results"].map {|n| n["role"] }.sort
+        assert_equal ["renew my car tax", "search for jobs"], body["results"].map {|n| n["goal"] }.sort
+        assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map {|n| n["benefit"] }.sort
       end
 
       should "return all needs if no organisation is given" do
@@ -118,7 +117,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])
-        assert_equal "http://example.org/needs?organisation_id=hm-treasury&page=2", link_header.find_link(["rel", "next"]).href
+        assert_equal "http://example.org/needs?organisation_id=hm-treasury&page=2", link_header.find_link(%w(rel next)).href
 
         get "/needs?organisation_id=hm-treasury&page=2"
         assert_equal 200, last_response.status
@@ -134,7 +133,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal 200, last_response.status
         body = JSON.parse(last_response.body)
         assert_equal 2, body["results"].size
-        assert_equal ["renew my car tax", "search for jobs"], body["results"].map{|n| n["goal"] }.sort
+        assert_equal ["renew my car tax", "search for jobs"], body["results"].map {|n| n["goal"] }.sort
       end
 
       should "paginate the results correctly" do
@@ -148,7 +147,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])
-        assert_equal "http://example.org/needs?ids=#{query_param}&page=2", CGI.unescape(link_header.find_link(["rel", "next"]).href)
+        assert_equal "http://example.org/needs?ids=#{query_param}&page=2", CGI.unescape(link_header.find_link(%w(rel next)).href)
 
         get "/needs?ids=#{query_param}&page=2"
         assert_equal 200, last_response.status
@@ -211,8 +210,8 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])
-        assert_equal "http://example.org/needs?page=1", link_header.find_link(["rel", "previous"]).href
-        assert_equal "http://example.org/needs?page=3", link_header.find_link(["rel", "next"]).href
+        assert_equal "http://example.org/needs?page=1", link_header.find_link(%w(rel previous)).href
+        assert_equal "http://example.org/needs?page=3", link_header.find_link(%w(rel next)).href
       end
 
       should "not display the previous link on the first page" do
@@ -221,11 +220,11 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         body = JSON.parse(last_response.body)
         links = body["_response_info"]["links"]
 
-        assert_equal ["next", "self"], links.map {|l| l['rel']}
+        assert_equal %w(next self), links.map {|l| l['rel']}
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])
-        assert_nil link_header.find_link(["rel", "previous"])
+        assert_nil link_header.find_link(%w(rel previous))
       end
 
       should "not display the next link on the last page" do
@@ -234,11 +233,11 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         body = JSON.parse(last_response.body)
         links = body["_response_info"]["links"]
 
-        assert_equal ["previous", "self"], links.map {|l| l['rel']}
+        assert_equal %w(previous self), links.map {|l| l['rel']}
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])
-        assert_nil link_header.find_link(["rel", "next"])
+        assert_nil link_header.find_link(%w(rel next))
       end
     end
 

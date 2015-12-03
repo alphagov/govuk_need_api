@@ -21,7 +21,7 @@ module Search
         yearly_searches: 1000,
         duplicate_of: 654321,
         status: NeedStatus.new(description: NeedStatus::PROPOSED),
-      )
+                   )
       @indexable_need = IndexableNeed.new(@need)
     end
 

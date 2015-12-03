@@ -1,7 +1,6 @@
 require_relative '../../test_helper'
 
 class NeedWithChangesetsTest < ActiveSupport::TestCase
-
   setup do
     @need = create(:need)
 
@@ -26,10 +25,10 @@ class NeedWithChangesetsTest < ActiveSupport::TestCase
 
   should "pair revisions correctly" do
     expected_authors = [
-      [ "John", "Paul" ],
-      [ "Paul", "Ringo" ],
-      [ "Ringo", "George" ],
-      [ "George", nil ]
+      %w(John Paul),
+      %w(Paul Ringo),
+      %w(Ringo George),
+      ["George", nil]
     ]
     assert_equal expected_authors, @decorator.changesets.map { |changeset|
       [
@@ -40,10 +39,8 @@ class NeedWithChangesetsTest < ActiveSupport::TestCase
   end
 
   should "fetch notes" do
-    @revisions.map { |revision|
-      { revision: revision.id }
-    }.each do |search_term|
-      Note.expects(:where).with(search_term)
+    @revisions.each do |revision|
+      Note.expects(:where).with(revision: revision.id)
     end
     @decorator.changesets
   end

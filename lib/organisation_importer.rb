@@ -20,13 +20,13 @@ class OrganisationImporter
     parent_ids = related_organisation_slugs(organisation_from_api.parent_organisations)
 
     organisation_atts = {
-      :content_id => organisation_from_api.details.content_id,
-      :name => organisation_from_api.title,
-      :slug => organisation_from_api.details.slug,
-      :abbreviation => organisation_from_api.details.abbreviation,
-      :govuk_status => organisation_from_api.details.govuk_status,
-      :parent_ids => parent_ids,
-      :child_ids => child_ids
+      content_id: organisation_from_api.details.content_id,
+      name: organisation_from_api.title,
+      slug: organisation_from_api.details.slug,
+      abbreviation: organisation_from_api.details.abbreviation,
+      govuk_status: organisation_from_api.details.govuk_status,
+      parent_ids: parent_ids,
+      child_ids: child_ids
     }
 
     slug = organisation_from_api.details.slug
@@ -64,10 +64,10 @@ class OrganisationImporter
   end
 
   def json_log_formatter
-    proc {|severity, datetime, progname, message|
+    proc {|_severity, datetime, _progname, message|
       {
         "@message" => message,
-        "@tags" => ["cron", "rake"],
+        "@tags" => %w(cron rake),
         "@timestamp" => datetime.iso8601
       }.to_json + "\n"
     }

@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class ShowingNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
   end
@@ -109,15 +108,15 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
 
     should "return the five most recent revisions for the need" do
       5.times do |i|
-        create(:need_revision, :need => @need, author: { name: "Author #{i}" }, created_at: Date.parse("2013-04-01"))
+        create(:need_revision, need: @need, author: { name: "Author #{i}" }, created_at: Date.parse("2013-04-01"))
       end
-      create(:need_revision, :need => @need, author: { name: "Old Author" }, created_at: Date.parse("2013-04-01"))
+      create(:need_revision, need: @need, author: { name: "Old Author" }, created_at: Date.parse("2013-04-01"))
 
       get "/needs/100001"
       body = JSON.parse(last_response.body)
 
       assert_equal 5, body["revisions"].size
-      assert_equal [ "2013-04-01T00:00:00.000Z" ], body["revisions"].map {|r| r['created_at'] }.uniq
+      assert_equal ["2013-04-01T00:00:00.000Z"], body["revisions"].map {|r| r['created_at'] }.uniq
     end
 
     should "return a not found response" do

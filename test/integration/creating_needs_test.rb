@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class CreatingNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
     use_test_index
@@ -19,8 +18,8 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "role" => "user",
       "goal" => "find out the minimum wage",
       "benefit" => "I can work out if I am being paid the correct amount",
-      "organisation_ids" => [ "department-for-work-and-pensions", "hm-treasury" ],
-      "justifications" => [ "legislation" ],
+      "organisation_ids" => ["department-for-work-and-pensions", "hm-treasury"],
+      "justifications" => ["legislation"],
       "impact" => "Noticed by many citizens",
       "met_when" => [
         "The user sees the minimum wage",
@@ -53,7 +52,7 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
 
     assert_equal ["legislation"], body["justifications"]
     assert_equal "Noticed by many citizens", body["impact"]
-    assert_equal [ "The user sees the minimum wage", "The user sees information about the age groups" ], body["met_when"]
+    assert_equal ["The user sees the minimum wage", "The user sees information about the age groups"], body["met_when"]
 
     assert_equal 2, body["organisations"].size
     assert_equal "Department for Work and Pensions", body["organisations"][0]["name"]

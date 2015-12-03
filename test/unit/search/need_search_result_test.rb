@@ -1,7 +1,6 @@
 require_relative '../../test_helper'
 
 class NeedSearchResultTest < ActiveSupport::TestCase
-
   def need_hash
     {
       need_id: 123456,

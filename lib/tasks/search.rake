@@ -2,7 +2,7 @@
 
 namespace :search do
   desc "Index all needs"
-  task :index_needs => :environment do
+  task index_needs: :environment do
     begin
       @logger.info "Indexing #{Need.all.count} needs..."
       Need.all.each do |need|
@@ -18,7 +18,7 @@ namespace :search do
   end
 
   desc "Create the index if it doesn't exist, or update if it does"
-  task :ensure_index => :environment do
+  task ensure_index: :environment do
     index_config = GovukNeedApi.index_config
 
     unless index_config.index_exists?
@@ -30,7 +30,7 @@ namespace :search do
   end
 
   desc "Delete the index, if it exists"
-  task :delete_index => :environment do
+  task delete_index: :environment do
     index_config = GovukNeedApi.index_config
     if index_config.index_exists?
       @logger.info "Deleting index"
@@ -39,8 +39,8 @@ namespace :search do
   end
 
   desc "Delete and re-create the index"
-  task :blat_index => [:delete_index, :ensure_index]
+  task blat_index: [:delete_index, :ensure_index]
 
   desc "Recreate the index and reindex all the needs"
-  task :reset => [:blat_index, :index_needs]
+  task reset: [:blat_index, :index_needs]
 end

@@ -1,7 +1,6 @@
 require_relative '../../test_helper'
 
 class NeedResultSetPresenterTest < ActiveSupport::TestCase
-
   # this class imitates the behaviour of the Need class when it
   # is scoped, with the ability to iterate over the needs whilst
   # providing additional attribute accessors
@@ -21,7 +20,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         role: "business owner",
         goal: "find out the VAT rate",
         benefit: "I can charge my customers the correct amount",
-        organisation_ids: [ "ministry-of-testing" ],
+        organisation_ids: ["ministry-of-testing"],
         organisations: [
           build(:organisation, name: "Ministry of Testing", slug: "ministry-of-testing")
         ]
@@ -32,7 +31,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         role: "car owner",
         goal: "renew my car tax",
         benefit: "I can drive my car for another year",
-        organisation_ids: [ "ministry-of-testing" ],
+        organisation_ids: ["ministry-of-testing"],
         organisations: [
           build(:organisation, name: "Ministry of Testing", slug: "ministry-of-testing")
         ]
@@ -75,16 +74,16 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       @needs.current_page = 2
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 1))
-                      .returns("url to page 1")
+        .with(has_entry(:page, 1))
+        .returns("url to page 1")
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 2))
-                      .returns("url to page 2")
+        .with(has_entry(:page, 2))
+        .returns("url to page 2")
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 3))
-                      .returns("url to page 3")
+        .with(has_entry(:page, 3))
+        .returns("url to page 3")
 
       response = NeedResultSetPresenter.new(@needs, @view_context).as_json
       links = response[:_response_info][:links]
@@ -106,12 +105,12 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       @needs.expects(:first_page?).returns(true)
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 1))
-                      .returns("url to page 1")
+        .with(has_entry(:page, 1))
+        .returns("url to page 1")
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 2))
-                      .returns("url to page 2")
+        .with(has_entry(:page, 2))
+        .returns("url to page 2")
 
       response = NeedResultSetPresenter.new(@needs, @view_context).as_json
       links = response[:_response_info][:links]
@@ -130,12 +129,12 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       @needs.expects(:last_page?).returns(true)
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 2))
-                      .returns("url to page 2")
+        .with(has_entry(:page, 2))
+        .returns("url to page 2")
 
       @view_context.expects(:needs_url)
-                      .with(has_entry(:page, 3))
-                      .returns("url to page 3")
+        .with(has_entry(:page, 3))
+        .returns("url to page 3")
 
       response = NeedResultSetPresenter.new(@needs, @view_context).as_json
       links = response[:_response_info][:links]
@@ -153,14 +152,14 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
   context "returning pagination link data" do
     setup do
       @view_context.stubs(:needs_url)
-                      .with(has_entry(:page, 1))
-                      .returns("url to page 1")
+        .with(has_entry(:page, 1))
+        .returns("url to page 1")
       @view_context.stubs(:needs_url)
-                      .with(has_entry(:page, 2))
-                      .returns("url to page 2")
+        .with(has_entry(:page, 2))
+        .returns("url to page 2")
       @view_context.stubs(:needs_url)
-                      .with(has_entry(:page, 3))
-                      .returns("url to page 3")
+        .with(has_entry(:page, 3))
+        .returns("url to page 3")
     end
 
     should "return links to the next and previous pages when paginated" do
@@ -185,16 +184,16 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       @needs.current_page = 2
 
       @view_context.expects(:needs_url)
-                      .with(:page => 1, :foo => "bar")
-                      .returns("scoped url to page 1")
+        .with(page: 1, foo: "bar")
+        .returns("scoped url to page 1")
       @view_context.expects(:needs_url)
-                      .with(:page => 2, :foo => "bar")
-                      .returns("scoped url to page 2")
+        .with(page: 2, foo: "bar")
+        .returns("scoped url to page 2")
       @view_context.expects(:needs_url)
-                      .with(:page => 3, :foo => "bar")
-                      .returns("scoped url to page 3")
+        .with(page: 3, foo: "bar")
+        .returns("scoped url to page 3")
 
-      links = NeedResultSetPresenter.new(@needs, @view_context, :scope_params => {:foo => "bar"}).links
+      links = NeedResultSetPresenter.new(@needs, @view_context, scope_params: {foo: "bar"}).links
 
       assert_equal 3, links.size
       assert links.all? {|l| l.is_a?(LinkHeader::Link) }
@@ -240,7 +239,6 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       assert_equal "url to page 3", links[1].href
       assert_equal "self", links[1].attrs["rel"]
     end
-
   end
 
   should "include the total number of needs" do

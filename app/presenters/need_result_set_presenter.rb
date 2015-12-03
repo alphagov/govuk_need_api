@@ -35,29 +35,28 @@ class NeedResultSetPresenter
 
   def build_links
     [].tap {|links|
-
       unless @needs.first_page?
         links << LinkHeader::Link.new(
-          @view_context.needs_url(@scope_params.merge(page: @needs.current_page-1)),
-          [["rel", "previous"]]
+          @view_context.needs_url(@scope_params.merge(page: @needs.current_page - 1)),
+          [%w(rel previous)]
         )
       end
 
       unless @needs.last_page?
         links << LinkHeader::Link.new(
-          @view_context.needs_url(@scope_params.merge(page: @needs.current_page+1)),
-          [["rel", "next"]]
+          @view_context.needs_url(@scope_params.merge(page: @needs.current_page + 1)),
+          [%w(rel next)]
         )
       end
 
       links << LinkHeader::Link.new(
         @view_context.needs_url(@scope_params.merge(page: @needs.current_page)),
-        [["rel", "self"]]
+        [%w(rel self)]
       )
     }
   end
 
   def start_index
-    @needs.offset_value+1
+    @needs.offset_value + 1
   end
 end

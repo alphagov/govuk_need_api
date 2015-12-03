@@ -5,13 +5,12 @@ require 'csv'
 require 'needs_importer'
 
 class NeedsImporterTest < ActiveSupport::TestCase
-
   setup do
     FileUtils.mkdir_p 'tmp'
     CSV.open('tmp/test-needs.csv', "wb") do |csv|
-      csv << [ 'As a...', 'I need to...', 'so that...' ]
-      csv << [ 'user', 'pay my car tax', 'avoid paying a fine' ]
-      csv << [ 'jobseeker', 'log into Jobsearch', "prove that I'm looking for work" ]
+      csv << ['As a...', 'I need to...', 'so that...']
+      csv << ['user', 'pay my car tax', 'avoid paying a fine']
+      csv << ['jobseeker', 'log into Jobsearch', "prove that I'm looking for work"]
     end
   end
 

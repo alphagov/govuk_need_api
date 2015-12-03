@@ -22,9 +22,7 @@ class NeedStatus
 
 private
   def clear_inconsistent_fields
-    if description != NOT_VALID && reasons != nil
-      self.reasons = nil
-    end
+    self.reasons = nil if description != NOT_VALID && reasons != nil
 
     if description != VALID && additional_comments != nil
       self.additional_comments = nil

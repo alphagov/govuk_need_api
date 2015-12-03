@@ -1,7 +1,6 @@
 require_relative '../integration_test_helper'
 
 class SearchingNeedsTest < ActionDispatch::IntegrationTest
-
   setup do
     login_as_stub_user
     use_test_index
@@ -69,7 +68,7 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
 
     refresh_index
 
-    get "/needs?q=#{submitted_need["id"]}"
+    get "/needs?q=#{submitted_need['id']}"
 
     body = JSON.parse(last_response.body)
     assert_equal 1, body["results"].count
@@ -101,7 +100,7 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
 
     assert last_response.headers.has_key?("Link")
     link_header = LinkHeader.parse(last_response.headers["Link"])
-    assert_equal "http://example.org/needs?page=2&q=monkeys", link_header.find_link(["rel", "next"]).href
+    assert_equal "http://example.org/needs?page=2&q=monkeys", link_header.find_link(%w(rel next)).href
 
     get "/needs?q=monkeys&page=2"
     assert_equal 200, last_response.status

@@ -25,7 +25,7 @@ class ActiveSupport::TestCase
   end
 
   def stub_user
-    @stub_user ||= create(:user, :name => 'Stub User')
+    @stub_user ||= create(:user, name: 'Stub User')
   end
 
   def login_as_stub_user
@@ -34,9 +34,9 @@ class ActiveSupport::TestCase
 
   def login_as(user)
     request.env['warden'] = stub(
-      :authenticate! => true,
-      :authenticated? => true,
-      :user => user
+      authenticate!: true,
+      authenticated?: true,
+      user: user
     )
   end
 end

@@ -100,7 +100,7 @@ class Need
   def save(*args)
     super
   rescue Moped::Errors::OperationFailure => e
-    if e.details["code"] == 11000  # Duplicate key error
+    if e.details["code"] == 11000 # Duplicate key error
       errors.add(:base, "This need already exists")
       return false
     else
@@ -200,6 +200,6 @@ private
     self.applies_to_all_organisations ||= false
 
     # return nil here so that it doesn't break the callback chain
-    return
+    nil
   end
 end
