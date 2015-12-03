@@ -25,7 +25,7 @@ class NeedRevisionTest < ActiveSupport::TestCase
       Timecop.freeze do
         revision = NeedRevision.create(@atts)
 
-        assert_equal Time.now.to_s, revision.created_at.to_s
+        assert_equal Time.zone.now.to_s, revision.created_at.to_s
       end
     end
 

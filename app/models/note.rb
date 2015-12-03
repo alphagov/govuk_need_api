@@ -7,7 +7,7 @@ class Note
   field :author, type: Hash
   field :revision, type: String
 
-  default_scope order_by([:created_at, :desc])
+  default_scope -> { order_by(:created_at.desc) }
 
   validates_presence_of :text, :need_id, :author
   validate :validate_need_id

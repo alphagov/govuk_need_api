@@ -6,10 +6,10 @@ class NeedRevision
   field :snapshot, type: Hash
   field :author, type: Hash
 
-  default_scope order_by([:created_at, :desc])
+  default_scope -> { order_by(:created_at.desc) }
 
   belongs_to :need
-  index [[ :need_id, Mongo::ASCENDING ], [ :created_at, Mongo::DESCENDING ]]
+  index({ need_id: 1, created_at: -1 })
 
   validates :action_type, inclusion: { in: ["create", "update", "close", "reopen"] }
   validates :snapshot, presence: true

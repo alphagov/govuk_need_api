@@ -3,6 +3,7 @@ class Need
 
   INITIAL_NEED_ID = 100001
 
+  field :_id, type: String, default: -> { need_id }
   field :need_id, type: Integer
   field :role, type: String
   field :goal, type: String
@@ -29,7 +30,7 @@ class Need
   after_update :record_update_revision
   after_create :record_create_revision
 
-  default_scope order_by([:_id, :desc])
+  default_scope -> { order_by(:_id.desc) }
 
   PAGE_SIZE = 50
   paginates_per PAGE_SIZE
@@ -43,21 +44,11 @@ class Need
   #      <http://two.mongoid.org/docs/callbacks.html>
   before_save :assign_new_id, on: :create
 
-  # Use need_id as the internal Mongo ID; see http://two.mongoid.org/docs/extras.html
-  key :need_id
-  index :duplicate_of
-
-  index :organisation_ids
+  index duplicate_of: 1
+  index organisation_ids: 1
 
   # uniqueness constraint to avoid simple forms of duplication
-  index(
-    [
-      [:role, Mongo::ASCENDING],
-      [:goal, Mongo::ASCENDING],
-      [:benefit, Mongo::ASCENDING]
-    ],
-    unique: true
-  )
+  index({ role: 1, goal: 1, benefit: 1 }, { unique: true })
 
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
@@ -108,8 +99,8 @@ class Need
 
   def save(*args)
     super
-  rescue Mongo::OperationFailure => e
-    if e.error_code == 11000  # Duplicate key error
+  rescue Moped::Errors::OperationFailure => e
+    if e.details["code"] == 11000  # Duplicate key error
       errors.add(:base, "This need already exists")
       return false
     else
@@ -117,10 +108,11 @@ class Need
     end
   end
 
-  private
+private
   def assign_new_id
-    last_assigned = Need.order_by([:need_id, :desc]).first
+    last_assigned = Need.order_by(:need_id.desc).first
     self.need_id ||= (last_assigned.present? && last_assigned.need_id >= INITIAL_NEED_ID) ? last_assigned.need_id + 1 : INITIAL_NEED_ID
+    self._id = self.need_id
   end
 
   def organisation_ids_must_exist

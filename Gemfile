@@ -1,9 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.22'
+gem 'rails', '4.2.5'
 
-gem 'mongoid', '2.8.1'
-gem 'bson_ext', '1.9.2'
+gem 'mongoid', '4.0.2'
 
 gem 'plek', '~> 1.10'
 gem 'gds-api-adapters', '20.1.1'

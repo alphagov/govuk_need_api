@@ -85,7 +85,7 @@ class OrganisationSlugChangerTest < ActiveSupport::TestCase
       "uid" => nil
     }
 
-    assert_equal expected_author, need.reload.revisions.map(&:author).last
+    assert_equal expected_author, need.reload.revisions.map(&:author).first
   end
 
   test 'it indexes updated needs in search' do
