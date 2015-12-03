@@ -36,8 +36,6 @@ group :test do
   gem 'mocha', '1.1.0', require: false
   gem 'shoulda', '3.5.0'
   gem 'shoulda-matchers', '2.8.0'
-  gem 'simplecov', '0.11.0'
-  gem 'simplecov-rcov'
   gem 'webmock', '1.22.3'
   gem 'test-unit', '~> 3.0'
 end
