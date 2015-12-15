@@ -447,7 +447,13 @@ class NeedsControllerTest < ActionController::TestCase
           id: @need_instance.need_id,
           role: "council tax payer",
           justifications: ["legislation"],
-          yearly_user_contacts: 726
+          yearly_user_contacts: 726,
+          status: {
+            description: "valid with conditions",
+            additional_comments: "testing",
+            validation_conditions: "example",
+            reasons: %w(one two),
+          },
         }
         GovukNeedApi.indexer.stubs(:index)
       end
@@ -458,6 +464,43 @@ class NeedsControllerTest < ActionController::TestCase
             name: "Winston Smith-Churchill",
             email: "winston@alphagov.co.uk"
           }
+        end
+
+        context "given the need is 'proposed'" do
+          should "persist associated fields" do
+            with_updated_need_for NeedStatus::PROPOSED do |updated_need|
+              assert_equal NeedStatus::PROPOSED, updated_need.status.description
+            end
+          end
+        end
+
+        context "given the need is 'valid'" do
+          should "persist associated fields" do
+            with_updated_need_for NeedStatus::VALID do |updated_need|
+              assert_equal NeedStatus::VALID, updated_need.status.description
+              assert_equal "testing", updated_need.status.additional_comments
+              assert_nil updated_need.status.validation_conditions
+            end
+          end
+        end
+
+        context "given the need is 'not valid'" do
+          should "persist associated fields" do
+            with_updated_need_for NeedStatus::NOT_VALID do |updated_need|
+              assert_equal NeedStatus::NOT_VALID, updated_need.status.description
+              assert_equal %w(one two), updated_need.status.reasons
+              assert_nil updated_need.status.additional_comments
+            end
+          end
+        end
+
+        context "given the need is 'valid with conditions'" do
+          should "persist associated fields" do
+            with_updated_need_for NeedStatus::VALID_WITH_CONDITIONS do |updated_need|
+              assert_equal NeedStatus::VALID_WITH_CONDITIONS, updated_need.status.description
+              assert_equal "example", updated_need.status.validation_conditions
+            end
+          end
         end
 
         should "return a success response" do
@@ -853,5 +896,12 @@ class NeedsControllerTest < ActionController::TestCase
         assert JSON.parse(response.body)["error"]
       end
     end
+  end
+
+  def with_updated_need_for(status)
+    @updates_with_author[:status][:description] = status
+    put :update, @updates_with_author
+
+    yield Need.find(@need_instance.need_id)
   end
 end
