@@ -160,6 +160,12 @@ class NeedsController < ApplicationController
       met_when: [],
       organisation_ids: [],
       justifications: [],
+      status: [
+        :description,
+        :additional_comments,
+        :validation_conditions,
+        reasons: [],
+      ],
     )
   end
 
