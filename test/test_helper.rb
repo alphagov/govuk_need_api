@@ -14,6 +14,11 @@ DatabaseCleaner.clean
 class ActiveSupport::TestCase
   include FactoryGirl::Syntax::Methods
 
+  setup do
+    session = Mongoid::Sessions.default
+    session.with(database: :admin).command({ setParameter: 1, textSearchEnabled: true })
+  end
+
   teardown do
     DatabaseCleaner.clean
   end

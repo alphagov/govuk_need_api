@@ -95,19 +95,14 @@ class NeedsControllerTest < ActionController::TestCase
 
   context "GET index with search parameter" do
     setup do
-      @results = [
-        Search::NeedSearchResult.new(
-          "need_id" => 100001,
-          "role" => "fishmonger",
-          "goal" => "sell fish",
-          "benefit" => "earn a living",
-          "organisation_ids" => ["cabinet-office"]
-        )
-      ]
-      mock_searcher = mock("searcher")
-      mock_searcher.expects(:search).with("fish", {})
-        .returns(Search::NeedSearchResultSet.new(@results, 1))
-      GovukNeedApi.stubs(:searcher).returns(mock_searcher)
+      create(
+        :need,
+        need_id: 100001,
+        role: "fishmonger",
+        goal: "sell fish",
+        benefit: "earn a living",
+        organisation_ids: ["cabinet-office"]
+      )
     end
 
     should "return success status" do
@@ -176,24 +171,10 @@ class NeedsControllerTest < ActionController::TestCase
   context "GET index with search AND organisation_id parameters" do
     setup do
       @needs = [
-        @matching_co_need    = create(:need, organisation_ids: ["cabinet-office"], role: "a cheeseboard"),
-        @nonmatching_co_need = create(:need, organisation_ids: ["cabinet-office"], role: "a chalkboard"),
-        @dft_need            = create(:need, organisation_ids: ["department-for-transport"], role: "a cheeseknife")
+        @matching_co_need    = create(:need, need_id: 100001, organisation_ids: ["cabinet-office"], role: "a cheese-board"),
+        @nonmatching_co_need = create(:need, need_id: 100002, organisation_ids: ["cabinet-office"], role: "a chalk-board"),
+        @dft_need            = create(:need, need_id: 100003, organisation_ids: ["department-for-transport"], role: "a cheese-knife")
       ]
-
-      @results = [
-        Search::NeedSearchResult.new(
-          "need_id" => 100001,
-          "role" => @matching_co_need.role,
-          "goal" => @matching_co_need.goal,
-          "benefit" => @matching_co_need.benefit,
-          "organisation_ids" => @matching_co_need.organisation_ids
-        )
-      ]
-      mock_searcher = mock("searcher")
-      mock_searcher.expects(:search).with("cheese", 'organisation_id' => "cabinet-office")
-        .returns(::Search::NeedSearchResultSet.new(@results, 1))
-      GovukNeedApi.stubs(:searcher).returns(mock_searcher)
 
       get :index, organisation_id: 'cabinet-office', q: 'cheese'
     end

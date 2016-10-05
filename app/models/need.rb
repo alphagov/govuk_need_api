@@ -50,6 +50,9 @@ class Need
   # uniqueness constraint to avoid simple forms of duplication
   index({ role: 1, goal: 1, benefit: 1 }, { unique: true })
 
+  # add fulltext index
+  index({ role: "text", goal: "text", benefit: "text", met_when: "text", other_evidence: "text" })
+
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
             numericality: {

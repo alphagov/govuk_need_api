@@ -6,7 +6,7 @@ The Need API is a JSON read and write API for information about user needs on GO
 
 - Ruby (1.9.3)
 - Bundler
-- MongoDB
+- MongoDB (with experimental text search feature enabled)
 - Elasticsearch (running on port 9200)
 - Redis (running on port 6379)
 
