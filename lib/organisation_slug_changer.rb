@@ -65,7 +65,6 @@ private
   def update_associated_needs
     associated_needs.each do |need|
       update_organisation_id_of_need(need)
-      reindex_need_in_search(need)
     end
   end
 
@@ -77,13 +76,6 @@ private
       "uid" => nil
     )
     logger.info "   -> Changed organisation_id of need '#{need._id}'"
-  end
-
-  def reindex_need_in_search(need)
-    GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
-    logger.info "   -> Reindexed need '#{need._id}'"
-  rescue Search::Indexer::IndexingFailed => e
-    logger.error "   -> Reindexing need '#{need._id}' failed due to #{e}"
   end
 
   def destroy_original_organisation

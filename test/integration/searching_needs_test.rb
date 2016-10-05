@@ -3,11 +3,6 @@ require_relative '../integration_test_helper'
 class SearchingNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
-    use_test_index
-  end
-
-  teardown do
-    delete_test_index
   end
 
   should "return no results on an empty index" do
@@ -27,8 +22,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
 
     assert_equal 201, last_response.status
 
-    refresh_index
-
     get "/needs?q=student"
     body = JSON.parse(last_response.body)
     assert_equal 1, body["results"].count
@@ -47,8 +40,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
 
     assert_equal 201, last_response.status
 
-    refresh_index
-
     get "/needs?q=students"
     body = JSON.parse(last_response.body)
     assert_equal 1, body["results"].count
@@ -65,8 +56,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
 
     assert_equal 201, last_response.status
     submitted_need = JSON.parse(last_response.body)
-
-    refresh_index
 
     get "/needs?q=#{submitted_need['id']}"
 
@@ -87,9 +76,6 @@ class SearchingNeedsTest < ActionDispatch::IntegrationTest
 
       assert_equal 201, last_response.status, last_response.body
     end
-
-    # Elasticsearch needs a little time to index the search results in the background
-    sleep 3
 
     get "/needs?q=monkeys"
 

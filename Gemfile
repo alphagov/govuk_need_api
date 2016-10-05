@@ -12,8 +12,6 @@ gem 'mongoid_rails_migrations', '1.1.0'
 gem 'kaminari', '0.16.3'
 gem 'link_header', '0.0.8'
 
-gem 'elasticsearch', '1.0.14'
-
 gem 'logstasher', '0.4.8'
 
 gem 'mlanett-redis-lock', '0.2.7'

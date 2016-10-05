@@ -13,7 +13,10 @@ class RemoveAppointedPersonForEnglandAndWalesOrganisation < Mongoid::Migration
           print need.errors.full_messages.join("\n\t\t")
         end
         print "\n"
-        GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
+        # NOTE: this was needed at the time this migration was written
+        # but this class has since been removed (we use mongo fulltext
+        # instead of needing elasticsearch)
+        # GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
       end
 
       organisation.destroy

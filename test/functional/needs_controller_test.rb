@@ -224,8 +224,6 @@ class NeedsControllerTest < ActionController::TestCase
             name: "Winston Smith-Churchill",
             email: "winston@alphagov.co.uk"
           })
-
-          GovukNeedApi.indexer.stubs(:index)
         end
 
         should "persist the need and create a revision given author information" do
@@ -278,33 +276,6 @@ class NeedsControllerTest < ActionController::TestCase
           post :create, @need_with_author.merge(duplicate_of: nil)
           assert_response :created
         end
-
-        should "attempt to index the new need" do
-          indexable_need = stub("indexable need")
-          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
-          GovukNeedApi.indexer.expects(:index).with(indexable_need)
-
-          post :create, @need_with_author
-        end
-
-        context "indexing fails" do
-          setup do
-            @exception = Search::Indexer::IndexingFailed.new(123456)
-            GovukNeedApi.indexer.expects(:index).raises(@exception)
-          end
-
-          should "return a 201 status code" do
-            post :create, @need_with_author
-            assert_response :created
-          end
-
-          should "send out an exception report" do
-            Airbrake
-              .expects(:notify_or_ignore)
-              .with(@exception)
-            post :create, @need_with_author
-          end
-        end
       end
 
 
@@ -337,7 +308,6 @@ class NeedsControllerTest < ActionController::TestCase
           "email" => "email",
           "uid" => "uid"
         ).returns(true)
-        GovukNeedApi.indexer.stubs(:index)
 
         post :create, @need.merge(author: {
           name: "name",
@@ -436,7 +406,6 @@ class NeedsControllerTest < ActionController::TestCase
             reasons: %w(one two),
           },
         }
-        GovukNeedApi.indexer.stubs(:index)
       end
 
       context "given author details" do
@@ -511,33 +480,6 @@ class NeedsControllerTest < ActionController::TestCase
             assert_equal @need_instance.send(field), updated_need.send(field)
           end
         end
-
-        should "attempt to index the new need" do
-          indexable_need = stub("indexable need")
-          Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
-          GovukNeedApi.indexer.expects(:index).with(indexable_need)
-
-          put :update, @updates_with_author
-        end
-
-        context "indexing fails" do
-          setup do
-            @exception = Search::Indexer::IndexingFailed.new(123456)
-            GovukNeedApi.indexer.expects(:index).raises(@exception)
-          end
-
-          should "return a 204 status code" do
-            put :update, @updates_with_author
-            assert_response 204
-          end
-
-          should "send out an exception report" do
-            Airbrake
-              .expects(:notify_or_ignore)
-              .with(@exception)
-            put :update, @updates_with_author
-          end
-        end
       end
 
       context "when no author details are provided" do
@@ -569,7 +511,6 @@ class NeedsControllerTest < ActionController::TestCase
           id: @need_instance.need_id,
           yearly_user_contacts: "lots"
         }
-        GovukNeedApi.indexer.stubs(:index)
       end
 
       context "with author details" do
@@ -612,11 +553,6 @@ class NeedsControllerTest < ActionController::TestCase
           Need.any_instance.expects(:save_as).never
           put :update, @updates_with_author
         end
-
-        should "not attempt to index the need" do
-          GovukNeedApi.indexer.expects(:index).never
-          put :update, @updates_with_author
-        end
       end
 
       should "return a 422 status" do
@@ -636,10 +572,6 @@ class NeedsControllerTest < ActionController::TestCase
         put :update, @updates
       end
 
-      should "not attempt to index the need" do
-        GovukNeedApi.indexer.expects(:index).never
-        put :update, @updates
-      end
     end
 
     context "attempting to update a closed need" do
@@ -676,7 +608,6 @@ class NeedsControllerTest < ActionController::TestCase
           id: @duplicate.need_id,
           duplicate_of: @canonical_need.need_id
         }
-        GovukNeedApi.indexer.stubs(:index)
       end
 
       context "given author details" do
@@ -706,13 +637,6 @@ class NeedsControllerTest < ActionController::TestCase
           [:goal, :benefit, :impact, :met_when].each do |field|
             assert_equal @duplicate.send(field), closed_need.send(field)
           end
-        end
-
-        should "not attempt to index the new need" do
-          indexable_need = stub("indexable need")
-          GovukNeedApi.indexer.expects(:index).never
-
-          put :closed, @closed_with_author
         end
 
         should "only be able to close once (without reopening)" do
@@ -783,11 +707,6 @@ class NeedsControllerTest < ActionController::TestCase
           Need.any_instance.expects(:save_as).never
           put :closed, @closed_with_author
         end
-
-        should "not attempt to index the need" do
-          GovukNeedApi.indexer.expects(:index).never
-          put :closed, @closed_with_author
-        end
       end
 
       should "return a 422 status" do
@@ -804,11 +723,6 @@ class NeedsControllerTest < ActionController::TestCase
 
       should "not save the need" do
         Need.any_instance.expects(:save_as).never
-        put :closed, @closed
-      end
-
-      should "not attempt to index the need" do
-        GovukNeedApi.indexer.expects(:index).never
         put :closed, @closed
       end
     end

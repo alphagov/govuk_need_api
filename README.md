@@ -7,7 +7,6 @@ The Need API is a JSON read and write API for information about user needs on GO
 - Ruby (1.9.3)
 - Bundler
 - MongoDB (with experimental text search feature enabled)
-- Elasticsearch (running on port 9200)
 - Redis (running on port 6379)
 
 The Need API is not dependent on any other GOV.UK appliations in order to run.
@@ -41,9 +40,3 @@ In the development environment, the mock strategy is used by default. This remov
 Organisations are imported from the [Whitehall](https://github.com/alphagov/whitehall) Organisations API. This import is automated using a Rake task:
 
     GOVUK_APP_DOMAIN=production.alphagov.co.uk bundle exec rake organisations:import
-
-## Search
-
-The tests (and the search/indexing functionality) won't work unless you have an elasticsearch server running on localhost port 9200, or unless you change the configuration in `config/initializers/elasticsearch.rb`.
-
-To set up the search index (or to clear out an old one and start again), you can run the `search:reset` Rake task, which will replace any existing index and re-index all needs. There are other Rake tasks available if you want to do this piece by piece, or update mappings for an existing index.
