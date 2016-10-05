@@ -55,14 +55,6 @@ GEM
     database_cleaner (1.5.1)
     domain_name (0.5.25)
       unf (>= 0.0.5, < 1.0.0)
-    elasticsearch (1.0.14)
-      elasticsearch-api (= 1.0.14)
-      elasticsearch-transport (= 1.0.14)
-    elasticsearch-api (1.0.14)
-      multi_json
-    elasticsearch-transport (1.0.14)
-      faraday
-      multi_json
     erubis (2.7.0)
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
@@ -256,7 +248,6 @@ PLATFORMS
 DEPENDENCIES
   airbrake (~> 4.3.4)
   database_cleaner (= 1.5.1)
-  elasticsearch (= 1.0.14)
   factory_girl_rails (= 4.5.0)
   gds-api-adapters (= 26.2.0)
   gds-sso (= 11.2.0)

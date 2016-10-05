@@ -5,22 +5,33 @@ class NeedsController < ApplicationController
   before_filter :check_for_author_params, only: [:create, :update, :closed, :reopen]
 
   def index
-    if params["q"].present?
-      result_set = GovukNeedApi.searcher.search(params["q"], params.slice(:organisation_id, :page))
-      @needs = Kaminari.paginate_array(result_set.results, total_count: result_set.total_count)
-        .page(params[:page])
-        .per(Need::PAGE_SIZE)
-    else
-      scope = Need
+    scope = Need
 
-      if params["organisation_id"].present?
-        scope = scope.where(organisation_ids: params["organisation_id"])
-      end
+    scope = scope.where(:need_id.in => need_ids) if need_ids
 
-      scope = scope.where(:need_id.in => need_ids) if need_ids
-
-      @needs = scope.page(params[:page])
+    if params["organisation_id"].present?
+      scope = scope.where(organisation_ids: params["organisation_id"])
     end
+
+    if params["q"].present?
+      # NOTE: if the query looks like it might be a need_id (e.g. it's all
+      # numbers) then don't use text_search as the index in mongo 2.4 doesn't
+      # seem to like searching on the integer need_id field
+      if params["q"] !~ /\A\d+\Z/
+        scope = scope.text_search(params['q'])
+        # NOTE: the results of text_search aren't a standard mongoid result set
+        # so they don't have kaminari pagination mixed in.  Also text search
+        # in mongo 2.4 doesn't support skip, so you can't do real pagination
+        # in the driver.
+        @needs = Kaminari.paginate_array(scope.to_a, total_count: scope.count)
+          .page(params[:page])
+          .per(Need::PAGE_SIZE)
+      else
+        scope = scope.where(need_id: params["q"].to_i)
+      end
+    end
+
+    @needs = scope.page(params[:page]) if @needs.nil?
 
     presenter = NeedResultSetPresenter.new(@needs, view_context, scope_params: params.slice(:q, :organisation_id, :ids))
     response.headers["Link"] = LinkHeader.new(presenter.links).to_s
@@ -57,7 +68,6 @@ class NeedsController < ApplicationController
     @need = Need.new(filtered_params)
 
     if @need.save_as(author_params)
-      try_index_need(@need)
       decorated_need = NeedWithChangesets.new(@need)
       render json: response_info("created").merge(NeedPresenter.new(decorated_need).as_json),
              status: :created
@@ -90,7 +100,6 @@ class NeedsController < ApplicationController
 
     @need.assign_attributes(filtered_params)
     if @need.valid? && @need.save_as(author_params)
-      try_index_need(@need)
       render nothing: true, status: 204
     else
       error 422, message: :invalid_attributes, errors: @need.errors.full_messages
@@ -172,14 +181,6 @@ class NeedsController < ApplicationController
   def author_params
     author = params[:author] || { }
     author.slice(:name, :email, :uid)
-  end
-
-  def try_index_need(need)
-    GovukNeedApi.indexer.index(Search::IndexableNeed.new(need))
-    true
-  rescue Search::Indexer::IndexingFailed => e
-    Airbrake.notify_or_ignore(e)
-    false
   end
 
   def need_ids

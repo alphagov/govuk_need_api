@@ -3,7 +3,6 @@ require_relative '../integration_test_helper'
 class ReopeningNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
-    use_test_index
 
     travel_to 2.seconds.ago do # Avoid race condition on creation timestamps
       @canonical_need = create(:need, role: "parent",
@@ -24,10 +23,6 @@ class ReopeningNeedsTest < ActionDispatch::IntegrationTest
       put("/needs/#{@duplicate.need_id}/closed",
           @author.merge(duplicate_of: @canonical_need.need_id))
     end
-  end
-
-  teardown do
-    delete_test_index
   end
 
   should "no longer be closed" do

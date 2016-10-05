@@ -3,7 +3,6 @@ require_relative '../integration_test_helper'
 class ClosingNeedsTest < ActionDispatch::IntegrationTest
   setup do
     login_as_stub_user
-    use_test_index
 
     travel_to 2.seconds.ago do # Avoid race condition on creation timestamps
       @main_need = create(:need, role: "parent",
@@ -19,10 +18,6 @@ class ClosingNeedsTest < ActionDispatch::IntegrationTest
         }
       }
     end
-  end
-
-  teardown do
-    delete_test_index
   end
 
   should "404 if the need doesn't exist" do
