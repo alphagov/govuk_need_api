@@ -24,7 +24,7 @@ class DistributedLock
 private
   def redis
     @_redis ||= begin
-      redis_config = YAML.load_file(File.join(Rails.root, "config", "redis.yml"))
+      redis_config = Rails.application.config_for(:redis)
       Redis.new(redis_config.symbolize_keys)
     end
   end
