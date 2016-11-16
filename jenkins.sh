@@ -18,5 +18,8 @@ if [[ ${GIT_BRANCH} != "origin/master" ]]; then
     app test lib config
 fi
 
+export ELASTICSEARCH_HOSTS="localhost:9200"
+export REDIS_HOST="127.0.0.1"
+
 bundle exec rake db:mongoid:drop
 bundle exec rake test
