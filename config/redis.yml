@@ -1,4 +1,12 @@
-host: <%= ENV['REDIS_HOST'] %>
-port: 6379
-namespace: 'need-api'
-
+development:
+  host: 127.0.0.1
+  port: 6379
+  namespace: 'need-api'
+test:
+  host: 127.0.0.1
+  port: 6379
+  namespace: 'need-api'
+production:
+  host: <%= ENV['REDIS_HOST'] %>
+  port: 6379 
+  namespace: 'need-api'
