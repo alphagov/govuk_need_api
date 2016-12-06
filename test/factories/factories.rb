@@ -15,6 +15,7 @@ FactoryGirl.define do
   end
 
   factory :need do
+    content_id SecureRandom.uuid
     sequence(:role) {|n| "user #{n}" }
     goal "pay my council tax"
     benefit "I don't receive a fine"

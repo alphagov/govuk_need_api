@@ -217,6 +217,15 @@ class NeedsControllerTest < ActionController::TestCase
     end
   end
 
+  context "GET content_id" do
+    should "show the content_id for a need" do
+      @need = create(:need)
+      get 'content_id', id: @need
+
+      assert_equal @need.content_id, response.body
+    end
+  end
+
   context "POST create" do
     context "given a valid need" do
       setup do

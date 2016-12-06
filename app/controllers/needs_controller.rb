@@ -35,6 +35,10 @@ class NeedsController < ApplicationController
            status: :ok
   end
 
+  def content_id
+    render json: @need.content_id
+  end
+
   def create
     # Explicitly deny need IDs in create requests
     # This is a controller-level concern, rather than a model-level one, as we
