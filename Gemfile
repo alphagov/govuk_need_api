@@ -5,7 +5,12 @@ gem 'rails', '4.2.5.1'
 gem 'mongoid', '4.0.2'
 
 gem 'plek', '~> 1.11'
-gem 'gds-api-adapters', '26.2.0'
+
+if ENV['API_DEV']
+  gem 'gds-api-adapters', path: '../gds-api-adapters'
+else
+  gem 'gds-api-adapters', '26.2.0'
+end
 
 gem 'mongoid_rails_migrations', '1.1.0'
 
