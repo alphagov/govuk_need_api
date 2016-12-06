@@ -5,4 +5,9 @@ namespace :needs do
   task :import, [:path] => :environment do |_t, args|
     NeedsImporter.new(Rails.root.join(args[:path])).run
   end
+
+  desc "Bulk export needs to the Publishing API"
+  task export: :environment do |_t, args|
+    NeedsExporter.new.run
+  end
 end

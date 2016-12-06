@@ -5,6 +5,7 @@ class Need
 
   field :_id, type: String, default: -> { need_id }
   field :need_id, type: Integer
+  field :content_id, type: String, default: -> { SecureRandom.uuid }
   field :role, type: String
   field :goal, type: String
   field :benefit, type: String
