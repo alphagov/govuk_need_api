@@ -29,14 +29,37 @@ private
                 schema_name: "need",
                 document_type: "need",
                 rendering_app: "info-frontend",
+                locale: "en",
                 base_path: "/a_path",
                 routes: [{
                   path: "/a_path",
                   type: "exact"
                 }],
-                details: need_revision.snapshot
+                details: present_details(need_revision.snapshot)
                }
     }
+  end
+
+  def present_details(snapshot)
+    details = {}
+    snapshot.each do |key, value|
+      if should_not_be_in_details(key,value)
+        next
+      elsif key == "status"
+        details["status"]= value["description"]
+      else
+        details["#{key}"]=value
+      end
+    end
+    details
+  end
+
+  def is_a_link?(key)
+    key == "organisation_ids"
+  end
+
+  def should_not_be_in_details(key,value)
+    is_a_link?(key) || value == nil
   end
 
 end
