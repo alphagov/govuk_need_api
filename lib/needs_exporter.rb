@@ -26,22 +26,21 @@ private
     {
       action: "Publish",
       payload: {
-                title: need_revision_title(need_revision),
+                title: need_revision.snapshot["benefit"],
                 publishing_app: "Need-API",
                 schema_name: "need",
                 document_type: "need",
                 rendering_app: "info-frontend",
                 locale: "en",
-                base_path: "/a_path",
+                base_path: "/needs/#{slug(need_revision)}",
                 routes: [{
-                  path: "/a_path",
+                  path: "/needs/#{slug(need_revision)}",
                   type: "exact"
                 }],
                 details: present_details(need_revision.snapshot)
                }
     }
   end
-
 
   def present_details(snapshot)
     details = {}
@@ -74,5 +73,9 @@ private
 
   def should_not_be_in_details(key,value)
     is_a_link?(key) || value == nil
+  end
+
+  def slug(need_revision)
+    need_revision.need.benefit.parameterize
   end
 end
