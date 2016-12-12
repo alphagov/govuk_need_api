@@ -18,6 +18,8 @@ private
   def export(need)
     snapshots = need.revisions.map{ |nr| present_need_revision(nr)}
     @api_client.import(need.content_id, snapshots)
+    links = present_links(need)
+    @api_client.patch_links(need.content_id, links: links)
   end
 
   def present_need_revision(need_revision)
@@ -40,6 +42,7 @@ private
     }
   end
 
+
   def present_details(snapshot)
     details = {}
     snapshot.each do |key, value|
@@ -54,6 +57,17 @@ private
     details
   end
 
+  def present_links(need)
+    links = {}
+    need.attributes.each do |key, value|
+      next unless is_a_link?(key) && value.present?
+      if key == "organisation_ids"
+        links["organisations"]= need.organisations.map(&:content_id)
+      end
+    end
+    links
+  end
+
   def is_a_link?(key)
     key == "organisation_ids"
   end
@@ -61,5 +75,4 @@ private
   def should_not_be_in_details(key,value)
     is_a_link?(key) || value == nil
   end
-
 end
