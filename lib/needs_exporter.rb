@@ -79,7 +79,10 @@ private
   end
 
   def should_not_be_in_details(key, value)
-    is_a_link?(key) || value == nil
+    is_a_link?(key) ||
+      value == nil ||
+      key == "content_id" ||
+      deprecated_fields.include?(key)
   end
 
   def slug(need_revision)
@@ -88,5 +91,9 @@ private
 
   def related_needs(need)
     Need.where(need_id: need.duplicate_of)
+  end
+
+  def deprecated_fields
+    %w{monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
   end
 end
