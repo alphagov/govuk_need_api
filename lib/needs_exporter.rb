@@ -9,7 +9,10 @@ class NeedsExporter
   end
 
   def run
-    export(@needs[0])
+    @needs.each_with_index do |need, index|
+      p "#{index}/#{@needs.count}"
+      export(need)
+    end
   end
 
 private
