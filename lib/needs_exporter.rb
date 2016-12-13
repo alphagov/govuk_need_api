@@ -63,13 +63,16 @@ private
       next unless is_a_link?(key) && value.present?
       if key == "organisation_ids"
         links["organisations"] = need.organisations.map(&:content_id)
+      elsif key == "duplicate_of"
+        links["related_items"] = related_needs(need).map(&:content_id)
       end
     end
     links
   end
 
   def is_a_link?(key)
-    key == "organisation_ids"
+    key == "organisation_ids" ||
+      key == "duplicate_of"
   end
 
   def should_not_be_in_details(key, value)
@@ -78,5 +81,9 @@ private
 
   def slug(need_revision)
     need_revision.need.benefit.parameterize
+  end
+
+  def related_needs(need)
+    Need.where(need_id: need.duplicate_of)
   end
 end
