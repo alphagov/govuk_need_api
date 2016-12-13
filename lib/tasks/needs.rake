@@ -7,7 +7,7 @@ namespace :needs do
   end
 
   desc "Bulk export needs to the Publishing API"
-  task export: :environment do |_t, args|
+  task export: :environment do |_t, _args|
     NeedsExporter.new.run
   end
 end

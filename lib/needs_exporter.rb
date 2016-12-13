@@ -3,7 +3,6 @@ require 'gds_api/publishing_api_v2'
 require 'csv'
 
 class NeedsExporter
-
   def initialize
     @needs = Need.all
     @api_client = GdsApi::PublishingApiV2.new(Plek.find('publishing-api'))
@@ -16,7 +15,7 @@ class NeedsExporter
 private
 
   def export(need)
-    snapshots = need.revisions.map{ |nr| present_need_revision(nr)}
+    snapshots = need.revisions.map { |nr| present_need_revision(nr)}
     @api_client.import(need.content_id, snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
@@ -45,12 +44,14 @@ private
   def present_details(snapshot)
     details = {}
     snapshot.each do |key, value|
-      if should_not_be_in_details(key,value)
+      if should_not_be_in_details(key, value)
         next
       elsif key == "status"
-        details["status"]= value["description"]
+        details["status"] = value["description"]
+      elsif key.start_with?("yearly")
+        details["#{key}"] = value.to_s
       else
-        details["#{key}"]=value
+        details["#{key}"] = value
       end
     end
     details
@@ -61,7 +62,7 @@ private
     need.attributes.each do |key, value|
       next unless is_a_link?(key) && value.present?
       if key == "organisation_ids"
-        links["organisations"]= need.organisations.map(&:content_id)
+        links["organisations"] = need.organisations.map(&:content_id)
       end
     end
     links
@@ -71,7 +72,7 @@ private
     key == "organisation_ids"
   end
 
-  def should_not_be_in_details(key,value)
+  def should_not_be_in_details(key, value)
     is_a_link?(key) || value == nil
   end
 
