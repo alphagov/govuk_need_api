@@ -26,21 +26,19 @@ private
 
   def present_need_revision(need_revision)
     {
-      action: "Publish",
-      payload: {
-                title: need_revision.snapshot["benefit"],
-                publishing_app: "Need-API",
-                schema_name: "need",
-                document_type: "need",
-                rendering_app: "info-frontend",
-                locale: "en",
-                base_path: "/needs/#{slug(need_revision)}",
-                routes: [{
-                  path: "/needs/#{slug(need_revision)}",
-                  type: "exact"
-                }],
-                details: present_details(need_revision.snapshot)
-               }
+       title: need_revision.snapshot["benefit"],
+       publishing_app: "Need-API",
+       schema_name: "need",
+       document_type: "need",
+       rendering_app: "info-frontend",
+       locale: "en",
+       base_path: "/needs/#{slug(need_revision)}",
+       state: state(need_revision),
+       routes: [{
+         path: "/needs/#{slug(need_revision)}",
+         type: "exact"
+       }],
+       details: present_details(need_revision.snapshot)
     }
   end
 
@@ -95,5 +93,24 @@ private
 
   def deprecated_fields
     %w{monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
+  end
+
+  def state(need_revision)
+    if is_latest?(need_revision)
+      need_revision.need.status
+    elsif includes_snapshot?(need_revision)
+      need_revision.snapshot["status"]["description"]
+    else
+      "superseded"
+    end
+  end
+
+  def is_latest?(need_revision)
+    all_revisions = need_revision.need.revisions
+    all_revisions[0] == need_revision
+  end
+
+  def includes_snapshot?(need_revision)
+    need_revision.snapshot["status"] && need_revision.snapshot["status"]["description"]
   end
 end
