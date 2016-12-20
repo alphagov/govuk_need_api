@@ -19,7 +19,8 @@ private
 
   def export(need, index)
     slug = generate_slug(need)
-    snapshots = need.revisions.map { |nr| present_need_revision(nr, slug)}
+    need_revisions = filter_need_revisions(need).compact
+    snapshots = need_revisions.map { |nr| present_need_revision(nr, slug)}
     @api_client.import(need.content_id, snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
@@ -104,6 +105,43 @@ private
     "-#{n}"
   end
 
+  def filter_need_revisions(need)
+    to_be_published = []
+
+    need_revisions = need.revisions.sort_by(&:created_at)
+
+    need_revisions.reverse_each do |need_revision|
+      if is_proposed?(need_revision) || is_not_valid?(need_revision)
+        to_be_published << need_revision unless draft_already_in_list?(to_be_published)
+      elsif is_valid?(need_revision)
+        to_be_published << need_revision
+      end
+    end
+    to_be_published
+  end
+
+  def draft_already_in_list?(revisions_list)
+    status_list = []
+    revisions_list.each {|r| status_list << get_status(r)}
+    status_list.include?("proposed") || status_list.include?("not valid")
+  end
+
+  def published_already_in_list?(revisions_list)
+    status_list = []
+    revisions_list.each {|r| status_list << get_status(r)}
+    status_list.include?("valid") || status_list.include?("valid with conditions")
+  end
+
+  def is_proposed?(need_revision)
+    get_status(need_revision) == "proposed"
+  end
+
+  def is_valid?(need_revision)
+    get_status(need_revision) == "valid" || get_status(need_revision) == "valid with conditions"
+  end
+
+  def is_not_valid?(need_revision)
+    get_status(need_revision) == "not valid"
   end
 
   def related_needs(need)
@@ -114,22 +152,31 @@ private
     %w{monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
   end
 
-  def state(need_revision)
-    if is_latest?(need_revision)
-      need_revision.need.status
-    elsif includes_snapshot?(need_revision)
+  def get_status(need_revision)
+    if includes_snapshot?(need_revision)
       need_revision.snapshot["status"]["description"]
     else
-      "superseded"
+      need_revision.need.status.description
     end
   end
 
   def is_latest?(need_revision)
     all_revisions = need_revision.need.revisions
-    all_revisions[0] == need_revision
+    all_revisions.select(&:created_at).max == need_revision
   end
 
   def includes_snapshot?(need_revision)
     need_revision.snapshot["status"] && need_revision.snapshot["status"]["description"]
+  end
+
+  def map_to_publishing_api_state(need_revision)
+   if is_proposed?(need_revision) || is_invalid?(need_revision)
+      "draft"
+    elsif is_valid?(need_revision)
+      return "superseded" if published_already_in_list?(need_revision.need.revisions)
+      "published"
+    else
+      raise "status not recognised: #{get_status(need_revision)}"
+    end
   end
 end
