@@ -11,8 +11,7 @@ class NeedsExporter
 
   def run
     @needs.each_with_index do |need, index|
-      p "#{index}/#{@needs.count}"
-      export(need)
+      export(need, index)
     end
   end
 
@@ -24,6 +23,8 @@ private
     @api_client.import(need.content_id, snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
+    p "#{index}/#{@needs.count}"
+    p "exported #{slug}"
   end
 
   def present_need_revision(need_revision, slug)
