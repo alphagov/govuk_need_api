@@ -6,6 +6,7 @@ class NeedsExporter
   def initialize
     @needs = Need.all
     @api_client = GdsApi::PublishingApiV2.new(Plek.find('publishing-api'))
+    @slugs = Set.new
   end
 
   def run
@@ -17,14 +18,15 @@ class NeedsExporter
 
 private
 
-  def export(need)
-    snapshots = need.revisions.map { |nr| present_need_revision(nr)}
+  def export(need, index)
+    slug = generate_slug(need)
+    snapshots = need.revisions.map { |nr| present_need_revision(nr, slug)}
     @api_client.import(need.content_id, snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
   end
 
-  def present_need_revision(need_revision)
+  def present_need_revision(need_revision, slug)
     {
        title: need_revision.snapshot["benefit"],
        publishing_app: "Need-API",
@@ -32,10 +34,10 @@ private
        document_type: "need",
        rendering_app: "info-frontend",
        locale: "en",
-       base_path: "/needs/#{slug(need_revision)}",
-       state: state(need_revision),
+       base_path: "/needs/#{slug}",
+       state: map_to_publishing_api_state(need_revision),
        routes: [{
-         path: "/needs/#{slug(need_revision)}",
+         path: "/needs/#{slug}",
          type: "exact"
        }],
        details: present_details(need_revision.snapshot)
@@ -83,8 +85,24 @@ private
       deprecated_fields.include?(key)
   end
 
-  def slug(need_revision)
-    need_revision.need.benefit.parameterize
+  def generate_slug(need)
+    base_slug = need.benefit.parameterize
+    n = 0
+    slug = ""
+    loop do
+      slug = base_slug + suffix(n)
+      break unless @slugs.include?(slug)
+      n += 1
+    end
+    @slugs.add(slug)
+    slug
+  end
+
+  def suffix(n)
+    return "" if n == 0
+    "-#{n}"
+  end
+
   end
 
   def related_needs(need)
