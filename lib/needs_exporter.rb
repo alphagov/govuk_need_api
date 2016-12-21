@@ -170,7 +170,12 @@ private
   end
 
   def map_to_publishing_api_state(need_revision)
-   if is_proposed?(need_revision) || is_invalid?(need_revision)
+    if need_revision.duplicate_of.present? && status == "proposed"
+      {
+        name: "unpublished",
+        type: "withdrawal"
+      }
+    elsif is_proposed?(need_revision) || is_invalid?(need_revision)
       "draft"
     elsif is_valid?(need_revision)
       return "superseded" if published_already_in_list?(need_revision.need.revisions)
