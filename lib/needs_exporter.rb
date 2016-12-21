@@ -31,7 +31,7 @@ private
   def present_need_revision(need_revision, slug)
     {
        title: need_revision.snapshot["benefit"],
-       publishing_app: "Need-API",
+       publishing_app: "need-api",
        schema_name: "need",
        document_type: "need",
        rendering_app: "info-frontend",
