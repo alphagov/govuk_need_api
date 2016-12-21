@@ -37,7 +37,7 @@ private
        rendering_app: "info-frontend",
        locale: "en",
        base_path: "/needs/#{slug}",
-       state: map_to_publishing_api_state(need_revision),
+       state: map_to_publishing_api_state(need_revision, slug),
        routes: [{
          path: "/needs/#{slug}",
          type: "exact"
@@ -169,13 +169,14 @@ private
     need_revision.snapshot["status"] && need_revision.snapshot["status"]["description"]
   end
 
-  def map_to_publishing_api_state(need_revision)
-    if need_revision.duplicate_of.present? && status == "proposed"
+  def map_to_publishing_api_state(need_revision, slug)
+    if need_revision.snapshot["duplicate_of"].present? && is_valid?(need_revision)
       {
         name: "unpublished",
-        type: "withdrawal"
+        type: "withdrawal",
+        explanation: "This need is a duplicate_of the need [#{need_revision.need.benefit}](/needs/#{slug})"
       }
-    elsif is_proposed?(need_revision) || is_invalid?(need_revision)
+    elsif is_proposed?(need_revision) || is_not_valid?(need_revision)
       "draft"
     elsif is_valid?(need_revision)
       return "superseded" if published_already_in_list?(need_revision.need.revisions)
