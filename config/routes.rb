@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :organisations, only: :index
   resources :needs, except: [:new, :edit]
   resources :notes, only: [:create]
 
