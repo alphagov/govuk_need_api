@@ -21,22 +21,6 @@ class ChangesetTest < ActiveSupport::TestCase
     assert_equal Time.parse("2013-10-01 10:00:00"), change.current.created_at
   end
 
-  should "attach notes to a revision" do
-    notes = [
-      {
-        text: "test",
-        author: {
-          name: "Winston Smith-Churchill"
-        },
-        created_at: Time.parse("2013-10-02 10:00:00")
-      }
-    ]
-    change = Changeset.new(@revision, nil, notes)
-    assert_equal "test", change.notes[0][:text]
-    assert_equal Time.parse("2013-10-02 10:00:00"), change.notes[0][:created_at]
-    assert_equal "Winston Smith-Churchill", change.notes[0][:author][:name]
-  end
-
   context "calculating the changes with a previous revision" do
     should "include changes in values for existing keys" do
       previous_revision = OpenStruct.new(

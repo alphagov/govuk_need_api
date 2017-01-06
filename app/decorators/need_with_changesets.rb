@@ -5,8 +5,7 @@ require 'delegate'
 class NeedWithChangesets < SimpleDelegator
   def changesets
     (need.revisions + [nil]).each_cons(2).map {|revision, previous|
-      notes = Note.where(revision: revision.id)
-      Changeset.new(revision, previous, notes)
+      Changeset.new(revision, previous)
     }
   end
 
