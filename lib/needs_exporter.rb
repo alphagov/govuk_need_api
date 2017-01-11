@@ -47,7 +47,7 @@ private
          path: "/needs/#{slug}",
          type: "exact"
        }],
-       details: present_details(need_revision_group.last.snapshot)
+       details: present_details(need_revision_group.last)
     }
   end
 
@@ -65,9 +65,9 @@ private
     end
   end
 
-  def present_details(snapshot)
+  def present_details(need_revision)
     details = {}
-    snapshot.each do |key, value|
+    need_revision.snapshot.each do |key, value|
       if should_not_be_in_details(key, value)
         next
       elsif key == "status"
@@ -78,7 +78,7 @@ private
         details["#{key}"] = value
       end
     end
-    details
+    details.merge("need_id" => need_revision.need_id)
   end
 
   def present_links(need)
