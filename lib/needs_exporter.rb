@@ -19,8 +19,9 @@ private
 
   def export(need, index)
     slug = generate_slug(need)
-    need_revisions = filter_need_revisions(need).compact
-    snapshots = need_revisions.map { |nr| present_need_revision(nr, slug)}
+    need_revision_groups = need_revision_groups(need.revisions)
+    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(nrg, slug)}
+    compute_superseded_needs(snapshots)
     @api_client.import(need.content_id, snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
@@ -28,22 +29,40 @@ private
     p "exported #{slug}"
   end
 
-  def present_need_revision(need_revision, slug)
+  def present_need_revision_group(need_revision_group, slug)
+    states = need_revision_group.map do |nr|
+      map_to_publishing_api_state(nr, slug)
+    end
+
     {
-       title: need_revision.snapshot["benefit"],
+       title: need_revision_group.last.snapshot["benefit"],
        publishing_app: "need-api",
        schema_name: "need",
        document_type: "need",
        rendering_app: "info-frontend",
        locale: "en",
        base_path: "/needs/#{slug}",
-       state: map_to_publishing_api_state(need_revision, slug),
+       states: states,
        routes: [{
          path: "/needs/#{slug}",
          type: "exact"
        }],
-       details: present_details(need_revision.snapshot)
+       details: present_details(need_revision_group.last.snapshot)
     }
+  end
+
+  def compute_superseded_needs(snapshots)
+    last_not_superseded = nil
+    snapshots.reverse_each do |snapshot|
+      # Every state that isn't published or draft is superseded.
+      if last_not_superseded.nil?
+        if %w(published unpublished).include?(snapshot[:states].last[:name])
+          last_not_superseded = snapshot
+        end
+      else
+        snapshot[:states] << { name: "superseded" }
+      end
+    end
   end
 
   def present_details(snapshot)
@@ -105,21 +124,6 @@ private
     "-#{n}"
   end
 
-  def filter_need_revisions(need)
-    to_be_published = []
-
-    need_revisions = need.revisions.sort_by(&:created_at)
-
-    need_revisions.reverse_each do |need_revision|
-      if is_proposed?(need_revision) || is_not_valid?(need_revision)
-        to_be_published << need_revision unless draft_already_in_list?(to_be_published)
-      elsif is_valid?(need_revision)
-        to_be_published << need_revision
-      end
-    end
-    to_be_published
-  end
-
   def draft_already_in_list?(revisions_list)
     status_list = []
     revisions_list.each {|r| status_list << get_status(r)}
@@ -169,18 +173,61 @@ private
     need_revision.snapshot["status"] && need_revision.snapshot["status"]["description"]
   end
 
+  def need_revision_groups(need_revisions)
+    need_revisions.inject([]) do |array, revision|
+      next [[revision]] if array == []
+
+      valid_transitions = [
+        %w(proposed proposed),
+        %w(proposed valid),
+        %w(proposed not\ valid),
+        %w(valid not\ valid)
+      ]
+
+      if valid_transitions.include?([get_revision_snapshot_status(array.last.last.snapshot), get_revision_snapshot_status(revision.snapshot)])
+        array.last << revision
+      else
+        array << [revision]
+      end
+      array
+    end
+  end
+
+  def get_revision_snapshot_status(snapshot)
+    # Some revisions are so old that they don't have a status attribute,
+    # so mark them as proposed.
+    if snapshot["status"].nil?
+      "proposed"
+    else
+      snapshot["status"]["description"]
+    end
+  end
+
   def map_to_publishing_api_state(need_revision, slug)
-    if need_revision.snapshot["duplicate_of"].present? && is_valid?(need_revision)
+    if need_revision["duplicate_of"].present? && is_valid?(need_revision)
       {
         name: "unpublished",
         type: "withdrawal",
+        date: need_revision["created_at"],
         explanation: "This need is a duplicate_of the need [#{need_revision.need.benefit}](/needs/#{slug})"
       }
-    elsif is_proposed?(need_revision) || is_not_valid?(need_revision)
-      "draft"
+    elsif is_proposed?(need_revision)
+      {
+        name: "draft",
+        date: need_revision["created_at"]
+      }
+    elsif is_not_valid?(need_revision)
+      {
+        name: "unpublished",
+        type: "withdrawal",
+        date: need_revision["created_at"],
+        explanation: "Thing."
+      }
     elsif is_valid?(need_revision)
-      return "superseded" if published_already_in_list?(need_revision.need.revisions)
-      "published"
+      {
+        name: "published",
+        date: need_revision["created_at"]
+      }
     else
       raise "status not recognised: #{get_status(need_revision)}"
     end
