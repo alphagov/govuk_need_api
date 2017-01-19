@@ -10,6 +10,7 @@ class NeedsExporter
   end
 
   def run
+    count = @needs.count
     @needs.order_by(:_id.asc).each_with_index do |need, index|
       export(need, index, count)
     end
@@ -17,7 +18,7 @@ class NeedsExporter
 
 private
 
-  def export(need, index)
+  def export(need, index, count)
     slug = generate_slug(need)
     need_revision_groups = need_revision_groups(need.revisions)
     snapshots = need_revision_groups.map { |nrg| present_need_revision_group(nrg, slug)}
@@ -25,8 +26,9 @@ private
     @api_client.import(need.content_id, snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
-    p "#{index}/#{@needs.count}"
-    p "exported #{slug}"
+
+    padding = Math.log10(count).ceil
+    puts format("%#{padding}d/#{count} exported #{slug}", index + 1)
   end
 
   def present_need_revision_group(need_revision_group, slug)
