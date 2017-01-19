@@ -10,8 +10,8 @@ class NeedsExporter
   end
 
   def run
-    @needs.each_with_index do |need, index|
-      export(need, index)
+    @needs.order_by(:_id.asc).each_with_index do |need, index|
+      export(need, index, count)
     end
   end
 
