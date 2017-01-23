@@ -36,6 +36,9 @@ private
       map_to_publishing_api_state(nr, slug)
     end
 
+    last_snapshot = need_revision_group.last.snapshot
+    role, goal, benefit = last_snapshot.values_at("role", "goal", "benefit")
+
     {
        title: need_revision_group.last.snapshot["benefit"],
        publishing_app: "need-api",
