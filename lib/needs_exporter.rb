@@ -40,7 +40,7 @@ private
     role, goal, benefit = last_snapshot.values_at("role", "goal", "benefit")
 
     {
-       title: need_revision_group.last.snapshot["benefit"],
+       title: goal,
        publishing_app: "need-api",
        schema_name: "need",
        document_type: "need",
@@ -110,7 +110,7 @@ private
   end
 
   def generate_slug(need)
-    base_slug = need.benefit.parameterize
+    base_slug = need.goal.parameterize
     n = 0
     slug = ""
     loop do
