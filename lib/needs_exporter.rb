@@ -5,7 +5,7 @@ require 'csv'
 class NeedsExporter
   def initialize
     @needs = Need.all
-    @api_client = GdsApi::PublishingApiV2.new(Plek.find('publishing-api'))
+    @api_client = GdsApi::PublishingApiV2.new(Plek.find('publishing-api'), timeout: 30)
     @slugs = Set.new
   end
 
