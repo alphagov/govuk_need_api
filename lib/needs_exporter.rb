@@ -74,8 +74,6 @@ private
         next
       elsif key == "status"
         details["status"] = value["description"]
-      elsif key.start_with?("yearly")
-        details["#{key}"] = value.to_s
       else
         details["#{key}"] = value
       end
