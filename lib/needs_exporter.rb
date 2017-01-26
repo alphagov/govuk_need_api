@@ -23,7 +23,7 @@ private
     need_revision_groups = need_revision_groups(need.revisions)
     snapshots = need_revision_groups.map { |nrg| present_need_revision_group(nrg, slug)}
     compute_superseded_needs(snapshots)
-    @api_client.import(need.content_id, snapshots)
+    @api_client.import(need.content_id, "en", snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
 
@@ -45,7 +45,6 @@ private
        schema_name: "need",
        document_type: "need",
        rendering_app: "info-frontend",
-       locale: "en",
        base_path: "/needs/#{slug}",
        states: states,
        routes: [{
