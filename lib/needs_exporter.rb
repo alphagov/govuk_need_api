@@ -74,9 +74,6 @@ private
     details = {}
     need_revision.snapshot.each do |key, value|
       if should_not_be_in_details(key, value)
-        next
-      elsif key == "status"
-        details["status"] = value["description"]
       else
         details["#{key}"] = value
       end
@@ -156,7 +153,7 @@ private
   end
 
   def deprecated_fields
-    %w{monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
+    %w{status monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
   end
 
   def get_status(need_revision)
