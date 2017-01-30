@@ -41,7 +41,7 @@ private
       last_snapshot.values_at("role", "goal", "benefit").map(&:strip)
 
     {
-       title: goal,
+       title: "As a #{role}, I need to #{goal}, so that #{benefit} (#{need_id})",
        publishing_app: "need-api",
        schema_name: "need",
        document_type: "need",
