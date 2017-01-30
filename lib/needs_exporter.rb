@@ -21,7 +21,7 @@ private
   def export(need, index, count)
     slug = generate_slug(need)
     need_revision_groups = need_revision_groups(need.revisions)
-    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(nrg, slug)}
+    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(need.id, nrg, slug)}
     compute_superseded_needs(snapshots)
     @api_client.import(need.content_id, "en", snapshots)
     links = present_links(need)
@@ -31,7 +31,7 @@ private
     puts format("%#{padding}d/#{count} exported #{slug}", index + 1)
   end
 
-  def present_need_revision_group(need_revision_group, slug)
+  def present_need_revision_group(need_id, need_revision_group, slug)
     states = need_revision_group.map do |nr|
       map_to_publishing_api_state(nr, slug)
     end
