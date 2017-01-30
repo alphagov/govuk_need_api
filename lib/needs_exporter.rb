@@ -37,7 +37,8 @@ private
     end
 
     last_snapshot = need_revision_group.last.snapshot
-    role, goal, benefit = last_snapshot.values_at("role", "goal", "benefit")
+    role, goal, benefit =
+      last_snapshot.values_at("role", "goal", "benefit").map(&:strip)
 
     {
        title: goal,
