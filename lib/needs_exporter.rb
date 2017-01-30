@@ -87,16 +87,13 @@ private
       next unless is_a_link?(key) && value.present?
       if key == "organisation_ids"
         links["organisations"] = need.organisations.map(&:content_id)
-      elsif key == "duplicate_of"
-        links["related_items"] = related_needs(need).map(&:content_id)
       end
     end
     links
   end
 
   def is_a_link?(key)
-    key == "organisation_ids" ||
-      key == "duplicate_of"
+    key == "organisation_ids"
   end
 
   def should_not_be_in_details(key, value)
@@ -153,7 +150,7 @@ private
   end
 
   def deprecated_fields
-    %w{status monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
+    %w{status monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason duplicate_of}
   end
 
   def get_status(need_revision)
