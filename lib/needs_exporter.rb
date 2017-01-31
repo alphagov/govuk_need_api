@@ -24,7 +24,7 @@ private
 
   def export(need, index, count)
     slug = generate_slug(need)
-    need_revision_groups = need_revision_groups(need.revisions)
+    need_revision_groups = need_revision_groups(need.revisions.sort_by(&:created_at))
     snapshots = need_revision_groups.map { |nrg| present_need_revision_group(need.id, nrg, slug)}
     compute_superseded_needs(snapshots)
     @api_client.import(need.content_id, "en", snapshots)
