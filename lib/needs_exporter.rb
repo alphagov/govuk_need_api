@@ -161,7 +161,7 @@ private
     if snapshot_includes_status?(need_revision)
       need_revision.snapshot["status"]["description"]
     else
-      need_revision.need.status.description
+      "proposed" # Old revisions don't have a status, so just use "proposed"
     end
   end
 
