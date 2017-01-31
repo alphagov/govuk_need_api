@@ -228,11 +228,15 @@ private
         date: need_revision["created_at"]
       }
     elsif is_not_valid?(need_revision)
+      bulleted_reasons =
+        need_revision.snapshot["status"]["reasons"].map { |x| "* #{x}\n" }.join
+      explanation = "This need is not valid because:\n\n#{bulleted_reasons}"
+
       {
         name: "unpublished",
         type: "withdrawal",
         date: need_revision["created_at"],
-        explanation: "Thing."
+        explanation: explanation
       }
     elsif is_valid?(need_revision)
       {
