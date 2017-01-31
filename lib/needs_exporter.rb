@@ -205,7 +205,7 @@ private
   end
 
   def map_to_publishing_api_state(need_revision, slug)
-    if need_revision["duplicate_of"].present? && is_valid?(need_revision)
+    if need_revision.snapshot["duplicate_of"].present?
       {
         name: "unpublished",
         type: "withdrawal",
