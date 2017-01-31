@@ -158,7 +158,7 @@ private
   end
 
   def get_status(need_revision)
-    if includes_snapshot?(need_revision)
+    if snapshot_includes_status?(need_revision)
       need_revision.snapshot["status"]["description"]
     else
       need_revision.need.status.description
@@ -170,7 +170,7 @@ private
     all_revisions.select(&:created_at).max == need_revision
   end
 
-  def includes_snapshot?(need_revision)
+  def snapshot_includes_status?(need_revision)
     need_revision.snapshot["status"] && need_revision.snapshot["status"]["description"]
   end
 
