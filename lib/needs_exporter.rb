@@ -212,7 +212,7 @@ private
           name: "unpublished",
           type: "withdrawal",
           date: need_revision["created_at"],
-          explanation: "This need is a duplicate of [embed:link:#{duplicate_content_id}]"
+          explanation: "This need is a duplicate of: [embed:link:#{duplicate_content_id}]"
         }
       rescue Mongoid::Errors::DocumentNotFound
         {
