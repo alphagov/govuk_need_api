@@ -125,18 +125,6 @@ private
     "-#{n}"
   end
 
-  def draft_already_in_list?(revisions_list)
-    status_list = []
-    revisions_list.each {|r| status_list << get_status(r)}
-    status_list.include?("proposed") || status_list.include?("not valid")
-  end
-
-  def published_already_in_list?(revisions_list)
-    status_list = []
-    revisions_list.each {|r| status_list << get_status(r)}
-    status_list.include?("valid") || status_list.include?("valid with conditions")
-  end
-
   def is_proposed?(need_revision)
     get_status(need_revision) == "proposed"
   end
@@ -149,10 +137,6 @@ private
     get_status(need_revision) == "not valid"
   end
 
-  def related_needs(need)
-    Need.where(need_id: need.duplicate_of)
-  end
-
   def deprecated_fields
     %w{status monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason duplicate_of}
   end
@@ -163,11 +147,6 @@ private
     else
       "proposed" # Old revisions don't have a status, so just use "proposed"
     end
-  end
-
-  def is_latest?(need_revision)
-    all_revisions = need_revision.need.revisions
-    all_revisions.select(&:created_at).max == need_revision
   end
 
   def snapshot_includes_status?(need_revision)
