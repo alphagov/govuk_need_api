@@ -186,7 +186,8 @@ private
   def map_to_publishing_api_state(need_revision, slug)
     if need_revision.snapshot["duplicate_of"].present?
       begin
-        duplicate_content_id = Need.find(need_revision.snapshot["duplicate_of"]).content_id
+        duplicate_need_id = need_revision.snapshot["duplicate_of"]
+        duplicate_content_id = Need.find(duplicate_need_id).content_id
         {
           name: "unpublished",
           type: "withdrawal",
@@ -198,7 +199,7 @@ private
           name: "unpublished",
           type: "withdrawal",
           date: need_revision["created_at"],
-          explanation: "This need is a duplicate of an unknown need (#{need_revision.snapshot["duplicate_of"]})"
+          explanation: "This need is a duplicate of an unknown need (#{duplicate_need_id})"
         }
       end
     elsif is_proposed?(need_revision)
