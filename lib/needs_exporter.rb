@@ -5,42 +5,51 @@ require 'csv'
 class NeedsExporter
   def initialize
     @needs = Need.all
-    @api_client = GdsApi::PublishingApiV2.new(Plek.find('publishing-api'))
+    @api_client = GdsApi::PublishingApiV2.new(
+      Plek.find('publishing-api'),
+      bearer_token: ENV["PUBLISHING_API_BEARER_TOKEN"] || "example",
+      timeout: 30
+    )
     @slugs = Set.new
   end
 
   def run
-    @needs.each_with_index do |need, index|
-      export(need, index)
+    count = @needs.count
+    @needs.order_by(:_id.asc).each_with_index do |need, index|
+      export(need, index, count)
     end
   end
 
 private
 
-  def export(need, index)
+  def export(need, index, count)
     slug = generate_slug(need)
-    need_revision_groups = need_revision_groups(need.revisions)
-    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(nrg, slug)}
+    need_revision_groups = need_revision_groups(need.revisions.sort_by(&:created_at))
+    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(need.id, nrg, slug)}
     compute_superseded_needs(snapshots)
-    @api_client.import(need.content_id, snapshots)
+    @api_client.import(need.content_id, "en", snapshots)
     links = present_links(need)
     @api_client.patch_links(need.content_id, links: links)
-    p "#{index}/#{@needs.count}"
-    p "exported #{slug}"
+
+    padding = Math.log10(count).ceil
+    puts format("%#{padding}d/#{count} exported #{slug}", index + 1)
   end
 
-  def present_need_revision_group(need_revision_group, slug)
+  def present_need_revision_group(need_id, need_revision_group, slug)
     states = need_revision_group.map do |nr|
       map_to_publishing_api_state(nr, slug)
     end
 
+    last_snapshot = need_revision_group.last.snapshot
+    role, goal, benefit =
+      last_snapshot.values_at("role", "goal", "benefit").map(&:strip)
+
     {
-       title: need_revision_group.last.snapshot["benefit"],
+       title: "As a #{role}, I need to #{goal}, so that #{benefit} (#{need_id})",
        publishing_app: "need-api",
        schema_name: "need",
        document_type: "need",
        rendering_app: "info-frontend",
-       locale: "en",
        base_path: "/needs/#{slug}",
        states: states,
        routes: [{
@@ -69,11 +78,6 @@ private
     details = {}
     need_revision.snapshot.each do |key, value|
       if should_not_be_in_details(key, value)
-        next
-      elsif key == "status"
-        details["status"] = value["description"]
-      elsif key.start_with?("yearly")
-        details["#{key}"] = value.to_s
       else
         details["#{key}"] = value
       end
@@ -87,16 +91,13 @@ private
       next unless is_a_link?(key) && value.present?
       if key == "organisation_ids"
         links["organisations"] = need.organisations.map(&:content_id)
-      elsif key == "duplicate_of"
-        links["related_items"] = related_needs(need).map(&:content_id)
       end
     end
     links
   end
 
   def is_a_link?(key)
-    key == "organisation_ids" ||
-      key == "duplicate_of"
+    key == "organisation_ids"
   end
 
   def should_not_be_in_details(key, value)
@@ -107,7 +108,7 @@ private
   end
 
   def generate_slug(need)
-    base_slug = need.benefit.parameterize
+    base_slug = need.goal.parameterize
     n = 0
     slug = ""
     loop do
@@ -124,18 +125,6 @@ private
     "-#{n}"
   end
 
-  def draft_already_in_list?(revisions_list)
-    status_list = []
-    revisions_list.each {|r| status_list << get_status(r)}
-    status_list.include?("proposed") || status_list.include?("not valid")
-  end
-
-  def published_already_in_list?(revisions_list)
-    status_list = []
-    revisions_list.each {|r| status_list << get_status(r)}
-    status_list.include?("valid") || status_list.include?("valid with conditions")
-  end
-
   def is_proposed?(need_revision)
     get_status(need_revision) == "proposed"
   end
@@ -148,28 +137,19 @@ private
     get_status(need_revision) == "not valid"
   end
 
-  def related_needs(need)
-    Need.where(need_id: need.duplicate_of)
-  end
-
   def deprecated_fields
-    %w{monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason}
+    %w{status monthly_user_contacts monthly_need_views currently_met in_scope out_of_scope_reason duplicate_of}
   end
 
   def get_status(need_revision)
-    if includes_snapshot?(need_revision)
+    if snapshot_includes_status?(need_revision)
       need_revision.snapshot["status"]["description"]
     else
-      need_revision.need.status.description
+      "proposed" # Old revisions don't have a status, so just use "proposed"
     end
   end
 
-  def is_latest?(need_revision)
-    all_revisions = need_revision.need.revisions
-    all_revisions.select(&:created_at).max == need_revision
-  end
-
-  def includes_snapshot?(need_revision)
+  def snapshot_includes_status?(need_revision)
     need_revision.snapshot["status"] && need_revision.snapshot["status"]["description"]
   end
 
@@ -204,24 +184,39 @@ private
   end
 
   def map_to_publishing_api_state(need_revision, slug)
-    if need_revision["duplicate_of"].present? && is_valid?(need_revision)
-      {
-        name: "unpublished",
-        type: "withdrawal",
-        date: need_revision["created_at"],
-        explanation: "This need is a duplicate_of the need [#{need_revision.need.benefit}](/needs/#{slug})"
-      }
+    if need_revision.snapshot["duplicate_of"].present?
+      begin
+        duplicate_need_id = need_revision.snapshot["duplicate_of"]
+        duplicate_content_id = Need.find(duplicate_need_id).content_id
+        {
+          name: "unpublished",
+          type: "withdrawal",
+          date: need_revision["created_at"],
+          explanation: "This need is a duplicate of: [embed:link:#{duplicate_content_id}]"
+        }
+      rescue Mongoid::Errors::DocumentNotFound
+        {
+          name: "unpublished",
+          type: "withdrawal",
+          date: need_revision["created_at"],
+          explanation: "This need is a duplicate of an unknown need (#{duplicate_need_id})"
+        }
+      end
     elsif is_proposed?(need_revision)
       {
         name: "draft",
         date: need_revision["created_at"]
       }
     elsif is_not_valid?(need_revision)
+      bulleted_reasons =
+        need_revision.snapshot["status"]["reasons"].map { |x| "* #{x}\n" }.join
+      explanation = "This need is not valid because:\n\n#{bulleted_reasons}"
+
       {
         name: "unpublished",
         type: "withdrawal",
         date: need_revision["created_at"],
-        explanation: "Thing."
+        explanation: explanation
       }
     elsif is_valid?(need_revision)
       {
