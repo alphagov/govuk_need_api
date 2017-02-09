@@ -9,7 +9,7 @@ gem 'plek', '~> 1.11'
 if ENV['API_DEV']
   gem 'gds-api-adapters', path: '../gds-api-adapters'
 else
-  gem 'gds-api-adapters', git: 'https://github.com/alphagov/gds-api-adapters.git', branch: 'add-import-endpoint-adapter'
+  gem 'gds-api-adapters', '39.2.0'
 end
 
 gem 'mongoid_rails_migrations', '1.1.0'
