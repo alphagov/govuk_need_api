@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   resources :organisations, only: :index
   resources :needs, except: [:new, :edit]
-  resources :notes, only: [:create]
 
   get '/needs/:id/content_id', to: 'needs#content_id'
 

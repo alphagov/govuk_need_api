@@ -37,11 +37,4 @@ class NeedWithChangesetsTest < ActiveSupport::TestCase
       ]
     }
   end
-
-  should "fetch notes" do
-    @revisions.each do |revision|
-      Note.expects(:where).with(revision: revision.id)
-    end
-    @decorator.changesets
-  end
 end
