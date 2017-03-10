@@ -16,20 +16,20 @@ class OrganisationImporter
   private
 
   def create_or_update_organisation(organisation_from_api)
-    child_ids = related_organisation_slugs(organisation_from_api.child_organisations)
-    parent_ids = related_organisation_slugs(organisation_from_api.parent_organisations)
+    child_ids = related_organisation_slugs(organisation_from_api["child_organisations"])
+    parent_ids = related_organisation_slugs(organisation_from_api["parent_organisations"])
 
     organisation_atts = {
-      content_id: organisation_from_api.details.content_id,
-      name: organisation_from_api.title,
-      slug: organisation_from_api.details.slug,
-      abbreviation: organisation_from_api.details.abbreviation,
-      govuk_status: organisation_from_api.details.govuk_status,
+      content_id: organisation_from_api["details"]["content_id"],
+      name: organisation_from_api["title"],
+      slug: organisation_from_api["details"]["slug"],
+      abbreviation: organisation_from_api["details"]["abbreviation"],
+      govuk_status: organisation_from_api["details"]["govuk_status"],
       parent_ids: parent_ids,
       child_ids: child_ids
     }
 
-    slug = organisation_from_api.details.slug
+    slug = organisation_from_api["details"]["slug"]
     existing_organisation = Organisation.where(_id: slug).first
 
     if existing_organisation.present?
@@ -43,7 +43,7 @@ class OrganisationImporter
 
   def related_organisation_slugs(arr)
     arr.map do |a|
-      a.id.split('/').last
+      a["id"].split('/').last
     end
   end
 
