@@ -34,7 +34,7 @@ else
   gem 'gds-sso', '13.2.0'
 end
 
-gem 'airbrake', '~> 4.3.4'
+gem 'airbrake', github: 'alphagov/airbrake', branch: 'silence-dep-warnings-for-rails-5'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
