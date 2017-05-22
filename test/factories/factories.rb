@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :user do
-    sequence(:name) { |n| "Winston #{n}"}
+    sequence(:name) { |n| "Winston #{n}" }
+    email { "#{name.downcase.gsub(/\s+/, '.')}@example.com" }
     permissions { ["signin"] }
   end
 
