@@ -100,8 +100,8 @@ class Need
 
   def save(*args)
     super
-  rescue Moped::Errors::OperationFailure => e
-    if e.details["code"] == 11000 # Duplicate key error
+  rescue Mongo::Error::OperationFailure => e
+    if e.message =~ /E11000/ # Duplicate key error
       errors.add(:base, "This need already exists")
       return false
     else

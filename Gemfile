@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '4.2.8'
 
-gem 'mongoid', '4.0.2'
+gem 'mongoid', '~> 5.0'
 
 gem 'plek', '~> 1.11'
 
