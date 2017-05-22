@@ -62,7 +62,7 @@ class Need
   validate :validate_duplicate
 
   has_and_belongs_to_many :organisations
-  has_many :revisions, class_name: "NeedRevision"
+  has_many :revisions, class_name: "NeedRevision", inverse_of: :need
 
   def save_as(user)
     action = new_record? ? "create" : "update"
@@ -166,11 +166,11 @@ private
   end
 
   def record_create_revision
-    record_revision "create"
+    prevent_additional_callbacks { record_revision "create" }
   end
 
   def record_update_revision
-    record_revision "update"
+    prevent_additional_callbacks { record_revision "update" }
   end
 
   def record_revision(action, user = nil)
@@ -179,6 +179,14 @@ private
       snapshot: attributes,
       author: user
     )
+  end
+
+  def prevent_additional_callbacks
+    if @prevent_additional_callbacks_guard.nil?
+      @prevent_additional_callbacks_guard = 'on guard'
+      yield
+      @prevent_additional_callbacks_guard = nil
+    end
   end
 
   # It is necessary to save without callbacks here so that we can create a

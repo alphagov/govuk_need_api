@@ -8,7 +8,7 @@ class NeedRevision
 
   default_scope -> { order_by(:created_at.desc) }
 
-  belongs_to :need
+  belongs_to :need, inverse_of: :revisions
   index({ need_id: 1, created_at: -1 })
 
   validates :action_type, inclusion: { in: %w(create update close reopen) }
