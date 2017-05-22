@@ -6,7 +6,7 @@ class NeedsController < ApplicationController
 
   def index
     if params["q"].present?
-      result_set = GovukNeedApi.searcher.search(params["q"], params.slice(:organisation_id, :page))
+      result_set = GovukNeedApi.searcher.search(params["q"], params.permit(:organisation_id, :page).to_h)
       @needs = Kaminari.paginate_array(result_set.results, total_count: result_set.total_count)
         .page(params[:page])
         .per(Need::PAGE_SIZE)
@@ -22,7 +22,7 @@ class NeedsController < ApplicationController
       @needs = scope.page(params[:page])
     end
 
-    presenter = NeedResultSetPresenter.new(@needs, view_context, scope_params: params.slice(:q, :organisation_id, :ids))
+    presenter = NeedResultSetPresenter.new(@needs, view_context, scope_params: params.permit(:q, :organisation_id, :ids).to_h)
     response.headers["Link"] = LinkHeader.new(presenter.links).to_s
 
     set_expiry 0
@@ -44,7 +44,7 @@ class NeedsController < ApplicationController
     # This is a controller-level concern, rather than a model-level one, as we
     # may want to be able to specify need IDs when, for example, importing old
     # needs.
-    if params["need_id"]
+    if params["need_id"].present?
       error(
         422,
         message: :invalid_attributes,
@@ -53,7 +53,7 @@ class NeedsController < ApplicationController
       return
     end
 
-    if params["duplicate_of"]
+    if params["duplicate_of"].present?
       error :unprocessable_entity, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set during create"]
       return
     end
@@ -82,12 +82,12 @@ class NeedsController < ApplicationController
 
     # Fail explicitly on need ID change
     # `attr_protected`, by default, will silently fail to update the field
-    if params["need_id"] && params["need_id"].to_i != @need.need_id
+    if params["need_id"].present? && params["need_id"].to_i != @need.need_id
       error :unprocessable_entity, message: :invalid_attributes, errors: ["Need IDs cannot change"]
       return
     end
 
-    if params["duplicate_of"] != @need.duplicate_of
+    if params["duplicate_of"].present? && params["duplicate_of"] != @need.duplicate_of
       error :unprocessable_entity, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be changed with an update"]
       return
     end
@@ -170,12 +170,11 @@ class NeedsController < ApplicationController
         :validation_conditions,
         reasons: [],
       ],
-    )
+    ).to_h
   end
 
   def author_params
-    author = params[:author] || { }
-    author.slice(:name, :email, :uid)
+    params.fetch(:author, {}).permit(:name, :email, :uid).to_h
   end
 
   def try_index_need(need)

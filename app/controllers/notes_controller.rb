@@ -18,6 +18,6 @@ class NotesController < ApplicationController
         :name,
         :email,
       ],
-    )
+    ).to_h
   end
 end
