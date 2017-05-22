@@ -26,7 +26,7 @@ gem 'mlanett-redis-lock', '0.2.7'
 if ENV['SSO_DEV']
   gem 'gds-sso', path: '../gds-sso'
 else
-  gem 'gds-sso', '11.2.0'
+  gem 'gds-sso', '13.2.0'
 end
 
 gem 'airbrake', '~> 4.3.4'
