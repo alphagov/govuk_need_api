@@ -4,7 +4,7 @@ class NotesController < ApplicationController
     if note.save
       head :created
     else
-      error 422, message: :invalid_attributes, errors: note.errors.full_messages
+      error :unprocessable_entity, message: :invalid_attributes, errors: note.errors.full_messages
     end
   end
 

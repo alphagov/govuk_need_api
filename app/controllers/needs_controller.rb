@@ -54,7 +54,7 @@ class NeedsController < ApplicationController
     end
 
     if params["duplicate_of"]
-      error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set during create"]
+      error :unprocessable_entity, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be set during create"]
       return
     end
 
@@ -66,70 +66,70 @@ class NeedsController < ApplicationController
       render json: response_info("created").merge(NeedPresenter.new(decorated_need).as_json),
              status: :created
     else
-      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+      error :unprocessable_entity, message: :invalid_attributes, errors: @need.errors.full_messages
     end
   end
 
   def destroy
-    error 405, message: :method_not_allowed, errors: "Needs cannot be deleted"
+    error :method_not_allowed, message: :method_not_allowed, errors: "Needs cannot be deleted"
   end
 
   def update
     if @need.closed?
-      error 409, message: "Cannot update a closed need"
+      error :conflict, message: "Cannot update a closed need"
       return
     end
 
     # Fail explicitly on need ID change
     # `attr_protected`, by default, will silently fail to update the field
     if params["need_id"] && params["need_id"].to_i != @need.need_id
-      error 422, message: :invalid_attributes, errors: ["Need IDs cannot change"]
+      error :unprocessable_entity, message: :invalid_attributes, errors: ["Need IDs cannot change"]
       return
     end
 
     if params["duplicate_of"] != @need.duplicate_of
-      error 422, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be changed with an update"]
+      error :unprocessable_entity, message: :invalid_attributes, errors: ["'Duplicate Of' ID cannot be changed with an update"]
       return
     end
 
     @need.assign_attributes(filtered_params)
     if @need.valid? && @need.save_as(author_params)
       try_index_need(@need)
-      render nothing: true, status: 204
+      head :no_content
     else
-      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+      error :unprocessable_entity, message: :invalid_attributes, errors: @need.errors.full_messages
     end
   end
 
   def closed
     if @need.closed?
-      error 409, message: "This need has already been closed"
+      error :conflict, message: "This need has already been closed"
       return
     end
 
     duplicate_of = params["duplicate_of"]
     unless duplicate_of.present?
-      error 422, message: :duplicate_of_not_provided, errors: ["'Duplicate Of' id must be provided"]
+      error :unprocessable_entity, message: :duplicate_of_not_provided, errors: ["'Duplicate Of' id must be provided"]
       return
     end
 
     if @need.close(duplicate_of, author_params)
-      render nothing: true, status: 204
+      head :no_content
     else
-      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+      error :unprocessable_entity, message: :invalid_attributes, errors: @need.errors.full_messages
     end
   end
 
   def reopen
     unless @need.closed?
-      error 404, message: :not_found, error: "This need is not closed"
+      error :not_found, message: :not_found, error: "This need is not closed"
       return
     end
 
     if @need.reopen(author_params)
-      render nothing: true, status: 204
+      head :no_content
     else
-      error 422, message: :invalid_attributes, errors: @need.errors.full_messages
+      error :unprocessable_entity, message: :invalid_attributes, errors: @need.errors.full_messages
     end
   end
 
@@ -138,12 +138,12 @@ class NeedsController < ApplicationController
   def load_need
     @need = Need.find(params["id"]) if params["id"]
   rescue Mongoid::Errors::DocumentNotFound
-    error 404, message: :not_found, error: "No need exists with this ID"
+    error :not_found, message: :not_found, error: "No need exists with this ID"
   end
 
   def check_for_author_params
     unless author_params.any?
-      error 422, message: :author_not_provided, errors: ["Author details must be provided"]
+      error :unprocessable_entity, message: :author_not_provided, errors: ["Author details must be provided"]
     end
   end
 
