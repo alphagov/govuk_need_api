@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :require_signin_permission!
 
-  private
+private
 
   def error(code, options = {})
     render json: { _response_info: { status: options.delete(:message) } }.merge(options),

@@ -3,7 +3,7 @@ require './lib/organisation_importer'
 
 class OrganisationImporterTest < ActionDispatch::IntegrationTest
   def stub_api_with_organisations(*organisations_atts)
-    organisations = organisations_atts.map {|o|
+    organisations = organisations_atts.map { |o|
       OpenStruct.new(
         title: o[:name],
         details: OpenStruct.new(slug: o[:slug],

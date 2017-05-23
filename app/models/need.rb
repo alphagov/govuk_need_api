@@ -49,7 +49,7 @@ class Need
   index organisation_ids: 1
 
   # uniqueness constraint to avoid simple forms of duplication
-  index({ role: 1, goal: 1, benefit: 1 }, { unique: true })
+  index({ role: 1, goal: 1, benefit: 1 }, unique: true)
 
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
@@ -80,9 +80,8 @@ class Need
   end
 
   def save_with_revision(action, user)
-    if saved = save_without_callbacks
-      record_revision(action, user)
-    end
+    saved = save_without_callbacks
+    record_revision(action, user) if saved
     saved
   end
 
@@ -110,10 +109,15 @@ class Need
   end
 
 private
+
   def assign_new_id
     last_assigned = Need.order_by(:need_id.desc).first
-    self.need_id ||= (last_assigned.present? && last_assigned.need_id >= INITIAL_NEED_ID) ? last_assigned.need_id + 1 : INITIAL_NEED_ID
+    self.need_id ||= increment_last_assigned_need_id?(last_assigned) ? last_assigned.need_id + 1 : INITIAL_NEED_ID
     self._id = self.need_id
+  end
+
+  def increment_last_assigned_need_id?(last_assigned)
+    last_assigned.present? && last_assigned.need_id >= INITIAL_NEED_ID
   end
 
   def organisation_ids_must_exist

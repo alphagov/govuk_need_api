@@ -5,7 +5,7 @@ class DistributedLock
   DEFAULTS = {
     life: (5 * 60), # lifetime (in seconds)
     acquire: 10, # acquisition timeout (in seconds). This is how long a 2nd lock waits if there's a 1st one already
-  }
+  }.freeze
 
   def initialize(lock_name, options = {})
     @lock_name = lock_name
@@ -22,6 +22,7 @@ class DistributedLock
   end
 
 private
+
   def redis
     @_redis ||= begin
       redis_config = Rails.application.config_for(:redis)

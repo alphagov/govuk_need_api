@@ -67,7 +67,7 @@ class SearcherTest < ActiveSupport::TestCase
     client = mock("client")
     client.expects(:search).with { |search_params|
       50 == search_params[:body]["size"] &&
-        0 == search_params[:body]["from"]
+        (search_params[:body]["from"]).zero?
     }.returns(single_result_response)
 
     Search::Searcher.new(client, "foo", "bang").search("baz")

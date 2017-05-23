@@ -11,7 +11,7 @@ class NeedResultSetPresenter
     {
       _response_info: {
         status: "ok",
-        links: links.map {|l| { "href" => l.href }.merge(l.attrs) }
+        links: links.map { |l| { "href" => l.href }.merge(l.attrs) }
       },
       total: @needs.total_count,
       current_page: @needs.current_page,
@@ -26,15 +26,16 @@ class NeedResultSetPresenter
     @links ||= build_links
   end
 
-  private
+private
+
   def results
-    @needs.map {|need|
+    @needs.map { |need|
       BasicNeedPresenter.new(need).as_json
     }
   end
 
   def build_links
-    [].tap {|links|
+    [].tap { |links|
       unless @needs.first_page?
         links << LinkHeader::Link.new(
           @view_context.needs_url(@scope_params.merge(page: @needs.current_page - 1)),

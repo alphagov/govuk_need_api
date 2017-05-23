@@ -40,7 +40,7 @@ module Search
         presented[field.name] = @need.send(field.name)
       end
       # special JSON presentation of the "status" field
-      representation.tap {|attributes| attributes[:status] = present_status(attributes[:status]) }
+      representation.tap { |attributes| attributes[:status] = present_status(attributes[:status]) }
     end
 
     def ==(other)
@@ -48,6 +48,7 @@ module Search
     end
 
   private
+
     def present_status(status)
       status.present? ? { description: status.description } : nil
     end

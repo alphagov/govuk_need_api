@@ -17,7 +17,7 @@ FactoryGirl.define do
 
   factory :need do
     content_id SecureRandom.uuid
-    sequence(:role) {|n| "user #{n}" }
+    sequence(:role) { |n| "user #{n}" }
     goal "pay my council tax"
     benefit "I don't receive a fine"
 
@@ -38,8 +38,6 @@ FactoryGirl.define do
     need
     action_type "update"
     snapshot { need.attributes }
-    author({
-      name: "Winston Smith-Churchill"
-    })
+    author(name: "Winston Smith-Churchill")
   end
 end

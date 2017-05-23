@@ -18,7 +18,7 @@ class Note
     super
   end
 
-  private
+private
 
   def validate_need_id
     need = Need.where(need_id: need_id).first

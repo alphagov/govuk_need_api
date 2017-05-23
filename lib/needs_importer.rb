@@ -7,7 +7,7 @@ class NeedsImporter
 
   def initialize(file)
     @file = file
-    @counter = {imported: 0, failed: 0}
+    @counter = { imported: 0, failed: 0 }
   end
 
   def run
@@ -19,11 +19,11 @@ class NeedsImporter
     puts "Failed to import #{@counter[:failed]} rows, recorded in #{file}.failed." if @counter[:failed] > 0
   end
 
-  private
+private
 
   def save_row(row)
     need = Need.new(need_hash(row))
-    if need.save_as({name: "Need Importer"})
+    if need.save_as(name: "Need Importer")
       @counter[:imported] += 1
     else
       record_failed_row(row)
@@ -59,7 +59,7 @@ class NeedsImporter
   end
 
   def add(need, key, value)
-    need.merge!({key => value}) if value.present?
+    need.merge!(key => value) if value.present?
   end
 
   def met_when(row)

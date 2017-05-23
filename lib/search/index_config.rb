@@ -32,6 +32,7 @@ module Search
     end
 
   private
+
     def mapping_properties
       @indexable_class.fields.each_with_object({}) do |field, properties|
         properties[field.name.to_s] = {

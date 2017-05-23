@@ -133,7 +133,7 @@ class NeedsController < ApplicationController
     end
   end
 
-  private
+private
 
   def load_need
     @need = Need.find(params["id"]) if params["id"]

@@ -9,11 +9,11 @@ module Search
     def search(querystring, options = {})
       organisation_id = options[:organisation_id]
       raw_page = options[:page].to_i
-      if raw_page < 1
-        page = 1
-      else
-        page = raw_page
-      end
+      page = if raw_page < 1
+               1
+             else
+               raw_page
+             end
       response = @client.search(
         index: @index_name,
         type: @type,

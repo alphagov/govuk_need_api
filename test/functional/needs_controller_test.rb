@@ -26,7 +26,7 @@ class NeedsControllerTest < ActionController::TestCase
       get :index
 
       body = JSON.parse(response.body)
-      body["results"].sort_by! {|r| r["id"] }
+      body["results"].sort_by! { |r| r["id"] }
 
       assert_equal 5, body["results"].size
       assert_equal @needs.first.need_id, body["results"][0]["id"]
@@ -61,7 +61,7 @@ class NeedsControllerTest < ActionController::TestCase
 
     should "return a response containing the needs matching the specified ids" do
       body = JSON.parse(response.body)
-      body["results"].sort_by! {|r| r["id"] }
+      body["results"].sort_by! { |r| r["id"] }
 
       assert_equal 3, body["results"].size
       assert_equal @first_need.need_id, body["results"][0]["id"]
@@ -160,7 +160,7 @@ class NeedsControllerTest < ActionController::TestCase
       get :index, params: { organisation_id: 'cabinet-office' }
 
       body = JSON.parse(response.body)
-      body["results"].sort_by! {|r| r["id"] }
+      body["results"].sort_by! { |r| r["id"] }
 
       assert_equal 1, body["results"].size
       assert_equal @co_need.need_id, body["results"][0]["id"]
@@ -737,7 +737,6 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "not attempt to index the new need" do
-          indexable_need = stub("indexable need")
           GovukNeedApi.indexer.expects(:index).never
 
           put :closed, params: @closed_with_author

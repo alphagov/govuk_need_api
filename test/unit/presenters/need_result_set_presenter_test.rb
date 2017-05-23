@@ -57,10 +57,10 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
     assert_equal "ok", response[:_response_info][:status]
     assert_equal 2, response[:results].size
 
-    assert_equal [1, 2], response[:results].map {|i| i[:id] }
-    assert_equal ["business owner", "car owner"], response[:results].map {|i| i[:role] }
-    assert_equal ["find out the VAT rate", "renew my car tax"], response[:results].map {|i| i[:goal] }
-    assert_equal ["I can charge my customers the correct amount", "I can drive my car for another year"], response[:results].map {|i| i[:benefit] }
+    assert_equal [1, 2], response[:results].map { |i| i[:id] }
+    assert_equal ["business owner", "car owner"], response[:results].map { |i| i[:role] }
+    assert_equal ["find out the VAT rate", "renew my car tax"], response[:results].map { |i| i[:goal] }
+    assert_equal ["I can charge my customers the correct amount", "I can drive my car for another year"], response[:results].map { |i| i[:benefit] }
 
     assert_equal ["ministry-of-testing"], response[:results][0][:organisation_ids]
 
@@ -168,7 +168,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       links = NeedResultSetPresenter.new(@needs, @view_context).links
 
       assert_equal 3, links.size
-      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
+      assert links.all? { |l| l.is_a?(LinkHeader::Link) }
 
       assert_equal "url to page 1", links[0].href
       assert_equal "previous", links[0].attrs["rel"]
@@ -193,10 +193,10 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
         .with(page: 3, foo: "bar")
         .returns("scoped url to page 3")
 
-      links = NeedResultSetPresenter.new(@needs, @view_context, scope_params: {foo: "bar"}).links
+      links = NeedResultSetPresenter.new(@needs, @view_context, scope_params: { foo: "bar" }).links
 
       assert_equal 3, links.size
-      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
+      assert links.all? { |l| l.is_a?(LinkHeader::Link) }
 
       assert_equal "scoped url to page 1", links[0].href
       assert_equal "previous", links[0].attrs["rel"]
@@ -215,7 +215,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       links = NeedResultSetPresenter.new(@needs, @view_context).links
 
       assert_equal 2, links.size
-      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
+      assert links.all? { |l| l.is_a?(LinkHeader::Link) }
 
       assert_equal "url to page 2", links[0].href
       assert_equal "next", links[0].attrs["rel"]
@@ -231,7 +231,7 @@ class NeedResultSetPresenterTest < ActiveSupport::TestCase
       links = NeedResultSetPresenter.new(@needs, @view_context).links
 
       assert_equal 2, links.size
-      assert links.all? {|l| l.is_a?(LinkHeader::Link) }
+      assert links.all? { |l| l.is_a?(LinkHeader::Link) }
 
       assert_equal "url to page 2", links[0].href
       assert_equal "previous", links[0].attrs["rel"]

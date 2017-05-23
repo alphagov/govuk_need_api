@@ -24,6 +24,7 @@ class OrganisationSlugChanger
   end
 
 private
+
   attr_reader(
     :old_slug,
     :new_slug,
@@ -54,7 +55,7 @@ private
       "parent_ids",
       "child_ids"
     )
-    new_organisation = Organisation.create(new_attributes.merge(slug: new_slug))
+    Organisation.create(new_attributes.merge(slug: new_slug))
     logger.info "Created clone organisation with new slug '#{new_slug}'"
   end
 

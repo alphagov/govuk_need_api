@@ -13,7 +13,7 @@ class OrganisationImporter
     logger.info "Import complete"
   end
 
-  private
+private
 
   def create_or_update_organisation(organisation_from_api)
     child_ids = related_organisation_slugs(organisation_from_api["child_organisations"])
@@ -58,13 +58,13 @@ class OrganisationImporter
              when "production" then Rails.root.join("log", "organisation_import.json.log")
              end
 
-    Logger.new(output).tap {|logger|
+    Logger.new(output).tap { |logger|
       logger.formatter = json_log_formatter if Rails.env.production?
     }
   end
 
   def json_log_formatter
-    proc {|_severity, datetime, _progname, message|
+    proc { |_severity, datetime, _progname, message|
       {
         "@message" => message,
         "@tags" => %w(cron rake),

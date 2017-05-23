@@ -18,7 +18,8 @@ class BasicNeedPresenter
     }
   end
 
-  private
+private
+
   def organisations
     @need.organisations.map(&:as_json)
   end

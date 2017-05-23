@@ -23,11 +23,11 @@ class Changeset
     snapshots = [previous_snapshot, current.snapshot]
 
     changed_keys.inject({}) { |changes, key|
-      changes.merge(key => snapshots.map {|snapshot| snapshot[key] })
+      changes.merge(key => snapshots.map { |snapshot| snapshot[key] })
     }
   end
 
-  private
+private
 
   def changed_keys
     (current.snapshot.keys | previous_snapshot.keys).reject { |key|
@@ -36,6 +36,6 @@ class Changeset
   end
 
   def previous_snapshot
-    previous.present? ? previous.snapshot : { }
+    previous.present? ? previous.snapshot : {}
   end
 end

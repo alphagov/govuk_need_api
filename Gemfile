@@ -46,7 +46,7 @@ group :development do
 end
 
 group :development, :test do
-  gem 'govuk-lint', '~> 0.4'
+  gem 'govuk-lint'
 end
 
 group :test do

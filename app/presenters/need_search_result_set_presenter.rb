@@ -20,9 +20,10 @@ class NeedSearchResultSetPresenter
     }
   end
 
-  private
+private
+
   def results
-    @needs.map {|need|
+    @needs.map { |need|
       BasicNeedPresenter.new(need).as_json
     }
   end

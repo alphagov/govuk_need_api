@@ -8,7 +8,7 @@ class NotesController < ApplicationController
     end
   end
 
-  private
+private
 
   def filtered_params
     params.permit(

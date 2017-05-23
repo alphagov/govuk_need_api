@@ -1,8 +1,8 @@
 class NeedStatus
-  PROPOSED = "proposed"
-  NOT_VALID = "not valid"
-  VALID = "valid"
-  VALID_WITH_CONDITIONS = "valid with conditions"
+  PROPOSED = "proposed".freeze
+  NOT_VALID = "not valid".freeze
+  VALID = "valid".freeze
+  VALID_WITH_CONDITIONS = "valid with conditions".freeze
 
   include Mongoid::Document
 
@@ -21,6 +21,7 @@ class NeedStatus
   before_validation :clear_inconsistent_fields
 
 private
+
   def clear_inconsistent_fields
     self.reasons = nil if description != NOT_VALID && reasons != nil
 
