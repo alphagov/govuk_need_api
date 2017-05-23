@@ -1,8 +1,8 @@
 require "link_header"
 
 class NeedsController < ApplicationController
-  before_filter :load_need
-  before_filter :check_for_author_params, only: [:create, :update, :closed, :reopen]
+  before_action :load_need
+  before_action :check_for_author_params, only: [:create, :update, :closed, :reopen]
 
   def index
     if params["q"].present?
