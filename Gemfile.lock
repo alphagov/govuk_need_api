@@ -59,7 +59,7 @@ GEM
     concurrent-ruby (1.0.5)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
-    database_cleaner (1.5.1)
+    database_cleaner (1.5.3)
     domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
     elasticsearch (1.0.14)
@@ -280,7 +280,7 @@ PLATFORMS
 
 DEPENDENCIES
   airbrake!
-  database_cleaner (= 1.5.1)
+  database_cleaner (= 1.5.3)
   elasticsearch (= 1.0.14)
   factory_girl_rails (= 4.5.0)
   gds-api-adapters (= 39.2.0)
