@@ -5,7 +5,7 @@ class NeedPresenterTest < ActiveSupport::TestCase
     presenter_stub = stub(as_json: presenter_output)
 
     attributes = [attributes] unless attributes.is_a?(Array)
-    matchers = attributes.map {|a| has_entries(a) }
+    matchers = attributes.map { |a| has_entries(a) }
 
     presenter.constantize.expects(:new)
       .with(*matchers)

@@ -1,6 +1,7 @@
 FactoryGirl.define do
   factory :user do
-    sequence(:name) { |n| "Winston #{n}"}
+    sequence(:name) { |n| "Winston #{n}" }
+    email { "#{name.downcase.gsub(/\s+/, '.')}@example.com" }
     permissions { ["signin"] }
   end
 
@@ -16,7 +17,7 @@ FactoryGirl.define do
 
   factory :need do
     content_id SecureRandom.uuid
-    sequence(:role) {|n| "user #{n}" }
+    sequence(:role) { |n| "user #{n}" }
     goal "pay my council tax"
     benefit "I don't receive a fine"
 
@@ -37,8 +38,6 @@ FactoryGirl.define do
     need
     action_type "update"
     snapshot { need.attributes }
-    author({
-      name: "Winston Smith-Churchill"
-    })
+    author(name: "Winston Smith-Churchill")
   end
 end

@@ -96,7 +96,6 @@ class CreatingNeedsTest < ActionDispatch::IntegrationTest
       "role" => "user",
       "goal" => "find out the minimum wage",
       "benefit" => "",
-      "author" => nil
     }.to_json
 
     post_json '/needs', request_body

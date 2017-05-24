@@ -48,15 +48,15 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
       # quick fix to sort results by the Need ID
       # remove once we have explicit sorting on needs
       #
-      results = body["results"].sort_by {|r| r["id"] }
+      results = body["results"].sort_by { |r| r["id"] }
 
       assert_equal 3, results.size
 
-      assert_equal ["car owner", "jobseeker", "student"], results.map {|n| n["role"] }.sort
-      assert_equal ["apply for student finance", "renew my car tax", "search for jobs"], results.map {|n| n["goal"] }.sort
-      assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map {|n| n["benefit"] }.sort
-      assert_equal [1, 1, 2], results.map {|n| n["organisations"].size }.sort
-      assert_equal [NeedStatus::PROPOSED], results.map {|n| n["status"]["description"] }.uniq
+      assert_equal ["car owner", "jobseeker", "student"], results.map { |n| n["role"] }.sort
+      assert_equal ["apply for student finance", "renew my car tax", "search for jobs"], results.map { |n| n["goal"] }.sort
+      assert_equal ["I can drive my car for another year", "I can get into work", "I can get the money I need to go to university"], results.map { |n| n["benefit"] }.sort
+      assert_equal [1, 1, 2], results.map { |n| n["organisations"].size }.sort
+      assert_equal [NeedStatus::PROPOSED], results.map { |n| n["status"]["description"] }.uniq
 
       organisation = results[0]["organisations"][0]
       assert_equal "hm-treasury", organisation["id"]
@@ -83,9 +83,9 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal 200, last_response.status
         assert_equal "ok", body["_response_info"]["status"]
         assert_equal 2, body["results"].size
-        assert_equal ["car owner", "jobseeker"], body["results"].map {|n| n["role"] }.sort
-        assert_equal ["renew my car tax", "search for jobs"], body["results"].map {|n| n["goal"] }.sort
-        assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map {|n| n["benefit"] }.sort
+        assert_equal ["car owner", "jobseeker"], body["results"].map { |n| n["role"] }.sort
+        assert_equal ["renew my car tax", "search for jobs"], body["results"].map { |n| n["goal"] }.sort
+        assert_equal ["I can drive my car for another year", "I can get into work"], body["results"].map { |n| n["benefit"] }.sort
       end
 
       should "return all needs if no organisation is given" do
@@ -133,12 +133,12 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         assert_equal 200, last_response.status
         body = JSON.parse(last_response.body)
         assert_equal 2, body["results"].size
-        assert_equal ["renew my car tax", "search for jobs"], body["results"].map {|n| n["goal"] }.sort
+        assert_equal ["renew my car tax", "search for jobs"], body["results"].map { |n| n["goal"] }.sort
       end
 
       should "paginate the results correctly" do
         batch_of_needs = create_list(:need, 50)
-        query_param = "100001," + batch_of_needs.map {|n| n.need_id.to_s }.join(",")
+        query_param = "100001," + batch_of_needs.map { |n| n.need_id.to_s }.join(",")
 
         get "/needs?ids=#{query_param}"
         assert_equal 200, last_response.status
@@ -220,7 +220,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         body = JSON.parse(last_response.body)
         links = body["_response_info"]["links"]
 
-        assert_equal %w(next self), links.map {|l| l['rel']}
+        assert_equal %w(next self), links.map { |l| l['rel'] }
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])
@@ -233,7 +233,7 @@ class ListingNeedsTest < ActionDispatch::IntegrationTest
         body = JSON.parse(last_response.body)
         links = body["_response_info"]["links"]
 
-        assert_equal %w(previous self), links.map {|l| l['rel']}
+        assert_equal %w(previous self), links.map { |l| l['rel'] }
 
         assert last_response.headers.has_key?("Link")
         link_header = LinkHeader.parse(last_response.headers["Link"])

@@ -16,7 +16,7 @@ class NotesControllerTest < ActionController::TestCase
 
   context "POST create" do
     should "save the note" do
-      post :create, @note
+      post :create, params: @note
 
       note = Note.first
 
@@ -28,7 +28,7 @@ class NotesControllerTest < ActionController::TestCase
     end
 
     should "show errors if a note is not valid" do
-      post :create, @note.except(:text)
+      post :create, params: @note.except(:text)
 
       body = JSON.parse(response.body)
       assert_equal 422, response.status

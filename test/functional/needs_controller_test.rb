@@ -26,7 +26,7 @@ class NeedsControllerTest < ActionController::TestCase
       get :index
 
       body = JSON.parse(response.body)
-      body["results"].sort_by! {|r| r["id"] }
+      body["results"].sort_by! { |r| r["id"] }
 
       assert_equal 5, body["results"].size
       assert_equal @needs.first.need_id, body["results"][0]["id"]
@@ -49,7 +49,7 @@ class NeedsControllerTest < ActionController::TestCase
       @fourth_need = @needs[3]
       @fifth_need = @needs[4]
 
-      get :index, ids: "#{@first_need.need_id},#{@fourth_need.need_id},#{@fifth_need.need_id}"
+      get :index, params: { ids: "#{@first_need.need_id},#{@fourth_need.need_id},#{@fifth_need.need_id}" }
     end
 
     should "return a success status" do
@@ -61,7 +61,7 @@ class NeedsControllerTest < ActionController::TestCase
 
     should "return a response containing the needs matching the specified ids" do
       body = JSON.parse(response.body)
-      body["results"].sort_by! {|r| r["id"] }
+      body["results"].sort_by! { |r| r["id"] }
 
       assert_equal 3, body["results"].size
       assert_equal @first_need.need_id, body["results"][0]["id"]
@@ -77,7 +77,7 @@ class NeedsControllerTest < ActionController::TestCase
   context "GET index with empty need ids" do
     setup do
       @needs = create_list(:need, 3)
-      get :index, ids: ''
+      get :index, params: { ids: '' }
     end
 
     should "return a success status" do
@@ -111,7 +111,7 @@ class NeedsControllerTest < ActionController::TestCase
     end
 
     should "return success status" do
-      get :index, q: "fish"
+      get :index, params: { q: "fish" }
 
       assert_response :success
 
@@ -120,7 +120,7 @@ class NeedsControllerTest < ActionController::TestCase
     end
 
     should "display search results" do
-      get :index, q: "fish"
+      get :index, params: { q: "fish" }
 
       body = JSON.parse(response.body)
       assert_equal 1, body["results"].size
@@ -131,7 +131,7 @@ class NeedsControllerTest < ActionController::TestCase
     end
 
     should "display organisation information" do
-      get :index, q: "fish"
+      get :index, params: { q: "fish" }
 
       body = JSON.parse(response.body)
       organisations = body["results"][0]["organisations"]
@@ -157,10 +157,10 @@ class NeedsControllerTest < ActionController::TestCase
     end
 
     should "return only the needs related to that organisation" do
-      get :index, organisation_id: 'cabinet-office'
+      get :index, params: { organisation_id: 'cabinet-office' }
 
       body = JSON.parse(response.body)
-      body["results"].sort_by! {|r| r["id"] }
+      body["results"].sort_by! { |r| r["id"] }
 
       assert_equal 1, body["results"].size
       assert_equal @co_need.need_id, body["results"][0]["id"]
@@ -195,7 +195,7 @@ class NeedsControllerTest < ActionController::TestCase
         .returns(::Search::NeedSearchResultSet.new(@results, 1))
       GovukNeedApi.stubs(:searcher).returns(mock_searcher)
 
-      get :index, organisation_id: 'cabinet-office', q: 'cheese'
+      get :index, params: { organisation_id: 'cabinet-office', q: 'cheese' }
     end
 
     should "return a success status" do
@@ -220,7 +220,7 @@ class NeedsControllerTest < ActionController::TestCase
   context "GET content_id" do
     should "show the content_id for a need" do
       @need = create(:need)
-      get 'content_id', id: @need
+      get 'content_id', params: { id: @need }
 
       assert_equal @need.content_id, response.body
     end
@@ -257,7 +257,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "persist the need and create a revision given author information" do
-          post :create, @need_with_author
+          post :create, params: @need_with_author
 
           need = Need.first
 
@@ -282,7 +282,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return a created status" do
-          post :create, @need_with_author
+          post :create, params: @need_with_author
 
           assert_response :created
 
@@ -291,7 +291,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return details about the new need" do
-          post :create, @need_with_author
+          post :create, params: @need_with_author
 
           need = Need.first
           body = JSON.parse(response.body)
@@ -303,7 +303,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "ignore `duplicate_of` if the value is nil" do
-          post :create, @need_with_author.merge(duplicate_of: nil)
+          post :create, params: @need_with_author.merge(duplicate_of: nil)
           assert_response :created
         end
 
@@ -312,7 +312,7 @@ class NeedsControllerTest < ActionController::TestCase
           Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
           GovukNeedApi.indexer.expects(:index).with(indexable_need)
 
-          post :create, @need_with_author
+          post :create, params: @need_with_author
         end
 
         context "indexing fails" do
@@ -322,7 +322,7 @@ class NeedsControllerTest < ActionController::TestCase
           end
 
           should "return a 201 status code" do
-            post :create, @need_with_author
+            post :create, params: @need_with_author
             assert_response :created
           end
 
@@ -330,7 +330,7 @@ class NeedsControllerTest < ActionController::TestCase
             Airbrake
               .expects(:notify_or_ignore)
               .with(@exception)
-            post :create, @need_with_author
+            post :create, params: @need_with_author
           end
         end
       end
@@ -338,13 +338,13 @@ class NeedsControllerTest < ActionController::TestCase
 
       context "when no author details are provided" do
         should "return a 422 status code" do
-          post :create, @need
+          post :create, params: @need
 
           assert_equal 422, response.status
         end
 
         should "return an error in the json response" do
-          post :create, @need
+          post :create, params: @need
 
           body = JSON.parse(response.body)
           assert_equal "author_not_provided", body["_response_info"]["status"]
@@ -353,7 +353,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "not create the need" do
-          post :create, @need
+          post :create, params: @need
 
           assert_equal 0, Need.count
         end
@@ -367,7 +367,7 @@ class NeedsControllerTest < ActionController::TestCase
         ).returns(true)
         GovukNeedApi.indexer.stubs(:index)
 
-        post :create, @need.merge(author: {
+        post :create, params: @need.merge(author: {
           name: "name",
           foo: "foo",
           uid: "uid",
@@ -397,13 +397,13 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return a 422 status code" do
-          post :create, @need_with_author
+          post :create, params: @need_with_author
 
           assert_equal 422, response.status
         end
 
         should "return model errors in the json response" do
-          post :create, @need_with_author
+          post :create, params: @need_with_author
 
           body = JSON.parse(response.body)
           assert_equal "invalid_attributes", body["_response_info"]["status"]
@@ -417,7 +417,7 @@ class NeedsControllerTest < ActionController::TestCase
           end
 
           should "not accept `duplicate_of` with a value in the parameters" do
-            post :create, @need_with_author.merge(duplicate_of: @canonical_need.need_id)
+            post :create, params: @need_with_author.merge(duplicate_of: @canonical_need.need_id)
 
             body = JSON.parse(response.body)
             assert_response 422
@@ -428,13 +428,13 @@ class NeedsControllerTest < ActionController::TestCase
 
       context "without author details" do
         should "return a 422 status code" do
-          post :create, @need
+          post :create, params: @need
 
           assert_equal 422, response.status
         end
 
         should "return an error in the json response" do
-          post :create, @need
+          post :create, params: @need
 
           body = JSON.parse(response.body)
           assert_equal "author_not_provided", body["_response_info"]["status"]
@@ -513,12 +513,12 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return a success response" do
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
           assert_response 204
         end
 
         should "update the need" do
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
 
           updated_need = Need.find(@need_instance.need_id)
           assert_equal "council tax payer", updated_need.role
@@ -527,12 +527,12 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "ignore `duplicate_of` if the value is nil" do
-          put :update, @updates_with_author.merge(duplicate_of: nil)
+          put :update, params: @updates_with_author.merge(duplicate_of: nil)
           assert_response 204
         end
 
         should "leave existing values unchanged" do
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
 
           updated_need = Need.find(@need_instance.need_id)
           [:goal, :benefit, :impact, :met_when].each do |field|
@@ -545,7 +545,7 @@ class NeedsControllerTest < ActionController::TestCase
           Search::IndexableNeed.expects(:new).with(is_a(Need)).returns(indexable_need)
           GovukNeedApi.indexer.expects(:index).with(indexable_need)
 
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
         end
 
         context "indexing fails" do
@@ -555,7 +555,7 @@ class NeedsControllerTest < ActionController::TestCase
           end
 
           should "return a 204 status code" do
-            put :update, @updates_with_author
+            put :update, params: @updates_with_author
             assert_response 204
           end
 
@@ -563,20 +563,20 @@ class NeedsControllerTest < ActionController::TestCase
             Airbrake
               .expects(:notify_or_ignore)
               .with(@exception)
-            put :update, @updates_with_author
+            put :update, params: @updates_with_author
           end
         end
       end
 
       context "when no author details are provided" do
         should "return a 422 status code" do
-          put :update, @updates
+          put :update, params: @updates
 
           assert_equal 422, response.status
         end
 
         should "return an error in the json response" do
-          put :update, @updates
+          put :update, params: @updates
 
           body = JSON.parse(response.body)
           assert_equal "author_not_provided", body["_response_info"]["status"]
@@ -586,7 +586,7 @@ class NeedsControllerTest < ActionController::TestCase
 
         should "not update the need" do
           Need.any_instance.expects(:save_as).never
-          put :update, @updates
+          put :update, params: @updates
         end
       end
     end
@@ -609,13 +609,13 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return a 422 status" do
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
           assert_response 422
         end
 
         should "not accept a different duplicate_of value as a parameter" do
           canonical_need = create(:need)
-          put :update, @updates_with_author.merge(duplicate_of: canonical_need.need_id)
+          put :update, params: @updates_with_author.merge(duplicate_of: canonical_need.need_id)
           body = JSON.parse(response.body)
           assert_response 422
           assert_equal(
@@ -625,7 +625,7 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return an error in the response" do
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
 
           body = JSON.parse(response.body)
           assert_equal "invalid_attributes", body["_response_info"]["status"]
@@ -638,22 +638,22 @@ class NeedsControllerTest < ActionController::TestCase
 
         should "not save the need" do
           Need.any_instance.expects(:save_as).never
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
         end
 
         should "not attempt to index the need" do
           GovukNeedApi.indexer.expects(:index).never
-          put :update, @updates_with_author
+          put :update, params: @updates_with_author
         end
       end
 
       should "return a 422 status" do
-        put :update, @updates
+        put :update, params: @updates
         assert_response 422
       end
 
       should "return an error in the response" do
-        put :update, @updates
+        put :update, params: @updates
 
         body = JSON.parse(response.body)
         assert_equal "author_not_provided", body["_response_info"]["status"]
@@ -661,12 +661,12 @@ class NeedsControllerTest < ActionController::TestCase
 
       should "not save the need" do
         Need.any_instance.expects(:save_as).never
-        put :update, @updates
+        put :update, params: @updates
       end
 
       should "not attempt to index the need" do
         GovukNeedApi.indexer.expects(:index).never
-        put :update, @updates
+        put :update, params: @updates
       end
     end
 
@@ -685,7 +685,7 @@ class NeedsControllerTest < ActionController::TestCase
       should "return a 409" do
         Need.any_instance.expects(:closed?).returns(true)
         Need.any_instance.expects(:save_as).never
-        put :update, @updates
+        put :update, params: @updates
 
         assert_response 409
       end
@@ -716,19 +716,19 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return a success response" do
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
           assert_response 204
         end
 
         should "marks the need as a duplicate of another need" do
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
 
           closed_need = Need.find(@duplicate.need_id)
           assert_equal @canonical_need.need_id, closed_need.duplicate_of
         end
 
         should "leave existing values unchanged" do
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
 
           closed_need = Need.find(@duplicate.need_id)
           [:goal, :benefit, :impact, :met_when].each do |field|
@@ -737,30 +737,29 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "not attempt to index the new need" do
-          indexable_need = stub("indexable need")
           GovukNeedApi.indexer.expects(:index).never
 
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
         end
 
         should "only be able to close once (without reopening)" do
           @duplicate.duplicate_of = @canonical_need.need_id
           @duplicate.save
 
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
           assert_response 409
         end
       end
 
       context "when no author details are provided" do
         should "return a 422 status code" do
-          put :closed, @closed
+          put :closed, params: @closed
 
           assert_equal 422, response.status
         end
 
         should "return an error in the json response" do
-          put :closed, @closed
+          put :closed, params: @closed
 
           body = JSON.parse(response.body)
           assert_equal "author_not_provided", body["_response_info"]["status"]
@@ -770,7 +769,7 @@ class NeedsControllerTest < ActionController::TestCase
 
         should "not update the need" do
           Need.any_instance.expects(:save_as).never
-          put :closed, @closed
+          put :closed, params: @closed
         end
       end
     end
@@ -791,12 +790,12 @@ class NeedsControllerTest < ActionController::TestCase
         end
 
         should "return a 422 status" do
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
           assert_response 422
         end
 
         should "return an error in the response" do
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
 
           body = JSON.parse(response.body)
           assert_equal "duplicate_of_not_provided", body["_response_info"]["status"]
@@ -809,22 +808,22 @@ class NeedsControllerTest < ActionController::TestCase
 
         should "not save the need" do
           Need.any_instance.expects(:save_as).never
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
         end
 
         should "not attempt to index the need" do
           GovukNeedApi.indexer.expects(:index).never
-          put :closed, @closed_with_author
+          put :closed, params: @closed_with_author
         end
       end
 
       should "return a 422 status" do
-        put :closed, @closed
+        put :closed, params: @closed
         assert_response 422
       end
 
       should "return an error in the response" do
-        put :closed, @closed
+        put :closed, params: @closed
 
         body = JSON.parse(response.body)
         assert_equal "author_not_provided", body["_response_info"]["status"]
@@ -832,12 +831,12 @@ class NeedsControllerTest < ActionController::TestCase
 
       should "not save the need" do
         Need.any_instance.expects(:save_as).never
-        put :closed, @closed
+        put :closed, params: @closed
       end
 
       should "not attempt to index the need" do
         GovukNeedApi.indexer.expects(:index).never
-        put :closed, @closed
+        put :closed, params: @closed
       end
     end
   end
@@ -861,40 +860,40 @@ class NeedsControllerTest < ActionController::TestCase
     context "given a closed need" do
       setup do
         @closed_with_author = @closed.merge @author
-        put :closed, @closed_with_author
+        put :closed, params: @closed_with_author
       end
 
       should "return a success response" do
-        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        delete :reopen, params: { id: @duplicate.need_id }.merge(@author)
         assert_response 204
       end
 
       should "not have duplicate_of set" do
-        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        delete :reopen, params: { id: @duplicate.need_id }.merge(@author)
         reopened = Need.find(@duplicate.need_id)
         refute reopened.duplicate_of
       end
 
       should "return a 422 if no author details are present" do
-        delete :reopen, { id: @duplicate.need_id }
+        delete :reopen, params: { id: @duplicate.need_id }
         assert_response 422
       end
 
       should "contain an error message" do
-        delete :reopen, { id: @duplicate.need_id }
+        delete :reopen, params: { id: @duplicate.need_id }
         assert JSON.parse(response.body)["errors"]
       end
 
       should "return a 422 if reopen fails" do
         Need.any_instance.expects(:reopen).returns(false)
-        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        delete :reopen, params: { id: @duplicate.need_id }.merge(@author)
         assert_response 422
       end
     end
 
     context "given an open need" do
       setup do
-        delete :reopen, { id: @duplicate.need_id }.merge(@author)
+        delete :reopen, params: { id: @duplicate.need_id }.merge(@author)
       end
 
       should "not be able to reopen an open need" do
@@ -909,7 +908,7 @@ class NeedsControllerTest < ActionController::TestCase
 
   def with_updated_need_for(status)
     @updates_with_author[:status][:description] = status
-    put :update, @updates_with_author
+    put :update, params: @updates_with_author
 
     yield Need.find(@need_instance.need_id)
   end

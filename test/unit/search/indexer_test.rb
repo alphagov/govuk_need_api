@@ -12,7 +12,7 @@ class IndexerTest < ActiveSupport::TestCase
     end
     need = mock("indexable need") do
       expects(:need_id).returns(123456)
-      expects(:present).returns({ wibble: true })
+      expects(:present).returns(wibble: true)
     end
 
     Search::Indexer.new(client, "foo", "bang").index(need)
@@ -26,7 +26,7 @@ class IndexerTest < ActiveSupport::TestCase
     ]
     need = stub("indexable need") do
       stubs(:need_id).returns(123456)
-      stubs(:present).returns({ wibble: true })
+      stubs(:present).returns(wibble: true)
     end
 
     error_classes.each do |error_class|
@@ -43,7 +43,7 @@ class IndexerTest < ActiveSupport::TestCase
   should "not wrap unanticipated errors" do
     need = stub("indexable need") do
       stubs(:need_id).returns(123456)
-      stubs(:present).returns({ wibble: true })
+      stubs(:present).returns(wibble: true)
     end
 
     client = mock("client") do

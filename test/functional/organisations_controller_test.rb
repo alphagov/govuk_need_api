@@ -27,7 +27,7 @@ class OrganisationsControllerTest < ActionController::TestCase
       get :index
 
       body = JSON.parse(response.body)
-      org_names = body["organisations"].map {|org| org["name"] }
+      org_names = body["organisations"].map { |org| org["name"] }
       assert_equal ["Department for Transport", "Home Office", "Ministry of Justice"], org_names
     end
   end

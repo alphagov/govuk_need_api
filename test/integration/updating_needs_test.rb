@@ -70,7 +70,7 @@ class UpdatingNeedsTest < ActionDispatch::IntegrationTest
   end
 
   should "return errors given no author details" do
-    put "/needs/#{@need.need_id}", role: "user", author: nil
+    put "/needs/#{@need.need_id}", role: "user"
     assert_equal 422, last_response.status
 
     body = JSON.parse(last_response.body)

@@ -116,23 +116,29 @@ class NeedTest < ActiveSupport::TestCase
     end
 
     should "disallow applies_to_all_organisations with explicit organisations" do
-      need = build(:need,
+      need = build(
+        :need,
         applies_to_all_organisations: true,
         organisation_ids: ["cabinet-office"]
-                  )
+      )
       refute need.valid?
     end
 
     should "allow applies_to_all_organisations with no organisations" do
-      need = build(:need,
+      need = build(
+        :need,
         applies_to_all_organisations: true,
         organisation_ids: []
-                  )
+      )
       assert need.valid?
     end
 
     should "allow applies_to_all_organisations with organisation IDs not set" do
-      need = build(:need, applies_to_all_organisations: true, organisation_ids: nil)
+      need = build(
+        :need,
+        applies_to_all_organisations: true,
+        organisation_ids: nil
+      )
       assert need.valid?
     end
 

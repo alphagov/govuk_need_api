@@ -4,11 +4,11 @@ class NotesController < ApplicationController
     if note.save
       head :created
     else
-      error 422, message: :invalid_attributes, errors: note.errors.full_messages
+      error :unprocessable_entity, message: :invalid_attributes, errors: note.errors.full_messages
     end
   end
 
-  private
+private
 
   def filtered_params
     params.permit(
@@ -18,6 +18,6 @@ class NotesController < ApplicationController
         :name,
         :email,
       ],
-    )
+    ).to_h
   end
 end

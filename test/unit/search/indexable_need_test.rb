@@ -3,7 +3,8 @@ require_relative '../../test_helper'
 module Search
   class IndexableNeedTest < ActiveSupport::TestCase
     setup do
-      @need = build(:need,
+      @need = build(
+        :need,
         need_id: 123456,
         role: "Role",
         goal: "Goal",
@@ -21,7 +22,7 @@ module Search
         yearly_searches: 1000,
         duplicate_of: 654321,
         status: NeedStatus.new(description: NeedStatus::PROPOSED),
-                   )
+      )
       @indexable_need = IndexableNeed.new(@need)
     end
 

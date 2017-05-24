@@ -4,7 +4,7 @@ module Search
       Elasticsearch::Transport::Transport::Error,
       Elasticsearch::Transport::Transport::ServerError,
       Elasticsearch::Transport::Transport::SnifferTimeoutError,
-    ]
+    ].freeze
 
     class IndexingFailed < StandardError
       attr_reader :need_id, :document, :cause

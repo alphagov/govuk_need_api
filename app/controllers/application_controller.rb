@@ -3,10 +3,10 @@ class ApplicationController < ActionController::Base
 
   include GDS::SSO::ControllerMethods
 
-  before_filter :authenticate_user!
-  before_filter :require_signin_permission!
+  before_action :authenticate_user!
+  before_action :require_signin_permission!
 
-  private
+private
 
   def error(code, options = {})
     render json: { _response_info: { status: options.delete(:message) } }.merge(options),

@@ -49,7 +49,7 @@ class Need
   index organisation_ids: 1
 
   # uniqueness constraint to avoid simple forms of duplication
-  index({ role: 1, goal: 1, benefit: 1 }, { unique: true })
+  index({ role: 1, goal: 1, benefit: 1 }, unique: true)
 
   validates :role, :goal, :benefit, presence: true
   validates :yearly_user_contacts, :yearly_site_views, :yearly_need_views, :yearly_searches,
@@ -62,7 +62,7 @@ class Need
   validate :validate_duplicate
 
   has_and_belongs_to_many :organisations
-  has_many :revisions, class_name: "NeedRevision"
+  has_many :revisions, class_name: "NeedRevision", inverse_of: :need
 
   def save_as(user)
     action = new_record? ? "create" : "update"
@@ -80,9 +80,8 @@ class Need
   end
 
   def save_with_revision(action, user)
-    if saved = save_without_callbacks
-      record_revision(action, user)
-    end
+    saved = save_without_callbacks
+    record_revision(action, user) if saved
     saved
   end
 
@@ -100,8 +99,8 @@ class Need
 
   def save(*args)
     super
-  rescue Moped::Errors::OperationFailure => e
-    if e.details["code"] == 11000 # Duplicate key error
+  rescue Mongo::Error::OperationFailure => e
+    if e.message =~ /E11000/ # Duplicate key error
       errors.add(:base, "This need already exists")
       return false
     else
@@ -110,10 +109,15 @@ class Need
   end
 
 private
+
   def assign_new_id
     last_assigned = Need.order_by(:need_id.desc).first
-    self.need_id ||= (last_assigned.present? && last_assigned.need_id >= INITIAL_NEED_ID) ? last_assigned.need_id + 1 : INITIAL_NEED_ID
+    self.need_id ||= increment_last_assigned_need_id?(last_assigned) ? last_assigned.need_id + 1 : INITIAL_NEED_ID
     self._id = self.need_id
+  end
+
+  def increment_last_assigned_need_id?(last_assigned)
+    last_assigned.present? && last_assigned.need_id >= INITIAL_NEED_ID
   end
 
   def organisation_ids_must_exist
@@ -166,11 +170,11 @@ private
   end
 
   def record_create_revision
-    record_revision "create"
+    prevent_additional_callbacks { record_revision "create" }
   end
 
   def record_update_revision
-    record_revision "update"
+    prevent_additional_callbacks { record_revision "update" }
   end
 
   def record_revision(action, user = nil)
@@ -179,6 +183,14 @@ private
       snapshot: attributes,
       author: user
     )
+  end
+
+  def prevent_additional_callbacks
+    if @prevent_additional_callbacks_guard.nil?
+      @prevent_additional_callbacks_guard = 'on guard'
+      yield
+      @prevent_additional_callbacks_guard = nil
+    end
   end
 
   # It is necessary to save without callbacks here so that we can create a

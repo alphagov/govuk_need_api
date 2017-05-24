@@ -25,7 +25,7 @@ private
   def export(need, index, count)
     slug = generate_slug(need)
     need_revision_groups = need_revision_groups(need.revisions.sort_by(&:created_at))
-    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(need.id, nrg, slug)}
+    snapshots = need_revision_groups.map { |nrg| present_need_revision_group(need.id, nrg, slug) }
     compute_superseded_needs(snapshots)
     @api_client.import(need.content_id, "en", snapshots)
     links = present_links(need)
@@ -79,7 +79,7 @@ private
     need_revision.snapshot.each do |key, value|
       if should_not_be_in_details(key, value)
       else
-        details["#{key}"] = value
+        details[key.to_s] = value
       end
     end
     details.merge("need_id" => need_revision.need_id)
@@ -121,7 +121,7 @@ private
   end
 
   def suffix(n)
-    return "" if n == 0
+    return "" if n.zero?
     "-#{n}"
   end
 
@@ -183,7 +183,7 @@ private
     end
   end
 
-  def map_to_publishing_api_state(need_revision, slug)
+  def map_to_publishing_api_state(need_revision, _slug)
     if need_revision.snapshot["duplicate_of"].present?
       begin
         duplicate_need_id = need_revision.snapshot["duplicate_of"]

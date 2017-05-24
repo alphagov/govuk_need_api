@@ -4,13 +4,13 @@ require 'delegate'
 # the need's revisions.
 class NeedWithChangesets < SimpleDelegator
   def changesets
-    (need.revisions + [nil]).each_cons(2).map {|revision, previous|
+    (need.revisions + [nil]).each_cons(2).map { |revision, previous|
       notes = Note.where(revision: revision.id)
       Changeset.new(revision, previous, notes)
     }
   end
 
-  private
+private
 
   def need
     __getobj__

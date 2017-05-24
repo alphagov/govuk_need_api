@@ -116,7 +116,7 @@ class ShowingNeedsTest < ActionDispatch::IntegrationTest
       body = JSON.parse(last_response.body)
 
       assert_equal 5, body["revisions"].size
-      assert_equal ["2013-04-01T00:00:00.000Z"], body["revisions"].map {|r| r['created_at'] }.uniq
+      assert_equal ["2013-04-01T00:00:00.000Z"], body["revisions"].map { |r| r['created_at'] }.uniq
     end
 
     should "return a not found response" do
