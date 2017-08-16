@@ -1,4 +1,4 @@
-class RemoveNeedStatusReasonField < Mongoid::Migration
+class RemoveNeedStatusReasonField < Mongoid::Migration[4.2]
   def self.up
     Need.all.each do |need|
       need.status.unset(:reason)

@@ -1,4 +1,4 @@
-class TransformFieldsFromMonthlyToYearly < Mongoid::Migration
+class TransformFieldsFromMonthlyToYearly < Mongoid::Migration[4.2]
   def self.up
     modify("monthly_","yearly_", -> x { x * 12 })
   end

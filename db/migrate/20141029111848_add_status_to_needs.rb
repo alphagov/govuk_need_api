@@ -1,4 +1,4 @@
-class AddStatusToNeeds < Mongoid::Migration
+class AddStatusToNeeds < Mongoid::Migration[4.2]
   def self.up
     Need.all.each do |n|
       unless n.status.present?

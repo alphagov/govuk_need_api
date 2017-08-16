@@ -1,4 +1,4 @@
-class RemoveCurrentlyMetField < Mongoid::Migration
+class RemoveCurrentlyMetField < Mongoid::Migration[4.2]
   def self.up
     Need.all.each do |need|
       need.unset(:currently_met)

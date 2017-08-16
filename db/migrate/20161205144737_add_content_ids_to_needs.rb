@@ -1,4 +1,4 @@
-class AddContentIdsToNeeds < Mongoid::Migration
+class AddContentIdsToNeeds < Mongoid::Migration[4.2]
   def self.up
     Need.all.each do |n|
       unless n.content_id.present?

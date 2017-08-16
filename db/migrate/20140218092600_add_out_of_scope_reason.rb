@@ -1,4 +1,4 @@
-class AddOutOfScopeReason < Mongoid::Migration
+class AddOutOfScopeReason < Mongoid::Migration[4.2]
   def self.up
     Need.all.each do |need|
       value = need.in_scope == false ? "closed" : nil

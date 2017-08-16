@@ -1,4 +1,4 @@
-class UpdateOrganisationSlug < Mongoid::Migration
+class UpdateOrganisationSlug < Mongoid::Migration[4.2]
   def self.up
     organisation = Organisation.find_by(slug: "government-actuary-s-department")
     organisation.update_attributes({

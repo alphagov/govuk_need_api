@@ -1,4 +1,4 @@
-class ChangeOutOfScopeStatusToNotValidStatus < Mongoid::Migration
+class ChangeOutOfScopeStatusToNotValidStatus < Mongoid::Migration[4.2]
   def self.up
     Need.all.each do |n|
       if n.status.description == "out of scope"

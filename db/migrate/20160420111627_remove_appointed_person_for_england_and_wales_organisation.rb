@@ -1,4 +1,4 @@
-class RemoveAppointedPersonForEnglandAndWalesOrganisation < Mongoid::Migration
+class RemoveAppointedPersonForEnglandAndWalesOrganisation < Mongoid::Migration[4.2]
   def self.up
     organisation = Organisation.where(_id: 'appointed-person-for-england-and-wales-under-the-proceeds-of-crime-act-2002').first
     if organisation.present?
